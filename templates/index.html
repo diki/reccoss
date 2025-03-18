@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Assistant</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Interview Assistant</h1>
+      <p>
+        Real-time transcription, screenshots, and question tracking for
+        technical interviews
+      </p>
+
+      <div class="controls">
+        <h2>Recording Controls</h2>
+        <div class="button-group">
+          <button id="start-recording" class="button primary">
+            Start Recording
+          </button>
+          <button id="stop-recording" class="button danger">
+            Stop Recording
+          </button>
+          <button id="take-screenshot" class="button secondary">
+            Extract Question (screenshot)
+          </button>
+          <button id="extract-with-gemini" class="button secondary">
+            Extract with Gemini (screenshot)
+          </button>
+        </div>
+        <p id="recording-status">Status: Not recording</p>
+
+        <div class="extracted-question-container">
+          <h3>Extracted Coding Question</h3>
+          <div id="extracted-question" class="question-box">
+            <p><em>No coding question extracted yet...</em></p>
+          </div>
+          <button id="get-solution" class="button solution-button" disabled>
+            Get Solution
+          </button>
+        </div>
+
+        <div class="solution-container">
+          <h3>Solution</h3>
+          <div id="solution-tabs" class="tabs">
+            <button class="tab-button active" data-tab="explanation">
+              Explanation
+            </button>
+            <button class="tab-button" data-tab="code">Code</button>
+            <button class="tab-button" data-tab="complexity">Complexity</button>
+          </div>
+          <div id="solution-content" class="solution-box">
+            <div id="explanation-tab" class="tab-content active">
+              <p>
+                <em>No solution yet. Click "Get Solution" to generate one.</em>
+              </p>
+            </div>
+            <div id="code-tab" class="tab-content">
+              <pre><code><em>No code solution yet.</em></code></pre>
+            </div>
+            <div id="complexity-tab" class="tab-content">
+              <p><em>No complexity analysis yet.</em></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="question-controls">
+          <h3>Question Tracking</h3>
+          <div class="control-row">
+            <label for="question-type">Question Type:</label>
+            <select id="question-type">
+              <option value="coding">Coding Question</option>
+              <option value="behavioral">Behavioral Question</option>
+              <option value="system-design">System Design</option>
+              <option value="other">Other</option>
+            </select>
+            <button id="mark-question" class="button info">
+              Mark New Question
+            </button>
+          </div>
+          <div class="control-row">
+            <button id="mark-followup" class="button info">
+              Mark Follow-up
+            </button>
+            <input
+              type="text"
+              id="question-notes"
+              placeholder="Add notes about this question..."
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="transcription-container">
+        <h2>Live Transcriptions</h2>
+        <div class="transcription-split">
+          <div class="transcription-column">
+            <h3>Interviewer</h3>
+            <div id="interviewer-transcription" class="latest-box">
+              <p><em>Waiting for transcription...</em></p>
+            </div>
+          </div>
+          <div class="transcription-column">
+            <h3>Interviewee</h3>
+            <div id="latest-transcription" class="latest-box">
+              <p><em>Waiting for transcription...</em></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="solution-container">
+          <h3>Solution</h3>
+          <div id="solution-tabs" class="tabs">
+            <button class="tab-button active" data-tab="explanation">
+              Explanation
+            </button>
+            <button class="tab-button" data-tab="code">Code</button>
+            <button class="tab-button" data-tab="complexity">Complexity</button>
+          </div>
+          <div id="solution-content" class="solution-box">
+            <div id="explanation-tab" class="tab-content active">
+              <p>
+                <em>No solution yet. Click "Get Solution" to generate one.</em>
+              </p>
+            </div>
+            <div id="code-tab" class="tab-content">
+              <pre><code><em>No code solution yet.</em></code></pre>
+            </div>
+            <div id="complexity-tab" class="tab-content">
+              <p><em>No complexity analysis yet.</em></p>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="screenshots-container">
+          <h3>Screenshots</h3>
+          <div id="screenshots" class="screenshots-box">
+            <p><em>No screenshots yet...</em></p>
+          </div>
+        </div>
+
+        <h3>Transcription History</h3>
+        <div id="transcription-history" class="history-box">
+          <p><em>No transcriptions yet...</em></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+  </body>
+</html>
