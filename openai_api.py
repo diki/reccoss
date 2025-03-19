@@ -3,6 +3,7 @@ import base64
 import requests
 import json
 from typing import Optional, Dict
+from openai import OpenAI
 
 def encode_image_to_base64(image_path: str) -> str:
     """
@@ -17,9 +18,9 @@ def encode_image_to_base64(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def extract_coding_question(image_path: str) -> Optional[str]:
+def extract_coding_question_with_openai(image_path: str) -> Optional[str]:
     """
-    Send an image to Claude Sonnet API to extract a coding question
+    Send an image to OpenAI API to extract a coding question
     
     Parameters:
     - image_path: Path to the screenshot image
@@ -27,72 +28,57 @@ def extract_coding_question(image_path: str) -> Optional[str]:
     Returns:
     - Extracted coding question as a string, or None if extraction failed
     """
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        print("Error: ANTHROPIC_API_KEY environment variable not set")
+        print("Error: OPENAI_API_KEY environment variable not set")
         return None
     
-    # Encode the image to base64
-    base64_image = encode_image_to_base64(image_path)
-    
-    # Prepare the API request
-    headers = {
-        "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
-    }
-    
-    # Construct the message with the image
-    payload = {
-        "model": "claude-3-sonnet-20240229",
-        "max_tokens": 1000,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "image/png",
-                            "data": base64_image
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "Extract the coding question from this screenshot. Return only the question text without any additional commentary or explanation."
-                    }
-                ]
-            }
-        ]
-    }
+    # Initialize the OpenAI client
+    client = OpenAI(api_key=api_key)
     
     try:
-        # Make the API request
-        response = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers=headers,
-            json=payload
+        # Load the image
+        with open(image_path, "rb") as image_file:
+            image_data = image_file.read()
+        
+        # Create a prompt with the image
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Extract the coding question from this screenshot. Return only the question text without any additional commentary or explanation."
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{encode_image_to_base64(image_path)}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=1000
         )
         
-        # Check if the request was successful
-        if response.status_code == 200:
-            response_data = response.json()
-            # Extract the question from Claude's response
-            extracted_question = response_data["content"][0]["text"]
+        # Extract the question from OpenAI's response
+        if response and response.choices and len(response.choices) > 0:
+            extracted_question = response.choices[0].message.content
             return extracted_question.strip()
         else:
-            print(f"Error from Claude API: {response.status_code}")
-            print(response.text)
+            print("Empty response from OpenAI API")
             return None
     
     except Exception as e:
-        print(f"Exception when calling Claude API: {str(e)}")
+        print(f"Exception when calling OpenAI API: {str(e)}")
         return None
 
-def get_solution_for_question(question: str) -> Optional[Dict[str, str]]:
+def get_solution_for_question_with_openai(question: str) -> Optional[Dict[str, str]]:
     """
-    Send a coding question to Claude Sonnet API to get a solution
+    Send a coding question to OpenAI API to get a solution
     
     Parameters:
     - question: The coding question to solve
@@ -100,19 +86,15 @@ def get_solution_for_question(question: str) -> Optional[Dict[str, str]]:
     Returns:
     - Dictionary containing explanation, code, complexity, and strategy, or None if failed
     """
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        print("Error: ANTHROPIC_API_KEY environment variable not set")
+        print("Error: OPENAI_API_KEY environment variable not set")
         return None
     
-    # Prepare the API request
-    headers = {
-        "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
-    }
+    # Initialize the OpenAI client
+    client = OpenAI(api_key=api_key)
     
-    # Construct the prompt for Claude
+    # Construct the prompt for OpenAI
     prompt = f"""
 I need a solution to the following coding problem:
 
@@ -131,30 +113,18 @@ Please provide a comprehensive solution with the following components:
 Format your response with clear section headers for each component.
 """
     
-    # Construct the message
-    payload = {
-        "model": "claude-3-sonnet-20240229",
-        "max_tokens": 4000,
-        "messages": [
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    }
-    
     try:
-        # Make the API request
-        response = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers=headers,
-            json=payload
+        # Generate the solution
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=4000
         )
         
-        # Check if the request was successful
-        if response.status_code == 200:
-            response_data = response.json()
-            solution_text = response_data["content"][0]["text"]
+        if response and response.choices and len(response.choices) > 0:
+            solution_text = response.choices[0].message.content
             
             # Parse the solution text to extract the different sections
             explanation = ""
@@ -200,10 +170,9 @@ Format your response with clear section headers for each component.
                 "strategy": strategy.strip()
             }
         else:
-            print(f"Error from Claude API: {response.status_code}")
-            print(response.text)
+            print("Empty response from OpenAI API")
             return None
     
     except Exception as e:
-        print(f"Exception when calling Claude API for solution: {str(e)}")
+        print(f"Exception when calling OpenAI API for solution: {str(e)}")
         return None

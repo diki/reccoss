@@ -5,63 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interview Assistant</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css"
+    />
   </head>
   <body>
     <div class="container">
-      <h1>Interview Assistant</h1>
-      <p>
-        Real-time transcription, screenshots, and question tracking for
-        technical interviews
-      </p>
-
-      <div class="controls">
-        <h2>Recording Controls</h2>
-        <div class="button-group">
-          <button id="start-recording" class="button primary">
-            Start Recording
-          </button>
-          <button id="stop-recording" class="button danger">
-            Stop Recording
-          </button>
-          <button id="take-screenshot" class="button secondary">
-            Extract Question (screenshot)
-          </button>
-          <button id="extract-with-gemini" class="button secondary">
-            Extract with Gemini (screenshot)
-          </button>
+      <div class="left-panel">
+        <button id="toggle-panel" class="toggle-button" title="Toggle Panel">
+          <span class="toggle-icon">▶</span>
+        </button>
+        <div class="controls">
+          <h2>Action Controls</h2>
+          <div class="button-group">
+            <button id="take-screenshot" class="button secondary">
+              Extract Question (screenshot)
+            </button>
+            <button id="extract-with-gemini" class="button secondary">
+              Extract with Gemini (screenshot)
+            </button>
+            <button id="extract-with-openai" class="button secondary">
+              Extract with OpenAI (screenshot)
+            </button>
+            <button id="get-solution" class="button solution-button" disabled>
+              Get Solution
+            </button>
+            <button
+              id="get-solution-with-openai"
+              class="button solution-button"
+              disabled
+            >
+              Get Solution with OpenAI
+            </button>
+            <button
+              id="get-solution-with-gemini"
+              class="button solution-button"
+              disabled
+            >
+              Get Solution with Gemini
+            </button>
+          </div>
         </div>
-        <p id="recording-status">Status: Not recording</p>
-
+        <div class="controls">
+          <h2>Recording Controls</h2>
+          <div class="button-group">
+            <button id="start-recording" class="button primary">
+              Start Recording
+            </button>
+            <button id="stop-recording" class="button danger">
+              Stop Recording
+            </button>
+            <button id="reset-all" class="button danger">Reset All</button>
+          </div>
+          <p id="recording-status">Status: Not recording</p>
+        </div>
+      </div>
+      <div class="main-content">
         <div class="extracted-question-container">
           <h3>Extracted Coding Question</h3>
           <div id="extracted-question" class="question-box">
             <p><em>No coding question extracted yet...</em></p>
           </div>
-          <button id="get-solution" class="button solution-button" disabled>
-            Get Solution
-          </button>
         </div>
 
-        <div class="solution-container">
-          <h3>Solution</h3>
-          <div id="solution-tabs" class="tabs">
-            <button class="tab-button active" data-tab="explanation">
-              Explanation
-            </button>
-            <button class="tab-button" data-tab="code">Code</button>
-            <button class="tab-button" data-tab="complexity">Complexity</button>
+        <div class="solution-code-container">
+          <div class="solution-container">
+            <h3>Solution</h3>
+            <div id="solution-tabs" class="tabs">
+              <button class="tab-button active" data-tab="explanation">
+                Explanation
+              </button>
+              <button class="tab-button" data-tab="complexity">
+                Complexity
+              </button>
+              <button class="tab-button" data-tab="strategy">Strategy</button>
+            </div>
+            <div id="solution-content" class="solution-box">
+              <div id="explanation-tab" class="tab-content active">
+                <p>
+                  <em
+                    >No solution yet. Click "Get Solution" to generate one.</em
+                  >
+                </p>
+              </div>
+              <div id="complexity-tab" class="tab-content">
+                <p><em>No complexity analysis yet.</em></p>
+              </div>
+              <div id="strategy-tab" class="tab-content">
+                <p><em>No interview strategy yet.</em></p>
+              </div>
+            </div>
           </div>
-          <div id="solution-content" class="solution-box">
-            <div id="explanation-tab" class="tab-content active">
-              <p>
-                <em>No solution yet. Click "Get Solution" to generate one.</em>
-              </p>
-            </div>
-            <div id="code-tab" class="tab-content">
-              <pre><code><em>No code solution yet.</em></code></pre>
-            </div>
-            <div id="complexity-tab" class="tab-content">
-              <p><em>No complexity analysis yet.</em></p>
+
+          <div class="code-container">
+            <h3>Code Solution</h3>
+            <div class="code-box">
+              <pre><code id="code-content"><em>No code solution yet.</em></code></pre>
             </div>
           </div>
         </div>
@@ -91,26 +135,25 @@
             />
           </div>
         </div>
-      </div>
 
-      <div class="transcription-container">
-        <h2>Live Transcriptions</h2>
-        <div class="transcription-split">
-          <div class="transcription-column">
-            <h3>Interviewer</h3>
-            <div id="interviewer-transcription" class="latest-box">
-              <p><em>Waiting for transcription...</em></p>
+        <div class="transcription-container">
+          <h2>Live Transcriptions</h2>
+          <div class="transcription-split">
+            <div class="transcription-column">
+              <h3>Interviewer</h3>
+              <div id="interviewer-transcription" class="latest-box">
+                <p><em>Waiting for transcription...</em></p>
+              </div>
+            </div>
+            <div class="transcription-column">
+              <h3>Interviewee</h3>
+              <div id="latest-transcription" class="latest-box">
+                <p><em>Waiting for transcription...</em></p>
+              </div>
             </div>
           </div>
-          <div class="transcription-column">
-            <h3>Interviewee</h3>
-            <div id="latest-transcription" class="latest-box">
-              <p><em>Waiting for transcription...</em></p>
-            </div>
-          </div>
-        </div>
 
-        <!-- <div class="solution-container">
+          <!-- <div class="solution-container">
           <h3>Solution</h3>
           <div id="solution-tabs" class="tabs">
             <button class="tab-button active" data-tab="explanation">
@@ -134,20 +177,27 @@
           </div>
         </div> -->
 
-        <div class="screenshots-container">
-          <h3>Screenshots</h3>
-          <div id="screenshots" class="screenshots-box">
-            <p><em>No screenshots yet...</em></p>
+          <div class="screenshots-container">
+            <h3>Screenshots</h3>
+            <div id="screenshots" class="screenshots-box">
+              <p><em>No screenshots yet...</em></p>
+            </div>
           </div>
-        </div>
 
-        <h3>Transcription History</h3>
-        <div id="transcription-history" class="history-box">
-          <p><em>No transcriptions yet...</em></p>
+          <h3>Transcription History</h3>
+          <div id="transcription-history" class="history-box">
+            <p><em>No transcriptions yet...</em></p>
+          </div>
         </div>
       </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
     <script src="/static/script.js"></script>
   </body>
 </html>

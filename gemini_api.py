@@ -63,13 +63,13 @@ def extract_coding_question_with_gemini(image_path: str) -> Optional[str]:
 
 def get_solution_for_question_with_gemini(question: str) -> Optional[Dict[str, str]]:
     """
-    Send a coding question to Google Gemini API to get a solution
+    Send a coding question to Google Gemini API to get a solution using structured JSON output
     
     Parameters:
     - question: The coding question to solve
     
     Returns:
-    - Dictionary containing explanation, code, and complexity, or None if failed
+    - Dictionary containing explanation, code, complexity, and strategy, or None if failed
     """
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -79,69 +79,100 @@ def get_solution_for_question_with_gemini(question: str) -> Optional[Dict[str, s
     # Configure the Gemini API
     genai.configure(api_key=api_key)
     
-    # Construct the prompt for Gemini
-    prompt = f"""
+    try:
+        # Initialize the model
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        # Construct the prompt for Gemini
+        prompt = f"""
 I need a solution to the following coding problem:
 
 {question}
 
 Please provide a comprehensive solution with the following components:
-
-1. EXPLANATION: Explain your solution step by step in simple English terms. Break down your thought process and approach.
-
-2. CODE: Implement the solution in TypeScript with proper type annotations. Make sure the code is clean, efficient, and well-commented.
-
-3. COMPLEXITY: Analyze the time and space complexity of your solution. Explain why this is the optimal complexity for this problem.
-
-Format your response with clear section headers for each component.
+1. Explanation of your approach step by step
+2. Code implementation in TypeScript with proper type annotations
+   - IMPORTANT: Place all comments ABOVE the code lines, not on the same line as the code
+   - Example of correct comment formatting:
+     // This is a comment explaining what the next line does
+     const result = calculateSomething(input);
+   - NOT like this:
+     const result = calculateSomething(input); // This comment is on the same line as code
+3. Time and space complexity analysis
+4. Interview strategy tips for this problem
 """
-    
-    try:
-        # Initialize the model
-        model = genai.GenerativeModel('gemini-2.0-flash')
         
-        # Generate the solution
-        response = model.generate_content(prompt)
+        # Define the response schema for structured output
+        response_schema = {
+            "type": "object",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Step-by-step explanation of the solution approach"
+                },
+                "code": {
+                    "type": "string",
+                    "description": "TypeScript implementation of the solution with proper type annotations"
+                },
+                "complexity": {
+                    "type": "string",
+                    "description": "Analysis of time and space complexity"
+                },
+                "strategy": {
+                    "type": "string",
+                    "description": "Interview strategy tips for this problem"
+                }
+            },
+            "required": ["explanation", "code", "complexity", "strategy"]
+        }
+        
+        # Generate the solution with structured JSON output
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "response_mime_type": "application/json",
+                "response_schema": response_schema
+            }
+        )
         
         if response and response.text:
-            solution_text = response.text
-            
-            # Parse the solution text to extract the different sections
-            explanation = ""
-            code = ""
-            complexity = ""
-            
-            # Simple parsing logic - can be improved for more robust extraction
-            current_section = None
-            for line in solution_text.split('\n'):
-                line_lower = line.lower()
+            try:
+                # Parse the JSON response
+                solution = json.loads(response.text)
+                return {
+                    "explanation": solution.get("explanation", ""),
+                    "code": solution.get("code", ""),
+                    "complexity": solution.get("complexity", ""),
+                    "strategy": solution.get("strategy", "")
+                }
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON response: {str(e)}")
+                # Fallback to the old text parsing method if JSON parsing fails
+                solution_text = response.text
                 
-                if "explanation" in line_lower and (line_lower.startswith('#') or line_lower.startswith('1.')):
-                    current_section = "explanation"
-                    continue
-                elif "code" in line_lower and (line_lower.startswith('#') or line_lower.startswith('2.')):
-                    current_section = "code"
-                    continue
-                elif "complexity" in line_lower and (line_lower.startswith('#') or line_lower.startswith('3.')):
-                    current_section = "complexity"
-                    continue
+                # Try to extract JSON from the text if it's embedded
+                if "{" in solution_text and "}" in solution_text:
+                    try:
+                        json_start = solution_text.find("{")
+                        json_end = solution_text.rfind("}") + 1
+                        json_str = solution_text[json_start:json_end]
+                        solution = json.loads(json_str)
+                        return {
+                            "explanation": solution.get("explanation", ""),
+                            "code": solution.get("code", ""),
+                            "complexity": solution.get("complexity", ""),
+                            "strategy": solution.get("strategy", "")
+                        }
+                    except:
+                        pass
                 
-                if current_section == "explanation":
-                    explanation += line + "\n"
-                elif current_section == "code":
-                    code += line + "\n"
-                elif current_section == "complexity":
-                    complexity += line + "\n"
-            
-            # If the parsing logic failed, just return the full text as explanation
-            if not explanation and not code and not complexity:
-                explanation = solution_text
-            
-            return {
-                "explanation": explanation.strip(),
-                "code": code.strip(),
-                "complexity": complexity.strip()
-            }
+                # If all JSON parsing fails, return the raw text as explanation
+                return {
+                    "explanation": solution_text,
+                    "code": "",
+                    "complexity": "",
+                    "strategy": ""
+                }
         else:
             print("Empty response from Gemini API")
             return None

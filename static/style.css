@@ -8,10 +8,70 @@ body {
 }
 
 .container {
-  width: 90%;
-  max-width: 1000px;
+  width: 100%;
+  /* max-width: 1200px; */
   margin: 0 auto;
   padding: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.left-panel {
+  width: 400px;
+  flex-shrink: 0;
+  position: relative;
+  transition: width 0.3s ease;
+}
+
+.left-panel.collapsed {
+  width: 60px;
+  overflow: hidden;
+}
+
+.toggle-button {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  z-index: 10;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.toggle-button:hover {
+  background: #2980b9;
+}
+
+.left-panel.collapsed .toggle-button {
+  transform: rotate(180deg);
+}
+
+.left-panel .controls {
+  position: sticky;
+  top: 20px;
+}
+
+.left-panel .button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.left-panel .button {
+  width: 100%;
+  text-align: center;
 }
 
 h1 {
@@ -294,11 +354,28 @@ h3 {
   cursor: not-allowed;
 }
 
-/* Solution container and tabs */
-.solution-container {
+/* Solution and code containers */
+.solution-code-container {
+  display: flex;
+  gap: 20px;
   margin-top: 20px;
   border-top: 1px solid #eee;
   padding-top: 15px;
+}
+
+.solution-container {
+  flex: 1;
+}
+
+.code-container {
+  flex: 1;
+}
+
+.code-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  overflow-y: auto;
 }
 
 .tabs {
@@ -336,8 +413,8 @@ h3 {
   border: 1px solid #ddd;
   border-top: none;
   padding: 15px;
-  min-height: 200px;
-  max-height: 400px;
+  /* min-height: 200px; */
+  /* max-height: 400px; */
   overflow-y: auto;
 }
 

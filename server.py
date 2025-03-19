@@ -10,6 +10,7 @@ from web_adapter import WebTranscriber, transcriptions, transcription_lock, is_r
 from screenshot import take_screenshot
 from claude_api import extract_coding_question, get_solution_for_question
 from gemini_api import extract_coding_question_with_gemini, get_solution_for_question_with_gemini
+from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai
 
 # Initialize Flask app
 app = Flask(__name__, 
@@ -113,19 +114,23 @@ def capture_screenshot():
             }
             interview_data["screenshots"].append(screenshot_info)
         
-        # Start a thread to extract the coding question from the screenshot using Claude
+        # Extract the coding question directly if it's a coding question
+        extracted_question = None
         if question_type == 'coding':
-            extraction_thread = threading.Thread(
-                target=process_screenshot_with_claude,
-                args=(screenshot_path,)
-            )
-            extraction_thread.daemon = True
-            extraction_thread.start()
+            extracted_question = extract_coding_question(screenshot_path)
+            
+            if extracted_question:
+                print(f"Extracted question with Claude: {extracted_question}")
+                
+                # Store the extracted question
+                with interview_data_lock:
+                    interview_data["extracted_questions"][screenshot_path] = extracted_question
         
-        # Return the screenshot info
+        # Return the screenshot info and extracted question
         return jsonify({
             "status": "success",
-            "screenshot": screenshot_info
+            "screenshot": screenshot_info,
+            "extracted_question": extracted_question
         })
     except Exception as e:
         return jsonify({
@@ -156,19 +161,23 @@ def extract_with_gemini():
             }
             interview_data["screenshots"].append(screenshot_info)
         
-        # Start a thread to extract the coding question from the screenshot using Gemini
+        # Extract the coding question directly if it's a coding question
+        extracted_question = None
         if question_type == 'coding':
-            extraction_thread = threading.Thread(
-                target=process_screenshot_with_gemini,
-                args=(screenshot_path,)
-            )
-            extraction_thread.daemon = True
-            extraction_thread.start()
+            extracted_question = extract_coding_question_with_gemini(screenshot_path)
+            
+            if extracted_question:
+                print(f"Extracted question with Gemini: {extracted_question}")
+                
+                # Store the extracted question
+                with interview_data_lock:
+                    interview_data["extracted_questions"][screenshot_path] = extracted_question
         
-        # Return the screenshot info
+        # Return the screenshot info and extracted question
         return jsonify({
             "status": "success",
-            "screenshot": screenshot_info
+            "screenshot": screenshot_info,
+            "extracted_question": extracted_question
         })
     except Exception as e:
         return jsonify({
@@ -209,6 +218,70 @@ def process_screenshot_with_gemini(screenshot_path):
             print("Failed to extract question from screenshot with Gemini")
     except Exception as e:
         print(f"Error processing screenshot with Gemini: {str(e)}")
+
+# API endpoint to extract question with OpenAI
+@app.route('/api/extract-with-openai', methods=['POST'])
+def extract_with_openai():
+    try:
+        # Take a screenshot
+        screenshot_path = take_screenshot()
+        
+        # Get question context if available
+        data = request.json or {}
+        question_type = data.get('question_type', 'coding')
+        notes = data.get('notes', '')
+        
+        # Add to interview data
+        with interview_data_lock:
+            screenshot_info = {
+                "path": screenshot_path,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "question_type": question_type,
+                "notes": notes,
+                "question_id": interview_data["current_question"] if interview_data["current_question"] else None
+            }
+            interview_data["screenshots"].append(screenshot_info)
+        
+        # Extract the coding question directly if it's a coding question
+        extracted_question = None
+        if question_type == 'coding':
+            extracted_question = extract_coding_question_with_openai(screenshot_path)
+            
+            if extracted_question:
+                print(f"Extracted question with OpenAI: {extracted_question}")
+                
+                # Store the extracted question
+                with interview_data_lock:
+                    interview_data["extracted_questions"][screenshot_path] = extracted_question
+        
+        # Return the screenshot info and extracted question
+        return jsonify({
+            "status": "success",
+            "screenshot": screenshot_info,
+            "extracted_question": extracted_question
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+# Function to process screenshot with OpenAI API
+def process_screenshot_with_openai(screenshot_path):
+    try:
+        # Extract coding question from the screenshot
+        extracted_question = extract_coding_question_with_openai(screenshot_path)
+        
+        if extracted_question:
+            print(f"Extracted question with OpenAI: {extracted_question}")
+            
+            # Store the extracted question
+            with interview_data_lock:
+                interview_data["extracted_questions"][screenshot_path] = extracted_question
+        else:
+            print("Failed to extract question from screenshot with OpenAI")
+    except Exception as e:
+        print(f"Error processing screenshot with OpenAI: {str(e)}")
 
 # API endpoint to get extracted questions
 @app.route('/api/extracted_questions', methods=['GET'])
@@ -271,6 +344,92 @@ def process_solution_with_claude(question, screenshot_path):
             print("Failed to generate solution for question")
     except Exception as e:
         print(f"Error processing solution with Claude: {str(e)}")
+
+# API endpoint to get a solution for a coding question with OpenAI
+@app.route('/api/solution-with-openai', methods=['POST'])
+def get_solution_with_openai():
+    data = request.json or {}
+    question = data.get('question', '')
+    screenshot_path = data.get('screenshot_path', '')
+    
+    if not question:
+        return jsonify({
+            "status": "error",
+            "message": "No question provided"
+        }), 400
+    
+    # Start a thread to get the solution
+    solution_thread = threading.Thread(
+        target=process_solution_with_openai,
+        args=(question, screenshot_path)
+    )
+    solution_thread.daemon = True
+    solution_thread.start()
+    
+    return jsonify({
+        "status": "success",
+        "message": "OpenAI solution request submitted"
+    })
+
+# API endpoint to get a solution for a coding question with Gemini
+@app.route('/api/solution-with-gemini', methods=['POST'])
+def get_solution_with_gemini():
+    data = request.json or {}
+    question = data.get('question', '')
+    screenshot_path = data.get('screenshot_path', '')
+    
+    if not question:
+        return jsonify({
+            "status": "error",
+            "message": "No question provided"
+        }), 400
+    
+    # Start a thread to get the solution
+    solution_thread = threading.Thread(
+        target=process_solution_with_gemini,
+        args=(question, screenshot_path)
+    )
+    solution_thread.daemon = True
+    solution_thread.start()
+    
+    return jsonify({
+        "status": "success",
+        "message": "Gemini solution request submitted"
+    })
+
+# Function to process solution with OpenAI API
+def process_solution_with_openai(question, screenshot_path):
+    try:
+        # Get solution for the question
+        solution = get_solution_for_question_with_openai(question)
+        
+        if solution:
+            print(f"Solution generated for question with OpenAI")
+            
+            # Store the solution
+            with interview_data_lock:
+                interview_data["solutions"][screenshot_path] = solution
+        else:
+            print("Failed to generate solution for question with OpenAI")
+    except Exception as e:
+        print(f"Error processing solution with OpenAI: {str(e)}")
+
+# Function to process solution with Gemini API
+def process_solution_with_gemini(question, screenshot_path):
+    try:
+        # Get solution for the question
+        solution = get_solution_for_question_with_gemini(question)
+        
+        if solution:
+            print(f"Solution generated for question with Gemini")
+            
+            # Store the solution
+            with interview_data_lock:
+                interview_data["solutions"][screenshot_path] = solution
+        else:
+            print("Failed to generate solution for question with Gemini")
+    except Exception as e:
+        print(f"Error processing solution with Gemini: {str(e)}")
 
 # API endpoint to get all solutions
 @app.route('/api/solutions', methods=['GET'])
@@ -354,6 +513,30 @@ def mark_followup():
 def get_interview_data():
     with interview_data_lock:
         return jsonify(interview_data)
+
+# API endpoint to reset all data
+@app.route('/api/reset', methods=['POST'])
+def reset_all_data():
+    global interview_data
+    
+    with interview_data_lock:
+        # Reset interview data
+        interview_data = {
+            "questions": [],
+            "screenshots": [],
+            "current_question": None,
+            "extracted_questions": {},
+            "solutions": {}
+        }
+    
+    # Clear transcriptions
+    with transcription_lock:
+        transcriptions.clear()
+    
+    return jsonify({
+        "status": "success",
+        "message": "All data has been reset"
+    })
 
 # API endpoint to get all screenshots
 @app.route('/api/screenshots', methods=['GET'])

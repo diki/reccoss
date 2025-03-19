@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const stopRecordingBtn = document.getElementById("stop-recording");
   const takeScreenshotBtn = document.getElementById("take-screenshot");
   const extractWithGeminiBtn = document.getElementById("extract-with-gemini");
+  const extractWithOpenaiBtn = document.getElementById("extract-with-openai");
+  const resetAllBtn = document.getElementById("reset-all");
   const markQuestionBtn = document.getElementById("mark-question");
   const markFollowupBtn = document.getElementById("mark-followup");
   const questionTypeSelect = document.getElementById("question-type");
@@ -18,10 +20,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const extractedQuestionContainer =
     document.getElementById("extracted-question");
   const getSolutionBtn = document.getElementById("get-solution");
+  const getSolutionWithOpenaiBtn = document.getElementById(
+    "get-solution-with-openai"
+  );
+  const getSolutionWithGeminiBtn = document.getElementById(
+    "get-solution-with-gemini"
+  );
   const solutionTabs = document.getElementById("solution-tabs");
   const explanationTab = document.getElementById("explanation-tab");
-  const codeTab = document.getElementById("code-tab");
+  const codeContent = document.getElementById("code-content");
   const complexityTab = document.getElementById("complexity-tab");
+  const strategyTab = document.getElementById("strategy-tab");
+  const togglePanelBtn = document.getElementById("toggle-panel");
+  const leftPanel = document.querySelector(".left-panel");
 
   // Keep track of transcription count to avoid duplicates
   let transcriptionCount = 0;
@@ -96,8 +107,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to take a screenshot and extract with Claude
   function takeScreenshot() {
+    // Reset the manually selected screenshot flag
+    manuallySelectedScreenshot = false;
+
     const questionType = questionTypeSelect.value;
     const notes = questionNotesInput.value;
+
+    // Show loading message
+    if (questionType === "coding") {
+      extractedQuestionContainer.innerHTML =
+        "<p><em>Extracting coding question...</em></p>";
+    }
 
     fetch("/api/screenshot", {
       method: "POST",
@@ -116,14 +136,32 @@ document.addEventListener("DOMContentLoaded", function () {
           screenshots.push(data.screenshot);
           updateScreenshotsDisplay();
 
-          // If it's a coding question, start polling for the extracted question
+          // If it's a coding question and we have an extracted question
           if (questionType === "coding") {
-            // Show loading message
-            extractedQuestionContainer.innerHTML =
-              "<p><em>Extracting coding question...</em></p>";
+            if (data.extracted_question) {
+              // Display the extracted question
+              extractedQuestionContainer.innerHTML = `<p>${data.extracted_question}</p>`;
 
-            // Start polling for the extracted question
-            pollForExtractedQuestion(data.screenshot.path);
+              // Enable the solution buttons
+              getSolutionBtn.disabled = false;
+              getSolutionWithOpenaiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+
+              // Store the current question and screenshot path
+              currentExtractedQuestion = data.extracted_question;
+              currentScreenshotPath = data.screenshot.path;
+            } else {
+              extractedQuestionContainer.innerHTML =
+                "<p><em>Could not extract coding question. Please try again.</em></p>";
+            }
           }
         } else {
           console.error("Error taking screenshot:", data.message);
@@ -131,6 +169,8 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error taking screenshot:", error);
+        extractedQuestionContainer.innerHTML =
+          "<p><em>Error extracting question. Please try again.</em></p>";
       });
   }
 
@@ -148,8 +188,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // We have an extracted question, display it
             extractedQuestionContainer.innerHTML = `<p>${data.question}</p>`;
 
-            // Enable the solution button
+            // Enable the solution buttons
             getSolutionBtn.disabled = false;
+            getSolutionWithOpenaiBtn.disabled = false;
+            getSolutionWithGeminiBtn.disabled = false;
 
             // Store the current question and screenshot path
             currentExtractedQuestion = data.question;
@@ -309,6 +351,9 @@ document.addEventListener("DOMContentLoaded", function () {
             item.addEventListener("click", function () {
               const path = this.getAttribute("data-path");
               if (path) {
+                // Set the flag to indicate a screenshot has been manually selected
+                manuallySelectedScreenshot = true;
+
                 const filename = path.split("/").pop();
                 // Fetch and display the extracted question for this screenshot
                 fetch(`/api/extracted_question/${filename}`)
@@ -317,8 +362,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (data.question) {
                       extractedQuestionContainer.innerHTML = `<p>${data.question}</p>`;
 
-                      // Enable the solution button
+                      // Enable the solution buttons
                       getSolutionBtn.disabled = false;
+                      getSolutionWithOpenaiBtn.disabled = false;
+                      getSolutionWithGeminiBtn.disabled = false;
 
                       // Store the current question and screenshot path
                       currentExtractedQuestion = data.question;
@@ -330,8 +377,10 @@ document.addEventListener("DOMContentLoaded", function () {
                       extractedQuestionContainer.innerHTML =
                         "<p><em>No coding question extracted for this screenshot.</em></p>";
 
-                      // Disable the solution button
+                      // Disable the solution buttons
                       getSolutionBtn.disabled = true;
+                      getSolutionWithOpenaiBtn.disabled = true;
+                      getSolutionWithGeminiBtn.disabled = true;
 
                       // Clear current question
                       currentExtractedQuestion = "";
@@ -351,22 +400,30 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  // Keep track of whether a screenshot has been manually selected
+  let manuallySelectedScreenshot = false;
+
   // Function to update all extracted questions
   function updateExtractedQuestions() {
     fetch("/api/extracted_questions")
       .then((response) => response.json())
       .then((data) => {
-        // If we have any extracted questions and the latest screenshot is a coding question,
-        // update the extracted question display with the most recent one
-        if (Object.keys(data).length > 0 && screenshots.length > 0) {
+        // Only update if no screenshot has been manually selected
+        if (
+          !manuallySelectedScreenshot &&
+          Object.keys(data).length > 0 &&
+          screenshots.length > 0
+        ) {
           const latestScreenshot = screenshots[screenshots.length - 1];
           if (latestScreenshot.question_type === "coding") {
             const question = data[latestScreenshot.path];
             if (question) {
               extractedQuestionContainer.innerHTML = `<p>${question}</p>`;
 
-              // Enable the solution button
+              // Enable the solution buttons
               getSolutionBtn.disabled = false;
+              getSolutionWithOpenaiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
 
               // Store the current question and screenshot path
               currentExtractedQuestion = question;
@@ -454,9 +511,9 @@ document.addEventListener("DOMContentLoaded", function () {
     getSolutionBtn.textContent = "Generating solution...";
     explanationTab.innerHTML =
       "<p><em>Generating solution, please wait...</em></p>";
-    codeTab.innerHTML =
-      "<pre><code><em>Generating code solution...</em></code></pre>";
+    codeContent.innerHTML = "<em>Generating code solution...</em>";
     complexityTab.innerHTML = "<p><em>Analyzing complexity...</em></p>";
+    strategyTab.innerHTML = "<p><em>Developing interview strategy...</em></p>";
 
     // Request solution from the server
     fetch("/api/solution", {
@@ -523,6 +580,10 @@ document.addEventListener("DOMContentLoaded", function () {
           "<p><em>Could not generate solution. Please try again.</em></p>";
         getSolutionBtn.disabled = false;
         getSolutionBtn.textContent = "Get Solution";
+        getSolutionWithOpenaiBtn.disabled = false;
+        getSolutionWithOpenaiBtn.textContent = "Get Solution with OpenAI";
+        getSolutionWithGeminiBtn.disabled = false;
+        getSolutionWithGeminiBtn.textContent = "Get Solution with Gemini";
       }
     }, 60000);
   }
@@ -540,10 +601,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (solution.code) {
-      codeTab.innerHTML = `<pre><code>${solution.code}</code></pre>`;
+      // Remove code block markers (```typescript and ```) if present
+      let cleanCode = solution.code;
+      cleanCode = cleanCode.replace(/^```typescript\n|^```\w*\n|```$/g, "");
+
+      // Detect language from code or default to javascript
+      let language = detectLanguage(cleanCode);
+
+      // Set the code content with the appropriate language class
+      codeContent.className = `language-${language}`;
+      codeContent.innerHTML = cleanCode;
+
+      // Trigger Prism to highlight the code
+      Prism.highlightElement(codeContent);
     } else {
-      codeTab.innerHTML =
-        "<pre><code><em>No code solution available.</em></code></pre>";
+      codeContent.innerHTML = "<em>No code solution available.</em>";
     }
 
     if (solution.complexity) {
@@ -556,9 +628,23 @@ document.addEventListener("DOMContentLoaded", function () {
         "<p><em>No complexity analysis available.</em></p>";
     }
 
-    // Reset the button
+    if (solution.strategy) {
+      strategyTab.innerHTML = `<p>${solution.strategy.replace(
+        /\n/g,
+        "<br>"
+      )}</p>`;
+    } else {
+      strategyTab.innerHTML =
+        "<p><em>No interview strategy available.</em></p>";
+    }
+
+    // Reset the buttons
     getSolutionBtn.disabled = false;
     getSolutionBtn.textContent = "Get Solution";
+    getSolutionWithOpenaiBtn.disabled = false;
+    getSolutionWithOpenaiBtn.textContent = "Get Solution with OpenAI";
+    getSolutionWithGeminiBtn.disabled = false;
+    getSolutionWithGeminiBtn.textContent = "Get Solution with Gemini";
   }
 
   // Function to check if we already have a solution for a screenshot
@@ -599,8 +685,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to extract question with Gemini
   function extractWithGemini() {
+    // Reset the manually selected screenshot flag
+    manuallySelectedScreenshot = false;
+
     const questionType = questionTypeSelect.value;
     const notes = questionNotesInput.value;
+
+    // Show loading message
+    if (questionType === "coding") {
+      extractedQuestionContainer.innerHTML =
+        "<p><em>Extracting coding question with Gemini...</em></p>";
+    }
 
     fetch("/api/extract-with-gemini", {
       method: "POST",
@@ -622,14 +717,27 @@ document.addEventListener("DOMContentLoaded", function () {
           screenshots.push(data.screenshot);
           updateScreenshotsDisplay();
 
-          // If it's a coding question, start polling for the extracted question
+          // If it's a coding question and we have an extracted question
           if (questionType === "coding") {
-            // Show loading message
-            extractedQuestionContainer.innerHTML =
-              "<p><em>Extracting coding question with Gemini...</em></p>";
+            if (data.extracted_question) {
+              // Display the extracted question
+              extractedQuestionContainer.innerHTML = `<p>${data.extracted_question}</p>`;
 
-            // Start polling for the extracted question
-            pollForExtractedQuestion(data.screenshot.path);
+              // Enable the solution buttons
+              getSolutionBtn.disabled = false;
+              getSolutionWithOpenaiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+
+              // Store the current question and screenshot path
+              currentExtractedQuestion = data.extracted_question;
+              currentScreenshotPath = data.screenshot.path;
+
+              // Automatically call getSolutionWithGemini
+              getSolutionWithGemini();
+            } else {
+              extractedQuestionContainer.innerHTML =
+                "<p><em>Could not extract coding question with Gemini. Please try again.</em></p>";
+            }
           }
         } else {
           console.error(
@@ -640,7 +748,230 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error taking screenshot for Gemini extraction:", error);
+        extractedQuestionContainer.innerHTML =
+          "<p><em>Error extracting question with Gemini. Please try again.</em></p>";
       });
+  }
+
+  // Function to extract question with OpenAI
+  function extractWithOpenai() {
+    // Reset the manually selected screenshot flag
+    manuallySelectedScreenshot = false;
+
+    const questionType = questionTypeSelect.value;
+    const notes = questionNotesInput.value;
+
+    // Show loading message
+    if (questionType === "coding") {
+      extractedQuestionContainer.innerHTML =
+        "<p><em>Extracting coding question with OpenAI...</em></p>";
+    }
+
+    fetch("/api/extract-with-openai", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        question_type: questionType,
+        notes: notes,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          console.log(
+            "Screenshot taken for OpenAI extraction:",
+            data.screenshot
+          );
+          screenshots.push(data.screenshot);
+          updateScreenshotsDisplay();
+
+          // If it's a coding question and we have an extracted question
+          if (questionType === "coding") {
+            if (data.extracted_question) {
+              // Display the extracted question
+              extractedQuestionContainer.innerHTML = `<p>${data.extracted_question}</p>`;
+
+              // Enable the solution buttons
+              getSolutionBtn.disabled = false;
+              getSolutionWithOpenaiBtn.disabled = false;
+              getSolutionWithGeminiBtn.disabled = false;
+
+              // Store the current question and screenshot path
+              currentExtractedQuestion = data.extracted_question;
+              currentScreenshotPath = data.screenshot.path;
+            } else {
+              extractedQuestionContainer.innerHTML =
+                "<p><em>Could not extract coding question with OpenAI. Please try again.</em></p>";
+            }
+          }
+        } else {
+          console.error(
+            "Error taking screenshot for OpenAI extraction:",
+            data.message
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error taking screenshot for OpenAI extraction:", error);
+        extractedQuestionContainer.innerHTML =
+          "<p><em>Error extracting question with OpenAI. Please try again.</em></p>";
+      });
+  }
+
+  // Function to get a solution for the current question with OpenAI
+  function getSolutionWithOpenai() {
+    if (!currentExtractedQuestion || !currentScreenshotPath) {
+      console.error("No question or screenshot path available");
+      return;
+    }
+
+    // Show loading state
+    getSolutionWithOpenaiBtn.disabled = true;
+    getSolutionWithOpenaiBtn.textContent = "Generating solution...";
+    explanationTab.innerHTML =
+      "<p><em>Generating solution with OpenAI, please wait...</em></p>";
+    codeContent.innerHTML = "<em>Generating code solution...</em>";
+    complexityTab.innerHTML = "<p><em>Analyzing complexity...</em></p>";
+    strategyTab.innerHTML = "<p><em>Developing interview strategy...</em></p>";
+
+    // Request solution from the server
+    fetch("/api/solution-with-openai", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        question: currentExtractedQuestion,
+        screenshot_path: currentScreenshotPath,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          console.log("OpenAI solution request submitted");
+
+          // Start polling for the solution
+          pollForSolution(currentScreenshotPath);
+        } else {
+          console.error("Error requesting OpenAI solution:", data.message);
+          getSolutionWithOpenaiBtn.disabled = false;
+          getSolutionWithOpenaiBtn.textContent = "Get Solution with OpenAI";
+        }
+      })
+      .catch((error) => {
+        console.error("Error requesting OpenAI solution:", error);
+        getSolutionWithOpenaiBtn.textContent = "Get Solution with OpenAI";
+      });
+  }
+
+  // Function to reset all data
+  function resetAll() {
+    fetch("/api/reset", {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          console.log("All data reset successfully");
+
+          // Reset local variables
+          transcriptionCount = 0;
+          screenshots = [];
+          currentQuestion = null;
+          currentExtractedQuestion = "";
+          currentScreenshotPath = "";
+          manuallySelectedScreenshot = false;
+
+          // Reset UI elements
+          extractedQuestionContainer.innerHTML =
+            "<p><em>No coding question extracted yet...</em></p>";
+          explanationTab.innerHTML =
+            '<p><em>No solution yet. Click "Get Solution" to generate one.</em></p>';
+          codeContent.innerHTML = "<em>No code solution yet.</em>";
+          complexityTab.innerHTML =
+            "<p><em>No complexity analysis yet.</em></p>";
+          strategyTab.innerHTML = "<p><em>No interview strategy yet.</em></p>";
+          interviewerTranscription.innerHTML =
+            "<p><em>Waiting for transcription...</em></p>";
+          latestTranscription.innerHTML =
+            "<p><em>Waiting for transcription...</em></p>";
+          transcriptionHistory.innerHTML =
+            "<p><em>No transcriptions yet...</em></p>";
+          screenshotsContainer.innerHTML =
+            "<p><em>No screenshots yet...</em></p>";
+
+          // Disable solution buttons
+          getSolutionBtn.disabled = true;
+          getSolutionWithOpenaiBtn.disabled = true;
+          getSolutionWithGeminiBtn.disabled = true;
+        } else {
+          console.error("Error resetting data:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error resetting data:", error);
+      });
+  }
+
+  // Function to get a solution for the current question with Gemini
+  function getSolutionWithGemini() {
+    if (!currentExtractedQuestion || !currentScreenshotPath) {
+      console.error("No question or screenshot path available");
+      return;
+    }
+
+    // Show loading state
+    getSolutionWithGeminiBtn.disabled = true;
+    getSolutionWithGeminiBtn.textContent = "Generating solution...";
+    explanationTab.innerHTML =
+      "<p><em>Generating solution with Gemini, please wait...</em></p>";
+    codeContent.innerHTML = "<em>Generating code solution...</em>";
+    complexityTab.innerHTML = "<p><em>Analyzing complexity...</em></p>";
+    strategyTab.innerHTML = "<p><em>Developing interview strategy...</em></p>";
+
+    // Request solution from the server
+    fetch("/api/solution-with-gemini", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        question: currentExtractedQuestion,
+        screenshot_path: currentScreenshotPath,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          console.log("Gemini solution request submitted");
+
+          // Start polling for the solution
+          pollForSolution(currentScreenshotPath);
+        } else {
+          console.error("Error requesting Gemini solution:", data.message);
+          getSolutionWithGeminiBtn.disabled = false;
+          getSolutionWithGeminiBtn.textContent = "Get Solution with Gemini";
+        }
+      })
+      .catch((error) => {
+        console.error("Error requesting Gemini solution:", error);
+        getSolutionWithGeminiBtn.disabled = false;
+        getSolutionWithGeminiBtn.textContent = "Get Solution with Gemini";
+      });
+  }
+
+  // Function to toggle the left panel
+  function toggleLeftPanel() {
+    leftPanel.classList.toggle("collapsed");
+    // Update the toggle icon based on the panel state
+    const toggleIcon = togglePanelBtn.querySelector(".toggle-icon");
+    if (leftPanel.classList.contains("collapsed")) {
+      toggleIcon.textContent = "◀";
+    } else {
+      toggleIcon.textContent = "▶";
+    }
   }
 
   // Set up event listeners for buttons
@@ -648,9 +979,14 @@ document.addEventListener("DOMContentLoaded", function () {
   stopRecordingBtn.addEventListener("click", stopRecording);
   takeScreenshotBtn.addEventListener("click", takeScreenshot);
   extractWithGeminiBtn.addEventListener("click", extractWithGemini);
+  extractWithOpenaiBtn.addEventListener("click", extractWithOpenai);
+  resetAllBtn.addEventListener("click", resetAll);
   markQuestionBtn.addEventListener("click", markQuestion);
   markFollowupBtn.addEventListener("click", markFollowup);
   getSolutionBtn.addEventListener("click", getSolution);
+  getSolutionWithOpenaiBtn.addEventListener("click", getSolutionWithOpenai);
+  getSolutionWithGeminiBtn.addEventListener("click", getSolutionWithGemini);
+  togglePanelBtn.addEventListener("click", toggleLeftPanel);
 
   // Set up polling for updates
   function pollForUpdates() {
@@ -659,6 +995,55 @@ document.addEventListener("DOMContentLoaded", function () {
     updateTranscriptionHistory();
     updateScreenshotsDisplay();
     updateExtractedQuestions();
+  }
+
+  // Function to detect programming language from code
+  function detectLanguage(code) {
+    // Default to javascript if we can't detect
+    let language = "javascript";
+
+    // Check for Python
+    if (
+      code.includes("def ") ||
+      (code.includes("import ") && code.includes(":") && !code.includes("{"))
+    ) {
+      language = "python";
+    }
+    // Check for Java
+    else if (
+      (code.includes("public class ") || code.includes("private class ")) &&
+      code.includes("public static void main")
+    ) {
+      language = "java";
+    }
+    // Check for C++
+    else if (
+      code.includes("#include <") &&
+      (code.includes("std::") || code.includes("using namespace std;"))
+    ) {
+      language = "cpp";
+    }
+    // Check for C
+    else if (
+      code.includes("#include <") &&
+      code.includes("int main(") &&
+      !code.includes("class ") &&
+      !code.includes("std::")
+    ) {
+      language = "c";
+    }
+    // JavaScript/TypeScript detection
+    else if (
+      code.includes("function ") ||
+      code.includes("const ") ||
+      code.includes("let ") ||
+      code.includes("var ") ||
+      code.includes("=>")
+    ) {
+      language = "javascript";
+    }
+
+    return language;
   }
 
   // Initial status check and polling setup
