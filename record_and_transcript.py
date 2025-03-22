@@ -24,7 +24,7 @@ class WhisperTranscriber:
                  channels=1,  # Mono for speech recognition
                  format=pyaudio.paInt16,
                  chunk_size=1024,
-                 record_seconds=5):  # Processing chunks of 10 seconds for Whisper
+                 record_seconds=3):  # Processing chunks of 10 seconds for Whisper
         
         self.device_name = device_name
         self.sample_rate = sample_rate
@@ -118,11 +118,13 @@ class WhisperTranscriber:
                 
                 try:
                     # Use OpenAI Whisper API to transcribe the audio with new API format
+                    print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Sending transcript request to Whisper API...")
                     with open(temp_filename, "rb") as audio_file:
                         transcript = client.audio.transcriptions.create(
                             model="whisper-1",
                             file=audio_file
                         )
+                    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Received response from Whisper API")
                     
                     text = transcript.text.strip()
                     if text:

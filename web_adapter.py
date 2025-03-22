@@ -71,11 +71,14 @@ class WebTranscriber:
             from record_and_transcript import client
             
             # Use OpenAI Whisper API to transcribe the audio
+            from datetime import datetime
+            print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] WebAdapter: Sending transcript request to Whisper API...")
             with open(temp_filename, "rb") as audio_file:
                 transcript = client.audio.transcriptions.create(
                     model="whisper-1",
                     file=audio_file
                 )
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] WebAdapter: Received response from Whisper API")
             
             text = transcript.text.strip()
             if text:
