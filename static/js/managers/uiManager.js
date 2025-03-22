@@ -109,11 +109,12 @@ export class UiManager {
           "<p><em>No coding question extracted yet...</em></p>";
         this.elements.explanationTab.innerHTML =
           '<p><em>No solution yet. Click "Get Solution" to generate one.</em></p>';
-        this.elements.codeContent.innerHTML = "<em>No code solution yet.</em>";
         this.elements.complexityTab.innerHTML =
           "<p><em>No complexity analysis yet.</em></p>";
         this.elements.strategyTab.innerHTML =
           "<p><em>No interview strategy yet.</em></p>";
+        this.elements.codeTab.innerHTML =
+          "<pre><code id='code-content'><em>No code solution yet.</em></code></pre>";
         this.elements.interviewerTranscription.innerHTML =
           "<p><em>Waiting for transcription...</em></p>";
         this.elements.latestTranscription.innerHTML =

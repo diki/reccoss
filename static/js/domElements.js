@@ -54,6 +54,9 @@ export function initDomElements() {
     complexityTab: document.getElementById("complexity-tab"),
     strategyTab: document.getElementById("strategy-tab"),
 
+    // Code tab
+    codeTab: document.getElementById("code-tab"),
+
     // UI controls
     resetAllBtn: document.getElementById("reset-all"),
     togglePanelBtn: document.getElementById("toggle-panel"),

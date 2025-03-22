@@ -390,27 +390,64 @@ export class SolutionManager {
       header.textContent = "Follow-up Solution";
       followupContainer.appendChild(header);
 
+      // Create tabs
+      const tabs = document.createElement("div");
+      tabs.className = "tabs followup-tabs";
+      tabs.innerHTML = `
+        <button class="tab-button active" data-tab="followup-explanation">Explanation</button>
+        <button class="tab-button" data-tab="followup-code">Code</button>
+      `;
+      followupContainer.appendChild(tabs);
+
       // Create content div
       const content = document.createElement("div");
       content.id = "followup-content";
       content.className = "solution-box";
+      content.innerHTML = `
+        <div id="followup-explanation-tab" class="tab-content active">
+          <p><em>Generating follow-up solution, please wait...</em></p>
+        </div>
+        <div id="followup-code-tab" class="tab-content">
+          <pre><code><em>Generating code solution...</em></code></pre>
+        </div>
+      `;
       followupContainer.appendChild(content);
 
-      // Add to the page inside the solution container
-      const solutionContainer = document.querySelector(".solution-container");
-      solutionContainer.appendChild(followupContainer);
-    }
+      // Add to the page inside the followup container
+      document
+        .getElementById("followup-container")
+        .appendChild(followupContainer);
 
-    // Update the content
-    const followupContent = document.getElementById("followup-content");
-    followupContent.innerHTML = `
-      <div class="followup-explanation">
-        <p><em>Generating follow-up solution, please wait...</em></p>
-      </div>
-      <div class="followup-code">
-        <pre><code><em>Generating code solution...</em></code></pre>
-      </div>
-    `;
+      // Add event listeners for tabs
+      const tabButtons = tabs.querySelectorAll(".tab-button");
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          // Remove active class from all buttons and contents
+          tabButtons.forEach((btn) => btn.classList.remove("active"));
+          const tabContents = content.querySelectorAll(".tab-content");
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          // Add active class to clicked button and corresponding content
+          button.classList.add("active");
+          const tabId = button.getAttribute("data-tab");
+          document.getElementById(`${tabId}-tab`).classList.add("active");
+        });
+      });
+    } else {
+      // Update the content if container already exists
+      const explanationTab = document.getElementById(
+        "followup-explanation-tab"
+      );
+      const codeTab = document.getElementById("followup-code-tab");
+
+      if (explanationTab) {
+        explanationTab.innerHTML = `<p><em>Generating follow-up solution, please wait...</em></p>`;
+      }
+
+      if (codeTab) {
+        codeTab.innerHTML = `<pre><code><em>Generating code solution...</em></code></pre>`;
+      }
+    }
   }
 
   /**
@@ -421,14 +458,17 @@ export class SolutionManager {
     // Update button text
     this.elements.getSolutionFollowupBtn.textContent = "Solve Follow-up";
 
-    // Get the follow-up content
-    const followupContent = document.getElementById("followup-content");
-    if (followupContent) {
-      followupContent.innerHTML = `
-        <div class="followup-explanation">
-          <p><em>${message}</em></p>
-        </div>
-      `;
+    // Get the explanation tab
+    const explanationTab = document.getElementById("followup-explanation-tab");
+    if (explanationTab) {
+      explanationTab.innerHTML = `<p><em>${message}</em></p>`;
+    }
+
+    // Clear the code tab if it exists
+    const codeTab = document.getElementById("followup-code-tab");
+    if (codeTab) {
+      codeTab.innerHTML =
+        "<pre><code><em>No code solution available.</em></code></pre>";
     }
   }
 
@@ -442,46 +482,39 @@ export class SolutionManager {
     // Update button text
     this.elements.getSolutionFollowupBtn.textContent = "Solve Follow-up";
 
-    // Get the follow-up content
-    const followupContent = document.getElementById("followup-content");
+    // Get the follow-up explanation and code tabs
+    const explanationTab = document.getElementById("followup-explanation-tab");
+    const codeTab = document.getElementById("followup-code-tab");
 
-    if (followupContent) {
-      // Create the content HTML
-      let html = "";
-
-      // Add explanation
+    if (explanationTab && codeTab) {
+      // Update explanation tab
       if (solution.explanation) {
-        html += `
-          <div class="followup-explanation">
-            <h4>Explanation</h4>
-            <p>${solution.explanation.replace(/\n/g, "<br>")}</p>
-          </div>
-        `;
+        explanationTab.innerHTML = `<p>${solution.explanation.replace(
+          /\n/g,
+          "<br>"
+        )}</p>`;
+      } else {
+        explanationTab.innerHTML = "<p><em>No explanation available.</em></p>";
       }
 
-      // Add code
+      // Update code tab
       if (solution.code) {
         // Remove code block markers and detect language
         const cleanCode = cleanCodeMarkdown(solution.code);
         const language = detectLanguage(cleanCode);
 
-        html += `
-          <div class="followup-code">
-            <h4>Updated Code</h4>
-            <pre><code class="language-${language}">${cleanCode}</code></pre>
-          </div>
-        `;
-      }
+        codeTab.innerHTML = `<pre><code class="language-${language}">${cleanCode}</code></pre>`;
 
-      // Update the content
-      followupContent.innerHTML = html;
-
-      // Highlight code if Prism is available
-      if (window.Prism) {
-        const codeElement = followupContent.querySelector("code");
-        if (codeElement) {
-          window.Prism.highlightElement(codeElement);
+        // Highlight code if Prism is available
+        if (window.Prism) {
+          const codeElement = codeTab.querySelector("code");
+          if (codeElement) {
+            window.Prism.highlightElement(codeElement);
+          }
         }
+      } else {
+        codeTab.innerHTML =
+          "<pre><code><em>No code solution available.</em></code></pre>";
       }
     }
   }
@@ -561,12 +594,17 @@ export class SolutionManager {
 
     // Update tab content
     this.elements.explanationTab.innerHTML = `<p><em>Generating solution${providerText}, please wait...</em></p>`;
-    this.elements.codeContent.innerHTML =
-      "<em>Generating code solution...</em>";
     this.elements.complexityTab.innerHTML =
       "<p><em>Analyzing complexity...</em></p>";
     this.elements.strategyTab.innerHTML =
       "<p><em>Developing interview strategy...</em></p>";
+
+    // Update code tab content
+    const codeTab = document.getElementById("code-tab");
+    if (codeTab) {
+      codeTab.innerHTML =
+        "<pre><code id='code-content'><em>Generating code solution...</em></code></pre>";
+    }
   }
 
   /**
@@ -783,27 +821,64 @@ export class SolutionManager {
       header.textContent = "Gemini Follow-up Solution";
       followupContainer.appendChild(header);
 
+      // Create tabs
+      const tabs = document.createElement("div");
+      tabs.className = "tabs followup-tabs";
+      tabs.innerHTML = `
+        <button class="tab-button active" data-tab="gemini-followup-explanation">Explanation</button>
+        <button class="tab-button" data-tab="gemini-followup-code">Code</button>
+      `;
+      followupContainer.appendChild(tabs);
+
       // Create content div
       const content = document.createElement("div");
       content.id = "gemini-followup-content";
       content.className = "solution-box";
+      content.innerHTML = `
+        <div id="gemini-followup-explanation-tab" class="tab-content active">
+          <p><em>Generating Gemini follow-up solution, please wait...</em></p>
+        </div>
+        <div id="gemini-followup-code-tab" class="tab-content">
+          <pre><code><em>Generating code solution...</em></code></pre>
+        </div>
+      `;
       followupContainer.appendChild(content);
 
-      // Add to the page inside the solution container
-      const solutionContainer = document.querySelector(".solution-container");
-      solutionContainer.appendChild(followupContainer);
-    }
+      // Add to the page inside the followup container
+      document
+        .getElementById("followup-container")
+        .appendChild(followupContainer);
 
-    // Update the content
-    const followupContent = document.getElementById("gemini-followup-content");
-    followupContent.innerHTML = `
-      <div class="followup-explanation">
-        <p><em>Generating Gemini follow-up solution, please wait...</em></p>
-      </div>
-      <div class="followup-code">
-        <pre><code><em>Generating code solution...</em></code></pre>
-      </div>
-    `;
+      // Add event listeners for tabs
+      const tabButtons = tabs.querySelectorAll(".tab-button");
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          // Remove active class from all buttons and contents
+          tabButtons.forEach((btn) => btn.classList.remove("active"));
+          const tabContents = content.querySelectorAll(".tab-content");
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          // Add active class to clicked button and corresponding content
+          button.classList.add("active");
+          const tabId = button.getAttribute("data-tab");
+          document.getElementById(`${tabId}-tab`).classList.add("active");
+        });
+      });
+    } else {
+      // Update the content if container already exists
+      const explanationTab = document.getElementById(
+        "gemini-followup-explanation-tab"
+      );
+      const codeTab = document.getElementById("gemini-followup-code-tab");
+
+      if (explanationTab) {
+        explanationTab.innerHTML = `<p><em>Generating Gemini follow-up solution, please wait...</em></p>`;
+      }
+
+      if (codeTab) {
+        codeTab.innerHTML = `<pre><code><em>Generating code solution...</em></code></pre>`;
+      }
+    }
   }
 
   /**
@@ -815,14 +890,19 @@ export class SolutionManager {
     this.elements.getSolutionFollowupWithGeminiBtn.textContent =
       "Solve Follow-up with GEMini";
 
-    // Get the follow-up content
-    const followupContent = document.getElementById("gemini-followup-content");
-    if (followupContent) {
-      followupContent.innerHTML = `
-        <div class="followup-explanation">
-          <p><em>${message}</em></p>
-        </div>
-      `;
+    // Get the explanation tab
+    const explanationTab = document.getElementById(
+      "gemini-followup-explanation-tab"
+    );
+    if (explanationTab) {
+      explanationTab.innerHTML = `<p><em>${message}</em></p>`;
+    }
+
+    // Clear the code tab if it exists
+    const codeTab = document.getElementById("gemini-followup-code-tab");
+    if (codeTab) {
+      codeTab.innerHTML =
+        "<pre><code><em>No code solution available.</em></code></pre>";
     }
   }
 
@@ -837,46 +917,41 @@ export class SolutionManager {
     this.elements.getSolutionFollowupWithGeminiBtn.textContent =
       "Solve Follow-up with GEMini";
 
-    // Get the follow-up content
-    const followupContent = document.getElementById("gemini-followup-content");
+    // Get the follow-up explanation and code tabs
+    const explanationTab = document.getElementById(
+      "gemini-followup-explanation-tab"
+    );
+    const codeTab = document.getElementById("gemini-followup-code-tab");
 
-    if (followupContent) {
-      // Create the content HTML
-      let html = "";
-
-      // Add explanation
+    if (explanationTab && codeTab) {
+      // Update explanation tab
       if (solution.explanation) {
-        html += `
-          <div class="followup-explanation">
-            <h4>Explanation</h4>
-            <p>${solution.explanation.replace(/\n/g, "<br>")}</p>
-          </div>
-        `;
+        explanationTab.innerHTML = `<p>${solution.explanation.replace(
+          /\n/g,
+          "<br>"
+        )}</p>`;
+      } else {
+        explanationTab.innerHTML = "<p><em>No explanation available.</em></p>";
       }
 
-      // Add code
+      // Update code tab
       if (solution.code) {
         // Remove code block markers and detect language
         const cleanCode = cleanCodeMarkdown(solution.code);
         const language = detectLanguage(cleanCode);
 
-        html += `
-          <div class="followup-code">
-            <h4>Updated Code</h4>
-            <pre><code class="language-${language}">${cleanCode}</code></pre>
-          </div>
-        `;
-      }
+        codeTab.innerHTML = `<pre><code class="language-${language}">${cleanCode}</code></pre>`;
 
-      // Update the content
-      followupContent.innerHTML = html;
-
-      // Highlight code if Prism is available
-      if (window.Prism) {
-        const codeElement = followupContent.querySelector("code");
-        if (codeElement) {
-          window.Prism.highlightElement(codeElement);
+        // Highlight code if Prism is available
+        if (window.Prism) {
+          const codeElement = codeTab.querySelector("code");
+          if (codeElement) {
+            window.Prism.highlightElement(codeElement);
+          }
         }
+      } else {
+        codeTab.innerHTML =
+          "<pre><code><em>No code solution available.</em></code></pre>";
       }
     }
   }
@@ -902,17 +977,22 @@ export class SolutionManager {
       const cleanCode = cleanCodeMarkdown(solution.code);
       const language = detectLanguage(cleanCode);
 
-      // Set the code content with the appropriate language class
-      this.elements.codeContent.className = `language-${language}`;
-      this.elements.codeContent.innerHTML = cleanCode;
+      // Update the code tab content
+      const codeElement = document.getElementById("code-content");
+      if (codeElement) {
+        codeElement.className = `language-${language}`;
+        codeElement.innerHTML = cleanCode;
 
-      // Trigger Prism to highlight the code if available
-      if (window.Prism) {
-        window.Prism.highlightElement(this.elements.codeContent);
+        // Trigger Prism to highlight the code if available
+        if (window.Prism) {
+          window.Prism.highlightElement(codeElement);
+        }
       }
     } else {
-      this.elements.codeContent.innerHTML =
-        "<em>No code solution available.</em>";
+      const codeElement = document.getElementById("code-content");
+      if (codeElement) {
+        codeElement.innerHTML = "<em>No code solution available.</em>";
+      }
     }
 
     if (solution.complexity) {
