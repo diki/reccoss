@@ -100,20 +100,69 @@ def get_solution_for_question(question: str) -> Optional[Dict[str, str]]:
     Returns:
     - Dictionary containing explanation, code, complexity, and strategy, or None if failed
     """
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        print("Error: ANTHROPIC_API_KEY environment variable not set")
-        return None
+    return _get_solution_with_prompt(question, _create_solution_prompt)
+
+def get_followup_solution(current_problem: str, current_code: str, transcript: str) -> Optional[Dict[str, str]]:
+    """
+    Send a follow-up request to Claude Sonnet API to get an updated solution
     
-    # Prepare the API request
-    headers = {
-        "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
-    }
+    Parameters:
+    - current_problem: The original coding problem
+    - current_code: The current solution code
+    - transcript: Recent transcript text containing the follow-up question
     
-    # Construct the prompt for Claude
-    prompt = f"""
+    Returns:
+    - Dictionary containing explanation and updated code, or None if failed
+    """
+    return _get_solution_with_prompt(
+        {"problem": current_problem, "code": current_code, "transcript": transcript},
+        _create_followup_prompt
+    )
+
+def _create_followup_prompt(context: Dict[str, str]) -> str:
+    """
+    Create a prompt for follow-up solution
+    
+    Parameters:
+    - context: Dictionary containing problem, code, and transcript
+    
+    Returns:
+    - Formatted prompt string
+    """
+    return f"""
+Given the following context:
+1. Current Problem: {context['problem']}
+2. Current Solution Code: {context['code']}
+3. Recent Transcript: {context['transcript']}
+
+Please:
+1. Extract the most recent follow-up question or request from the transcript
+2. Analyze how this follow-up relates to the current solution
+3. Modify the current solution code to address the follow-up
+4. Return a JSON object with:
+   - explanation: Detailed explanation of the changes made
+   - code: The updated solution code
+
+IMPORTANT: Format your response as a valid JSON object with the following structure:
+{{
+  "explanation": "Your detailed explanation here",
+  "code": "Your updated TypeScript code here"
+}}
+
+Make sure to properly escape any special characters in the JSON strings, especially quotes and newlines.
+"""
+
+def _create_solution_prompt(question: str) -> str:
+    """
+    Create a prompt for initial solution
+    
+    Parameters:
+    - question: The coding question to solve
+    
+    Returns:
+    - Formatted prompt string
+    """
+    return f"""
 I need a solution to the following coding problem:
 
 {question}
@@ -138,6 +187,32 @@ IMPORTANT: Format your response as a valid JSON object with the following struct
 
 Make sure to properly escape any special characters in the JSON strings, especially quotes and newlines.
 """
+
+def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str]]:
+    """
+    Generic function to get a solution from Claude API
+    
+    Parameters:
+    - context: The context for the prompt (string or dict)
+    - prompt_creator: Function to create the prompt
+    
+    Returns:
+    - Dictionary containing solution components, or None if failed
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("Error: ANTHROPIC_API_KEY environment variable not set")
+        return None
+    
+    # Prepare the API request
+    headers = {
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+    }
+    
+    # Construct the prompt for Claude
+    prompt = prompt_creator(context)
     
     # Construct the message
     payload = {
@@ -174,13 +249,20 @@ Make sure to properly escape any special characters in the JSON strings, especia
                     json_str = solution_text[start_idx:end_idx]
                     solution_json = json.loads(json_str)
                     
-                    # Ensure all required fields are present
-                    return {
-                        "explanation": solution_json.get("explanation", ""),
-                        "code": solution_json.get("code", ""),
-                        "complexity": solution_json.get("complexity", ""),
-                        "strategy": solution_json.get("strategy", "")
-                    }
+                    # For follow-up solutions, we only expect explanation and code
+                    if "explanation" in solution_json and "code" in solution_json and len(solution_json) == 2:
+                        return {
+                            "explanation": solution_json.get("explanation", ""),
+                            "code": solution_json.get("code", "")
+                        }
+                    # For regular solutions, we expect all four fields
+                    else:
+                        return {
+                            "explanation": solution_json.get("explanation", ""),
+                            "code": solution_json.get("code", ""),
+                            "complexity": solution_json.get("complexity", ""),
+                            "strategy": solution_json.get("strategy", "")
+                        }
                 else:
                     raise ValueError("JSON object not found in response")
                     
@@ -224,12 +306,20 @@ Make sure to properly escape any special characters in the JSON strings, especia
                 if not explanation and not code and not complexity and not strategy:
                     explanation = solution_text
                 
-                return {
-                    "explanation": explanation.strip(),
-                    "code": code.strip(),
-                    "complexity": complexity.strip(),
-                    "strategy": strategy.strip()
-                }
+                # For follow-up solutions, we only return explanation and code
+                if isinstance(context, dict) and "transcript" in context:
+                    return {
+                        "explanation": explanation.strip(),
+                        "code": code.strip()
+                    }
+                # For regular solutions, we return all four fields
+                else:
+                    return {
+                        "explanation": explanation.strip(),
+                        "code": code.strip(),
+                        "complexity": complexity.strip(),
+                        "strategy": strategy.strip()
+                    }
         else:
             print(f"Error from Claude API: {response.status_code}")
             print(response.text)

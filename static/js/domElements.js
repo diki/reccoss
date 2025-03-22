@@ -42,6 +42,10 @@ export function initDomElements() {
     getSolutionWithGeminiBtn: document.getElementById(
       "get-solution-with-gemini"
     ),
+    getSolutionFollowupBtn: document.getElementById("get-solution-followup"),
+    getSolutionFollowupWithGeminiBtn: document.getElementById(
+      "get-solution-followup-with-gemini"
+    ),
 
     // Solution display
     solutionTabs: document.getElementById("solution-tabs"),

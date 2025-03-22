@@ -8,8 +8,8 @@ from datetime import datetime
 # Import our web adapter and screenshot functionality
 from web_adapter import WebTranscriber, transcriptions, transcription_lock, is_recording
 from screenshot import take_screenshot
-from claude_api import extract_coding_question, get_solution_for_question
-from gemini_api import extract_coding_question_with_gemini, get_solution_for_question_with_gemini
+from claude_api import extract_coding_question, get_solution_for_question, get_followup_solution
+from gemini_api import extract_coding_question_with_gemini, get_solution_for_question_with_gemini, get_followup_solution_with_gemini
 from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai
 
 # Initialize Flask app
@@ -47,6 +47,35 @@ def get_latest_transcription():
             return jsonify(transcriptions[-1])
         else:
             return jsonify({"text": "", "timestamp": ""})
+
+# API endpoint to get transcriptions from the last 2 minutes
+@app.route('/api/transcriptions/recent', methods=['GET'])
+def get_recent_transcriptions():
+    with transcription_lock:
+        if not transcriptions:
+            return jsonify([])
+        
+        # Get current time
+        current_time = datetime.now()
+        
+        # Filter transcriptions from the last 2 minutes
+        recent_transcriptions = []
+        for transcript in transcriptions:
+            try:
+                # Parse the timestamp
+                transcript_time = datetime.strptime(transcript["timestamp"], "%Y-%m-%d %H:%M:%S")
+                
+                # Calculate time difference in seconds
+                time_diff = (current_time - transcript_time).total_seconds()
+                
+                # If within the last 2 minutes (120 seconds)
+                if time_diff <= 120:
+                    recent_transcriptions.append(transcript)
+            except (ValueError, KeyError) as e:
+                print(f"Error parsing timestamp: {e}")
+                continue
+        
+        return jsonify(recent_transcriptions)
 
 # API endpoint to start recording
 @app.route('/api/recording/start', methods=['POST'])
@@ -328,6 +357,62 @@ def get_solution():
         "message": "Solution request submitted"
     })
 
+# API endpoint to get a follow-up solution with Claude
+@app.route('/api/solution/followup', methods=['POST'])
+def get_followup_solution_route():
+    data = request.json or {}
+    current_problem = data.get('problem', '')
+    current_code = data.get('code', '')
+    transcript = data.get('transcript', '')
+    screenshot_path = data.get('screenshot_path', '')
+    
+    if not current_problem or not current_code or not transcript:
+        return jsonify({
+            "status": "error",
+            "message": "Missing required parameters"
+        }), 400
+    
+    # Start a thread to get the follow-up solution
+    solution_thread = threading.Thread(
+        target=process_followup_solution,
+        args=(current_problem, current_code, transcript, screenshot_path)
+    )
+    solution_thread.daemon = True
+    solution_thread.start()
+    
+    return jsonify({
+        "status": "success",
+        "message": "Follow-up solution request submitted"
+    })
+
+# API endpoint to get a follow-up solution with Gemini
+@app.route('/api/solution/followup-with-gemini', methods=['POST'])
+def get_followup_solution_with_gemini_route():
+    data = request.json or {}
+    current_problem = data.get('problem', '')
+    current_code = data.get('code', '')
+    transcript = data.get('transcript', '')
+    screenshot_path = data.get('screenshot_path', '')
+    
+    if not current_problem or not current_code or not transcript:
+        return jsonify({
+            "status": "error",
+            "message": "Missing required parameters"
+        }), 400
+    
+    # Start a thread to get the follow-up solution with Gemini
+    solution_thread = threading.Thread(
+        target=process_followup_solution_with_gemini,
+        args=(current_problem, current_code, transcript, screenshot_path)
+    )
+    solution_thread.daemon = True
+    solution_thread.start()
+    
+    return jsonify({
+        "status": "success",
+        "message": "Gemini follow-up solution request submitted"
+    })
+
 # Function to process solution with Claude API
 def process_solution_with_claude(question, screenshot_path):
     try:
@@ -344,6 +429,41 @@ def process_solution_with_claude(question, screenshot_path):
             print("Failed to generate solution for question")
     except Exception as e:
         print(f"Error processing solution with Claude: {str(e)}")
+
+# Function to process follow-up solution with Claude
+def process_followup_solution(current_problem, current_code, transcript, screenshot_path):
+    try:
+        print(f"Processing follow-up request with transcript length: {len(transcript)} characters")
+        print(f"Follow-up request transcript excerpt: {transcript[:100]}...")
+        
+        # Get follow-up solution
+        solution = get_followup_solution(current_problem, current_code, transcript)
+        
+        if solution:
+            print(f"Follow-up solution generated successfully")
+            print(f"Follow-up solution explanation length: {len(solution.get('explanation', ''))}")
+            print(f"Follow-up solution code length: {len(solution.get('code', ''))}")
+            
+            # Store the solution as a follow-up solution
+            with interview_data_lock:
+                # Create a follow-up solution entry
+                followup_solution = {
+                    "explanation": solution.get("explanation", ""),
+                    "code": solution.get("code", ""),
+                    "is_followup": True,
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                
+                # Store the follow-up solution
+                # Use a special key format to indicate it's a follow-up
+                followup_key = f"{screenshot_path}:followup:{int(time.time())}"
+                interview_data["solutions"][followup_key] = followup_solution
+                
+                print(f"Follow-up solution stored with key: {followup_key}")
+        else:
+            print("Failed to generate follow-up solution")
+    except Exception as e:
+        print(f"Error processing follow-up solution: {str(e)}")
 
 # API endpoint to get a solution for a coding question with OpenAI
 @app.route('/api/solution-with-openai', methods=['POST'])
@@ -413,6 +533,41 @@ def process_solution_with_openai(question, screenshot_path):
             print("Failed to generate solution for question with OpenAI")
     except Exception as e:
         print(f"Error processing solution with OpenAI: {str(e)}")
+
+# Function to process follow-up solution with Gemini
+def process_followup_solution_with_gemini(current_problem, current_code, transcript, screenshot_path):
+    try:
+        print(f"Processing Gemini follow-up request with transcript length: {len(transcript)} characters")
+        print(f"Gemini follow-up request transcript excerpt: {transcript[:100]}...")
+        
+        # Get follow-up solution with Gemini
+        solution = get_followup_solution_with_gemini(current_problem, current_code, transcript)
+        
+        if solution:
+            print(f"Gemini follow-up solution generated successfully")
+            print(f"Gemini follow-up solution explanation length: {len(solution.get('explanation', ''))}")
+            print(f"Gemini follow-up solution code length: {len(solution.get('code', ''))}")
+            
+            # Store the solution as a follow-up solution
+            with interview_data_lock:
+                # Create a follow-up solution entry
+                followup_solution = {
+                    "explanation": solution.get("explanation", ""),
+                    "code": solution.get("code", ""),
+                    "is_followup": True,
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                
+                # Store the follow-up solution
+                # Use a special key format to indicate it's a Gemini follow-up
+                followup_key = f"{screenshot_path}:gemini-followup:{int(time.time())}"
+                interview_data["solutions"][followup_key] = followup_solution
+                
+                print(f"Gemini follow-up solution stored with key: {followup_key}")
+        else:
+            print("Failed to generate Gemini follow-up solution")
+    except Exception as e:
+        print(f"Error processing Gemini follow-up solution: {str(e)}")
 
 # Function to process solution with Gemini API
 def process_solution_with_gemini(question, screenshot_path):
