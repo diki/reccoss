@@ -398,18 +398,24 @@ h3 {
 }
 
 .followup-code {
-  background-color: #f9f9f9;
   border-radius: 4px;
   padding: 10px;
+  border: 1px solid #ddd;
 }
 
 /* Code styling */
-#code-tab pre {
+#code-tab pre, #followup-code-tab pre, #gemini-followup-code-tab pre {
   margin: 0;
-  background-color: #fff;
   border: 1px solid #ddd;
   padding: 15px;
   overflow-y: auto;
+  border-radius: 4px;
+}
+
+#code-tab code, #followup-code-tab code, #gemini-followup-code-tab code {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .tabs {
@@ -478,15 +484,15 @@ h3 {
 
 /* Code formatting */
 pre {
-  background-color: #f5f5f5;
   padding: 10px;
   border-radius: 4px;
   overflow-x: auto;
   margin: 0;
+  border: 1px solid #ddd;
 }
 
 code {
   font-family: 'Courier New', monospace;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
 }
