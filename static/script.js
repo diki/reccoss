@@ -145,15 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
               // Enable the solution buttons
               getSolutionBtn.disabled = false;
               getSolutionWithOpenaiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
-              getSolutionWithGeminiBtn.disabled = false;
 
               // Store the current question and screenshot path
               currentExtractedQuestion = data.extracted_question;
