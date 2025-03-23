@@ -449,6 +449,7 @@ def process_followup_solution(current_problem, current_code, transcript, screens
                 # Create a follow-up solution entry
                 followup_solution = {
                     "explanation": solution.get("explanation", ""),
+                    "solution": solution.get("solution", ""),
                     "code": solution.get("code", ""),
                     "is_followup": True,
                     "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -553,6 +554,7 @@ def process_followup_solution_with_gemini(current_problem, current_code, transcr
                 # Create a follow-up solution entry
                 followup_solution = {
                     "explanation": solution.get("explanation", ""),
+                    "solution": solution.get("solution", ""),
                     "code": solution.get("code", ""),
                     "is_followup": True,
                     "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -577,6 +579,9 @@ def process_solution_with_gemini(question, screenshot_path):
         
         if solution:
             print(f"Solution generated for question with Gemini")
+            print(f"Solution explanation length: {len(solution.get('explanation', ''))}")
+            print(f"Solution interview-style explanation length: {len(solution.get('solution', ''))}")
+            print(f"Solution code length: {len(solution.get('code', ''))}")
             
             # Store the solution
             with interview_data_lock:

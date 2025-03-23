@@ -487,14 +487,37 @@ export class SolutionManager {
     const codeTab = document.getElementById("followup-code-tab");
 
     if (explanationTab && codeTab) {
-      // Update explanation tab
+      // Update explanation tab with technical explanation
       if (solution.explanation) {
-        explanationTab.innerHTML = `<p>${solution.explanation.replace(
+        // If we have both explanation and solution fields, show a header for the technical explanation
+        const explanationHeader = solution.solution
+          ? "<h4>Technical Explanation:</h4>"
+          : "";
+        explanationTab.innerHTML = `${explanationHeader}<p>${solution.explanation.replace(
           /\n/g,
           "<br>"
         )}</p>`;
       } else {
         explanationTab.innerHTML = "<p><em>No explanation available.</em></p>";
+      }
+
+      // Add the interview-style solution if available
+      if (solution.solution) {
+        // Add the solution with a header to the explanation tab
+        const solutionHtml = `
+          <h4>Interview-Style Explanation:</h4>
+          <p class="interview-solution">${solution.solution.replace(
+            /\n/g,
+            "<br>"
+          )}</p>
+        `;
+
+        // Append to the explanation tab (after the technical explanation if it exists)
+        if (solution.explanation) {
+          explanationTab.innerHTML += solutionHtml;
+        } else {
+          explanationTab.innerHTML = solutionHtml;
+        }
       }
 
       // Update code tab
@@ -594,6 +617,14 @@ export class SolutionManager {
 
     // Update tab content
     this.elements.explanationTab.innerHTML = `<p><em>Generating solution${providerText}, please wait...</em></p>`;
+
+    // Update interview-style tab
+    const interviewStyleTab = document.getElementById("interview-style-tab");
+    if (interviewStyleTab) {
+      interviewStyleTab.innerHTML =
+        "<p><em>Preparing interview-style explanation...</em></p>";
+    }
+
     this.elements.complexityTab.innerHTML =
       "<p><em>Analyzing complexity...</em></p>";
     this.elements.strategyTab.innerHTML =
@@ -924,14 +955,37 @@ export class SolutionManager {
     const codeTab = document.getElementById("gemini-followup-code-tab");
 
     if (explanationTab && codeTab) {
-      // Update explanation tab
+      // Update explanation tab with technical explanation
       if (solution.explanation) {
-        explanationTab.innerHTML = `<p>${solution.explanation.replace(
+        // If we have both explanation and solution fields, show a header for the technical explanation
+        const explanationHeader = solution.solution
+          ? "<h4>Technical Explanation:</h4>"
+          : "";
+        explanationTab.innerHTML = `${explanationHeader}<p>${solution.explanation.replace(
           /\n/g,
           "<br>"
         )}</p>`;
       } else {
         explanationTab.innerHTML = "<p><em>No explanation available.</em></p>";
+      }
+
+      // Add the interview-style solution if available
+      if (solution.solution) {
+        // Add the solution with a header to the explanation tab
+        const solutionHtml = `
+          <h4>Interview-Style Explanation:</h4>
+          <p class="interview-solution">${solution.solution.replace(
+            /\n/g,
+            "<br>"
+          )}</p>
+        `;
+
+        // Append to the explanation tab (after the technical explanation if it exists)
+        if (solution.explanation) {
+          explanationTab.innerHTML += solutionHtml;
+        } else {
+          explanationTab.innerHTML = solutionHtml;
+        }
       }
 
       // Update code tab
@@ -970,6 +1024,19 @@ export class SolutionManager {
     } else {
       this.elements.explanationTab.innerHTML =
         "<p><em>No explanation available.</em></p>";
+    }
+
+    // Update the interview-style tab
+    if (solution.solution) {
+      document.getElementById("interview-style-tab").innerHTML = `
+        <p class="interview-solution">${solution.solution.replace(
+          /\n/g,
+          "<br>"
+        )}</p>
+      `;
+    } else {
+      document.getElementById("interview-style-tab").innerHTML =
+        "<p><em>No interview-style explanation available.</em></p>";
     }
 
     if (solution.code) {

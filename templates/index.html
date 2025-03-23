@@ -13,11 +13,10 @@
   <body>
     <div class="container">
       <div class="left-panel">
-        <button id="toggle-panel" class="toggle-button" title="Toggle Panel">
+        <!-- <button id="toggle-panel" class="toggle-button" title="Toggle Panel">
           <span class="toggle-icon">▶</span>
-        </button>
+        </button> -->
         <div class="controls">
-          <h2>Action Controls</h2>
           <div class="button-group">
             <button id="take-screenshot" class="button secondary">
               Extract Question (screenshot)
@@ -59,11 +58,6 @@
             >
               Solve Follow-up with GEMini
             </button>
-          </div>
-        </div>
-        <div class="controls">
-          <h2>Recording Controls</h2>
-          <div class="button-group">
             <button id="start-recording" class="button primary">
               Start Recording
             </button>
@@ -72,6 +66,10 @@
             </button>
             <button id="reset-all" class="button danger">Reset All</button>
           </div>
+        </div>
+        <div class="controls" style="display: none">
+          <h2>Recording Controls</h2>
+          <div class="button-group"></div>
           <p id="recording-status">Status: Not recording</p>
         </div>
       </div>
@@ -90,6 +88,9 @@
               <button class="tab-button active" data-tab="explanation">
                 Explanation
               </button>
+              <button class="tab-button" data-tab="interview-style">
+                Interview Style
+              </button>
               <button class="tab-button" data-tab="complexity">
                 Complexity
               </button>
@@ -103,6 +104,9 @@
                     >No solution yet. Click "Get Solution" to generate one.</em
                   >
                 </p>
+              </div>
+              <div id="interview-style-tab" class="tab-content">
+                <p><em>No interview-style explanation yet.</em></p>
               </div>
               <div id="complexity-tab" class="tab-content">
                 <p><em>No complexity analysis yet.</em></p>

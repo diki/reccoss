@@ -22,9 +22,9 @@ export class UiManager {
    */
   setupEventListeners() {
     this.elements.resetAllBtn.addEventListener("click", () => this.resetAll());
-    this.elements.togglePanelBtn.addEventListener("click", () =>
-      this.toggleLeftPanel()
-    );
+    // this.elements.togglePanelBtn.addEventListener("click", () =>
+    //   this.toggleLeftPanel()
+    // );
   }
 
   /**

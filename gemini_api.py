@@ -97,7 +97,8 @@ Please:
 2. Analyze how this follow-up relates to the current solution
 3. Modify the current solution code to address the follow-up
 4. Return a JSON object with:
-   - explanation: Detailed explanation of the changes made
+   - explanation: Detailed technical explanation of the changes made
+   - solution: Friendly and conversational but concise explanation as if you're in an interview explaining your approach
    - code: The updated solution code
 """
         
@@ -107,14 +108,18 @@ Please:
             "properties": {
                 "explanation": {
                     "type": "string",
-                    "description": "Detailed explanation of the changes made to address the follow-up"
+                    "description": "Detailed technical explanation of the changes made to address the follow-up"
+                },
+                "solution": {
+                    "type": "string",
+                    "description": "Friendly and conversational but concise explanation as if in an interview setting"
                 },
                 "code": {
                     "type": "string",
                     "description": "The updated solution code"
                 }
             },
-            "required": ["explanation", "code"]
+            "required": ["explanation", "solution", "code"]
         }
         
         # Generate the solution with structured JSON output
@@ -132,6 +137,7 @@ Please:
                 solution = json.loads(response.text)
                 return {
                     "explanation": solution.get("explanation", ""),
+                    "solution": solution.get("solution", ""),
                     "code": solution.get("code", "")
                 }
             except json.JSONDecodeError as e:
@@ -148,6 +154,7 @@ Please:
                         solution = json.loads(json_str)
                         return {
                             "explanation": solution.get("explanation", ""),
+                            "solution": solution.get("solution", ""),
                             "code": solution.get("code", "")
                         }
                     except:
@@ -156,6 +163,7 @@ Please:
                 # If all JSON parsing fails, return the raw text as explanation
                 return {
                     "explanation": solution_text,
+                    "solution": "I'd approach this by carefully analyzing the requirements and implementing a solution that addresses the core issue while maintaining good coding practices.",
                     "code": ""
                 }
         else:
@@ -195,16 +203,17 @@ I need a solution to the following coding problem:
 {question}
 
 Please provide a comprehensive solution with the following components:
-1. Explanation of your approach step by step
-2. Code implementation in TypeScript with proper type annotations
+1. Explanation of your approach step by step (technical explanation)
+2. A friendly, conversational but concise explanation as if you're in an interview explaining your approach
+3. Code implementation in TypeScript with proper type annotations
    - IMPORTANT: Place all comments ABOVE the code lines, not on the same line as the code
    - Example of correct comment formatting:
      // This is a comment explaining what the next line does
      const result = calculateSomething(input);
    - NOT like this:
      const result = calculateSomething(input); // This comment is on the same line as code
-3. Time and space complexity analysis
-4. Interview strategy tips for this problem
+4. Time and space complexity analysis
+5. Interview strategy tips for this problem
 """
         
         # Define the response schema for structured output
@@ -213,7 +222,11 @@ Please provide a comprehensive solution with the following components:
             "properties": {
                 "explanation": {
                     "type": "string",
-                    "description": "Step-by-step explanation of the solution approach"
+                    "description": "Step-by-step technical explanation of the solution approach"
+                },
+                "solution": {
+                    "type": "string",
+                    "description": "Friendly and conversational but concise explanation as if in an interview setting"
                 },
                 "code": {
                     "type": "string",
@@ -228,7 +241,7 @@ Please provide a comprehensive solution with the following components:
                     "description": "Interview strategy tips for this problem"
                 }
             },
-            "required": ["explanation", "code", "complexity", "strategy"]
+            "required": ["explanation", "solution", "code", "complexity", "strategy"]
         }
         
         # Generate the solution with structured JSON output
@@ -246,6 +259,7 @@ Please provide a comprehensive solution with the following components:
                 solution = json.loads(response.text)
                 return {
                     "explanation": solution.get("explanation", ""),
+                    "solution": solution.get("solution", ""),
                     "code": solution.get("code", ""),
                     "complexity": solution.get("complexity", ""),
                     "strategy": solution.get("strategy", "")
@@ -264,6 +278,7 @@ Please provide a comprehensive solution with the following components:
                         solution = json.loads(json_str)
                         return {
                             "explanation": solution.get("explanation", ""),
+                            "solution": solution.get("solution", ""),
                             "code": solution.get("code", ""),
                             "complexity": solution.get("complexity", ""),
                             "strategy": solution.get("strategy", "")
@@ -274,6 +289,7 @@ Please provide a comprehensive solution with the following components:
                 # If all JSON parsing fails, return the raw text as explanation
                 return {
                     "explanation": solution_text,
+                    "solution": "I'd approach this by carefully analyzing the requirements and implementing a solution that addresses the core issue while maintaining good coding practices.",
                     "code": "",
                     "complexity": "",
                     "strategy": ""

@@ -14,6 +14,7 @@ body {
   padding: 20px;
   display: flex;
   gap: 20px;
+  flex-direction: column;
 }
 
 .main-content {
@@ -21,10 +22,12 @@ body {
 }
 
 .left-panel {
-  width: 400px;
+  width: 100%;
   flex-shrink: 0;
   position: relative;
   transition: width 0.3s ease;
+  position: fixed;
+  z-index: 999;
 }
 
 .left-panel.collapsed {
@@ -59,18 +62,18 @@ body {
 }
 
 .left-panel .controls {
-  position: sticky;
-  top: 20px;
+  /* position: sticky;
+  top: 20px; */
 }
 
 .left-panel .button-group {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   gap: 10px;
 }
 
 .left-panel .button {
-  width: 100%;
+  /* width: 100%; */
   text-align: center;
 }
 
@@ -93,10 +96,10 @@ h3 {
 
 .controls, .transcription-container {
   background: #fff;
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  /* margin-top: 20px; */
 }
 
 .button-group {
@@ -107,12 +110,12 @@ h3 {
 }
 
 .button {
-  padding: 10px 15px;
+  /* padding: 10px 15px; */
   border: none;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
+  /* font-size: 16px; */
+  /* font-weight: bold; */
   transition: background-color 0.3s;
 }
 
@@ -342,7 +345,7 @@ h3 {
 .solution-button {
   background-color: #9b59b6;
   color: white;
-  margin-top: 10px;
+  /* margin-top: 10px; */
 }
 
 .solution-button:hover {
@@ -415,7 +418,7 @@ h3 {
 #code-tab code, #followup-code-tab code, #gemini-followup-code-tab code {
   font-family: 'Courier New', monospace;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1;
 }
 
 .tabs {
