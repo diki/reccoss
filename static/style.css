@@ -417,8 +417,8 @@ h3 {
 
 #code-tab code, #followup-code-tab code, #gemini-followup-code-tab code {
   font-family: 'Courier New', monospace;
-  font-size: 16px;
-  line-height: 1;
+  font-size: 13px;
+  line-height: .9;
 }
 
 .tabs {
