@@ -11,74 +11,72 @@
     />
   </head>
   <body>
-    <div class="container">
-      <div class="left-panel">
-        <!-- <button id="toggle-panel" class="toggle-button" title="Toggle Panel">
-          <span class="toggle-icon">▶</span>
-        </button> -->
-        <div class="controls">
-          <div class="button-group">
-            <button id="take-screenshot" class="button secondary">
-              Extract Question (screenshot)
-            </button>
-            <button id="take-screenshot" class="button secondary">
-              Extract Question (screenshot)
-            </button>
-            <button id="extract-with-gemini" class="button secondary">
-              Extract with Gemini (screenshot)
-            </button>
-            <button id="get-design-question" class="button secondary">
-              Get Design Question (screenshot)
-            </button>
-            <button id="extract-with-openai" class="button secondary">
-              Extract with OpenAI (screenshot)
-            </button>
-            <button id="get-solution" class="button solution-button" disabled>
-              Get Solution
-            </button>
-            <button
-              id="get-solution-with-openai"
-              class="button solution-button"
-              disabled
-            >
-              Get Solution with OpenAI
-            </button>
-            <button
-              id="get-solution-with-gemini"
-              class="button solution-button"
-              disabled
-            >
-              Get Solution with Gemini
-            </button>
-            <button
-              id="get-solution-followup"
-              class="button solution-button"
-              disabled
-            >
-              Solve Follow-up
-            </button>
-            <button
-              id="get-solution-followup-with-gemini"
-              class="button solution-button"
-              disabled
-            >
-              Solve Follow-up with GEMini
-            </button>
-            <button id="start-recording" class="button primary">
-              Start Recording
-            </button>
-            <button id="stop-recording" class="button danger">
-              Stop Recording
-            </button>
-            <button id="reset-all" class="button danger">Reset All</button>
-          </div>
-        </div>
-        <div class="controls" style="display: none">
-          <h2>Recording Controls</h2>
-          <div class="button-group"></div>
-          <p id="recording-status">Status: Not recording</p>
+    <div class="left-panel">
+      <div class="controls">
+        <div class="button-group">
+          <button id="take-screenshot" class="button secondary">
+            Extract with Claude (screenshot)
+          </button>
+          <button id="extract-with-gemini" class="button secondary">
+            Extract with Gemini (screenshot)
+          </button>
+          <button id="extract-with-openai" class="button secondary">
+            Extract with OpenAI (screenshot)
+          </button>
+          <button
+            id="get-design-question"
+            class="button secondary"
+            style="background-color: black"
+          >
+            Get Design Question (screenshot)
+          </button>
+          <button id="get-solution" class="button solution-button" disabled>
+            Get Solution
+          </button>
+          <button
+            id="get-solution-with-openai"
+            class="button solution-button"
+            disabled
+          >
+            Get Solution with OpenAI
+          </button>
+          <button
+            id="get-solution-with-gemini"
+            class="button solution-button"
+            disabled
+          >
+            Get Solution with Gemini
+          </button>
+          <button
+            id="get-solution-followup"
+            class="button solution-button"
+            disabled
+          >
+            Solve Follow-up
+          </button>
+          <button
+            id="get-solution-followup-with-gemini"
+            class="button solution-button"
+            disabled
+          >
+            Solve Follow-up with GEMini
+          </button>
+          <button id="start-recording" class="button primary">
+            Start Recording
+          </button>
+          <button id="stop-recording" class="button danger">
+            Stop Recording
+          </button>
+          <button id="reset-all" class="button danger">Reset All</button>
         </div>
       </div>
+      <div class="controls" style="display: none">
+        <h2>Recording Controls</h2>
+        <div class="button-group"></div>
+        <p id="recording-status">Status: Not recording</p>
+      </div>
+    </div>
+    <div class="container">
       <div class="main-content">
         <div class="extracted-question-container">
           <h3>Extracted Coding Question</h3>

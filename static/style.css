@@ -9,7 +9,7 @@ body {
 
 .container {
   width: 100%;
-  /* max-width: 1200px; */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
@@ -28,6 +28,13 @@ body {
   transition: width 0.3s ease;
   position: fixed;
   z-index: 999;
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 100vh;
+  background-color: white;
+  padding: 16px;
 }
 
 .left-panel.collapsed {
@@ -98,7 +105,7 @@ h3 {
   background: #fff;
   /* padding: 20px; */
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
   /* margin-top: 20px; */
 }
 
@@ -140,6 +147,8 @@ h3 {
 .secondary {
   background: #3498db;
   color: white;
+  width: 100%;
+  padding: 8px
 }
 
 .secondary:hover {
