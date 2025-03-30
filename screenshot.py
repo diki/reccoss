@@ -39,7 +39,7 @@ def take_screenshot(output_directory='screenshots'):
     # Take the screenshot of the entire screen
     with mss.mss() as sct:
         # Get the first monitor (entire screen)
-        monitor = sct.monitors[1]
+        monitor = sct.monitors[2]
         
         # Capture the screen
         screenshot = sct.grab(monitor)

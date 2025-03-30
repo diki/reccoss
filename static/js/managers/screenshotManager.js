@@ -27,6 +27,9 @@ export class ScreenshotManager {
     this.elements.extractWithGeminiBtn.addEventListener("click", () =>
       this.extractWithGemini()
     );
+    this.elements.getDesignQuestionBtn.addEventListener("click", () =>
+      this.getDesignQuestion()
+    );
     this.elements.extractWithOpenaiBtn.addEventListener("click", () =>
       this.extractWithOpenai()
     );
@@ -202,6 +205,77 @@ export class ScreenshotManager {
       console.error("Error taking screenshot for Gemini extraction:", error);
       this.elements.extractedQuestionContainer.innerHTML =
         "<p><em>Error extracting question with Gemini. Please try again.</em></p>";
+    }
+  }
+
+  /**
+   * Get design system question
+   */
+  async getDesignQuestion() {
+    // Reset the manually selected screenshot flag
+    appState.update("screenshots.manuallySelectedScreenshot", false);
+
+    const questionType = appState.get("question.type");
+    const notes = appState.get("question.notes");
+
+    // Show loading message
+    this.elements.extractedQuestionContainer.innerHTML =
+      "<p><em>Extracting design system question...</em></p>";
+
+    try {
+      const data = await apiRequest("/api/get-design-question", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question_type: questionType,
+          notes: notes,
+        }),
+      });
+
+      if (data.status === "success") {
+        console.log("Screenshot taken for design question:", data.screenshot);
+
+        // Update screenshots in state
+        const screenshots = [
+          ...appState.get("screenshots.items"),
+          data.screenshot,
+        ];
+        appState.update("screenshots.items", screenshots);
+
+        if (data.extracted_question) {
+          // Display the extracted question
+          this.elements.extractedQuestionContainer.innerHTML = `<p>${data.extracted_question}</p>`;
+
+          // Enable the solution buttons
+          this.elements.getSolutionBtn.disabled = false;
+          this.elements.getSolutionWithOpenaiBtn.disabled = false;
+          this.elements.getSolutionWithGeminiBtn.disabled = false;
+
+          // Store the current question and screenshot path
+          appState.update(
+            "question.currentExtractedQuestion",
+            data.extracted_question
+          );
+          appState.update(
+            "screenshots.currentScreenshotPath",
+            data.screenshot.path
+          );
+        } else {
+          this.elements.extractedQuestionContainer.innerHTML =
+            "<p><em>Could not extract design question. Please try again.</em></p>";
+        }
+      } else {
+        console.error(
+          "Error taking screenshot for design question:",
+          data.message
+        );
+      }
+    } catch (error) {
+      console.error("Error taking screenshot for design question:", error);
+      this.elements.extractedQuestionContainer.innerHTML =
+        "<p><em>Error extracting design question. Please try again.</em></p>";
     }
   }
 

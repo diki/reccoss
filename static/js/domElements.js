@@ -17,6 +17,7 @@ export function initDomElements() {
     // Screenshot controls
     takeScreenshotBtn: document.getElementById("take-screenshot"),
     extractWithGeminiBtn: document.getElementById("extract-with-gemini"),
+    getDesignQuestionBtn: document.getElementById("get-design-question"),
     extractWithOpenaiBtn: document.getElementById("extract-with-openai"),
     screenshotsContainer: document.getElementById("screenshots"),
 

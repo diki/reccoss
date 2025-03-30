@@ -9,7 +9,7 @@ from datetime import datetime
 from web_adapter import WebTranscriber, transcriptions, transcription_lock, is_recording
 from screenshot import take_screenshot
 from claude_api import extract_coding_question, get_solution_for_question, get_followup_solution
-from gemini_api import extract_coding_question_with_gemini, get_solution_for_question_with_gemini, get_followup_solution_with_gemini
+from gemini_api import extract_coding_question_with_gemini, get_solution_for_question_with_gemini, get_followup_solution_with_gemini, extract_design_question_with_gemini
 from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai
 
 # Initialize Flask app
@@ -247,6 +247,51 @@ def process_screenshot_with_gemini(screenshot_path):
             print("Failed to extract question from screenshot with Gemini")
     except Exception as e:
         print(f"Error processing screenshot with Gemini: {str(e)}")
+
+# API endpoint to get design system question
+@app.route('/api/get-design-question', methods=['POST'])
+def get_design_question():
+    try:
+        # Take a screenshot
+        screenshot_path = take_screenshot()
+        
+        # Get question context if available
+        data = request.json or {}
+        question_type = data.get('question_type', 'design')
+        notes = data.get('notes', '')
+        
+        # Add to interview data
+        with interview_data_lock:
+            screenshot_info = {
+                "path": screenshot_path,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "question_type": question_type,
+                "notes": notes,
+                "question_id": interview_data["current_question"] if interview_data["current_question"] else None
+            }
+            interview_data["screenshots"].append(screenshot_info)
+        
+        # Extract the design question
+        extracted_question = extract_design_question_with_gemini(screenshot_path)
+        
+        if extracted_question:
+            print(f"Extracted design question: {extracted_question}")
+            
+            # Store the extracted question
+            with interview_data_lock:
+                interview_data["extracted_questions"][screenshot_path] = extracted_question
+        
+        # Return the screenshot info and extracted question
+        return jsonify({
+            "status": "success",
+            "screenshot": screenshot_info,
+            "extracted_question": extracted_question
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 # API endpoint to extract question with OpenAI
 @app.route('/api/extract-with-openai', methods=['POST'])
