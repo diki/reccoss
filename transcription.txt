@@ -1,3 +1,1255 @@
+. .
+This is one, one of them, but yes, uh, I will.
+or like my main, let's say my main role, my main job is...
+Just in this ecosystem, right? What can we do to make this even faster and better for you?
+So, yeah, it's more.
+I mean, yeah.
+like they don't cost $3,000 something that you need.
+years. So that is our customer base.
+Yes.
+Thank you very much.
+. .
+You
+. .
+Yes, yeah, that's all.
+Sometimes it's, I think the biggest challenge sometimes is what will bring you in.
+part. And second, like, not
+being opinionated enough, right? Sometimes
+because you kind of, right, they are employees, so you can speak to them.
+so on. You kind of want to please everybody, but by pleasing everybody, some.
+Sometimes you give the developers too much choice and then...
+that choice makes them either take wrong decisions or...
+like, this illusion of like, them, like
+I have so many options, I don't know what to do here. I wish you could just tell me.
+this and that's it done or this is how this is set up and done right so there's
+We are always in this dichotomy where if you don't give...
+developers in all options, some of them are
+going to be pissed, but most of them are like, I don't want options, right?
+I just want one option. I just want you to tell me what am I supposed to do here.
+Because in most cases they don't care, right? They just want their services to be deployed.
+and that's it, right? They don't care how you configure the service. Give me a golden path.
+And that only for those who really care, okay?
+Okay, give me a scape hat so that I can tune it right.
+like, but then the balance is, that line is super.
+hard one to watch.
+. .
+. .
+. .
+. .
+. .
+Yep. Humans are...
+. .
+. .
+Bye-bye.
+Okei, kerro minulle hieman itseäsi. Näen...
+I've seen your CV and so on, but give me a bit of an overview.
+interview, who you are, where have you been, and so on.
+. .
+. .
+. .
+. .
+Bye bye.
+Yeah, I used to work on Typeform, so.
+Hey!
+. .
+.
+. .
+Thank you.
+. .
+Thank you.
+. .
+. .
+. .
+. .
+Bye bye.
+. .
+Thank you.
+Thank you.
+. .
+. .
+. .
+. .
+. .
+Right, so you are like the sauce of...
+payment providers right like that
+Bye-bye.
+in this time for payment providers.
+. .
+. .
+Mm-hmm. Yeah.
+Thank you.
+. .
+Thank you.
+. .
+. .
+. .
+Bye bye.
+. .
+Bien, eso es todo, un abrazo.
+Thank you.
+Thank you.
+. .
+. .
+. .
+. .
+Okay Nice very nice wall
+thank you for listening to a very interesting experience
+Nice. Shall we get started with the coding? What do you think?
+All right, so you have our page.
+the page here anyway, so I can let you in.
+Bye-bye.
+Thank you.
+Bye-bye.
+. .
+. .
+. .
+. .
+. .
+Yeah, I'll unmute you right now.
+Awesome. All right. So you're here. I think if you said you already need that.
+All you need to do is enter your name and you know where you are.
+it's going on both, perfect. And
+Just to repurchase our screen and please go with you or do you want some?
+something else. JavaScript as an element is cool, yeah.
+Alright, well, let's download JavaScript.
+just because so today we will be doing
+You already have your technical interview, but I always like to...
+to like set some ground rules of what I like to happen in Egypt.
+interviews, right? Most of all, I wanted to be communicated.
+about what you're thinking, what you're doing, what you have in mind.
+mind what is wrong and right i don't i prefer you talking to max and you don't
+talking to, you know, if you know what I mean, and also...
+Like, you are of course free to look up things that you don't...
+remember like, oh, I don't remember the exact API of this method, so I'll just go and
+second. But also you are absolutely free to use me as
+your rubber duck so you can ask me questions, you can explain to me things and say all
+Okay, I'm trying to do this and I'm struggling here. I'm thinking of these two options.
+So I want you to feel like this is more you and I.
+working together on something, than it is on...
+than it is something like, I don't know, like an exam where you...
+to get perfect answers for everything right? Of course I will expect you to need more.
+of the interview, but right now that I'm here and I can help.
+as well. So, just that, more to come.
+We're working together toward this exercise you're leading the way on here.
+for you and I'll just write like
+For scoring sounds good
+Awesome, so I'm gonna play this exercise and let's go through
+it together so right this is
+a function that has the following fun, like signature, you have a.
+this is called the match function right and you have a pattern and you have a work
+and you need to return true and only true if
+Like, if and only if, like, the word is a complete match for...
+pattern. Now, this pattern is sort of special.
+right? Because this pattern was just strings and words were just strings.
+It won't be a five minute job, right? But the idea with this
+pattern is when it contains letters, you match it exactly. So.
+They don't they don't write for example the second
+it's false because you're right like
+The word is longer than the pattern, right? It has this extra S.
+But when the matching happens is so if it's a letter you.
+much in letter by letter, but if there is a number, then that number
+adds like a wild card so if you have a number three that means
+Okay, now accept any three characters that you want, but it has to be
+three right so if you if i put three and you just give me two characters i'm gonna
+Let's say, hey, this is not right. And then these numbers can be.
+anywhere in the pattern. So for example, in line 24, you see.
+There's D, so you imagine the D word by word, right?
+Then you say 3, which is 3 characters, anything that you want.
+and then you continue if there's a string later
+then you continue matching one-to-one in that sense.
+And right then same applies here for stop my leg so in light way
+with the I'm finished with dog. The problem is this one said there should be.
+characters and there was only one, right?
+Bye-bye.
+Because, right, there should have been 3 characters, any, right, because it's a wildcard, but there
+was only one so the length is not the same one
+And that's pretty much it.
+For now.
+. .
+. .
+. .
+You
+. .
+. .
+. .
+. .
+Go ahead.
+All right.
+Yeah, the first is about learning the second.
+Only the Lord you want to love.
+Okay.
+Yes.
+Yes.
+Okay.
+Thank you.
+. .
+Bye bye.
+Yeah, the numbers you're all.
+Let's handle that later, but if the number is zero, right? No
+Nothing happens. Yeah. It just came.
+Right, you can just go over one more in the pattern, right? So a number zero means.
+I expect zero characters, either for drawing.
+So it's just for drawing, right? Zero is like...
+Like, stop being naughty.
+We can delay the 0k for later, but for now, yeah, just mute.
+Yes, we're right.
+Thank you.
+не тинул?
+. .
+. .
+. .
+Thank you.
+Yeah.
+No problem.
+. .
+. .
+. .
+. .
+. .
+Bye-bye.
+. .
+. .
+. .
+Not for now.
+see where you're going but yeah not for now there let's say for
+For now, you will only get one emerald, yes, but I see one.
+you're going. Let's get that first one implemented and then I'll tell you what to do.
+tell you more.
+. .
+. .
+. .
+. .
+. .
+Bye-bye.
+Reflect.
+. .
+. .
+Thank you.
+. .
+. .
+Yes.
+. .
+. .
+. .
+. .
+Silence.
+. .
+Silence.
+Thank you.
+. .
+. .
+. .
+. .
+. .
+. .
+All right.
+Yeah, yeah, you already did.
+Cool, so these are working.
+Right, you see the same thing left and right, it means they are.
+The same result. Let's try with this one.
+a bit more nasty but let's see
+I want it more, let's see if everything matches up.
+Yep.
+. .
+No, y'all won't, yeah?
+You are all good guests.
+Nice! Awesome! So, first part...
+don't. Now, when you already think it through.
+The worst thing is the double.
+number, right? Like, let's say
+a lot of numbers, but in theory, it can be any number. So one side could be numbers, right?
+Thank you very much.
+Thank you.
+Mm-hmm.
+. .
+Bye bye.
+. .
+One.
+. .
+Thank you.
+Thank you.
+. .
+. . . .
+Thank you.
+Okay.
+All right, but I guess you need to do something now.
+with an average R count, like you need to increment it somewhere.
+Thank you.
+Do you need to reset it somewhere?
+. .
+Thank you.
+probably because no like at least in my mind
+I see you need to be counting, counting, counting numbers until you finally...
+And when you find the letter, you're like, oh, okay, now I have the letter.
+have the whole number, right?
+Thank you.
+But, you don't go in like that.
+have to write. So I think this is not gonna work right.
+of the previous number, like the one you want to do the...
+like exponential of 10 is of the previous number. So let's let's
+about.
+Bye.
+Thank you.
+Bye-bye.
+I see okay, so now you're like
+Thank you.
+But then you probably need.
+the number chart count or should this
+Please be never bad in your small.
+. .
+Thank you.
+into one.
+. .
+Damage outcome is zero, right? So you're like, okay, 10 plus zero.
+plus one, okay? Next iteration, you get another one.
+you know 10 per one that's 10 and
+And then you do 11. And in this case, we want to.
+Okay, but what if it was 821? I don't think that would work.
+Right, because...
+You'll make it on your chart count like 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+five, six, seven, eight, by you don't take.
+into account on the current number value list.
+Thank you.
+Thank you.
+. .
+. .
+You're very close.
+Think about, do you even need this number chart out?
+now that you are accumulating the number value.
+You don't, right? Like every time you want to move number by...
+value up, you just need to multiply it by 10 and add.
+. .
+Yes.
+. .
+Perfect and then now my only question is do you
+add number value here or not.
+. .
+. .
+. .
+. .
+All right.
+. .
+You
+You have already a hint, you have already a place, yes, perfect.
+You didn't need those things.
+. .
+. .
+Elaine? Elaine. Yes.
+but do you need something else?
+Instead of that number, chart count, that you just commented out, what do you do?
+to do.
+. .
+. .
+Also,
+Pitäkää katsoa kaikkia näitä videoita, jos haluat.
+. .
+. .
+. .
+. .
+. .
+Look at where you set number of volumes along.
+Look at where you set number body.
+. .
+. .
+. .
+Bye-bye.
+Bye-bye.
+the problem is more where are you setting it you are setting it inside
+and one album, so every iteration.
+At every iteration, you are setting it to zero, right?
+You
+You don't want that at every iteration because you want to accumulate it, no?
+. .
+. .
+Yes.
+. .
+Excellent.
+. .
+All right, right, because otherwise they were resetting it to zero.
+every iteration, right, so you could not accumulate.
+Now let's have a look at whether we brought
+the previous cases or not. No shame!
+Somehow loveholic sleepwalking putn ayayayayayayayayayayilly es just out of contact Can't hear What everybody Okay. Can't hear  but let's Thank you that that the on
+Oh so we were out so.
+a third one.
+You return false when we should return true.
+true.
+And that's in the case where you don't have
+a string at the end in the pattern, right?
+Thank you.
+. .
+. .
+. .
+. .
+. .
+Thank you.
+. .
+. .
+Yeah.
+. .
+. .
+Thank you.
+Bye-bye.
+Think about it differently.
+When you reach that case, what has happened?
+We've got their knee necks.
+Thank you.
+. .
+So, you're already out of the wild.
+Thank you.
+Maybe just do that same thing you have in the else mode.
+one more time after the while loop.
+. .
+. .
+. .
+. .
+. .
+. .
+. .
+. .
+Thank you.
+Yes.
+. .
+Thank you.
+Let's let's think let's think through this again. So what's happening here is
+Because pattern index reaches the end of the pattern index, so you get thrown out of the
+the while loop, right? As soon as you finish, you do that 56 by 36.
+next. So...
+Instead of doing this, if here that also like, okay,
+You're trying to count, right, whether, I think what you're trying to count here is
+will run every time you find a number. So I don't think that's what you want to do.
+and check every time you find that number. What you probably want to do is...
+If, at the end of the loop, you still have numbers.
+values that means you haven't reasoned in them.
+then you probably just need to write like.
+add those to the word index, and then you can do.
+the tag on one of the index matches one of the length again. You see what I mean?
+me. Like, oh, okay, I finished the loop. That means...
+I reached the end here or there but do...
+Do we still have any number of volumes to clear? Yes. Then I will add.
+I will add those to the word index, the same way I would do a lunch.
+65 and then
+I would compare again the legs to make sure that both
+were at the end of each.
+. .
+. .
+. .
+. .
+. .
+. .
+Thank you. Bye-bye.
+But I think even, for example, this one, right, like, in this case.
+Let's introduce wild legends.
+This one should be true, because...
+3D editing characters.
+and then the three anime characters match. So doing something like one.
+or like let's say, so if not.
+I mean, technically, we don't even need that if we could just do it right away.
+way, but like doing something like word index plus number value.
+Because realistically, numbers...
+value is only different than zero when you have entered this value.
+pattern right where you only accumulate pattern index. Otherwise...
+You are accumulating word index, you are here, and number value.
+is only set to zero, right? So one.
+And we are, what we will be doing here is, for example, in lightning.
+ways. Okay, we first check the first one, then we...
+We check the second one, we get thrown out, right, because father-in-law...
+index has reached the end.
+Let's try running this app.
+Okay, so do what you want
+Bye bye.
+All right, so this worked, let me quickly compare.
+the console login and let's see if everything works
+And I think that's all I have to say.
+Look what happened.
+Alright, so
+Awesome, everything matches up, but wait for it.
+Because I have some extras for you And then
+And this one is the Extra of Extras, which is...
+All right, like with zero, that's right.
+Yep. Excellent. And then
+The one you asked, at the very beginning.
+which was very good. Let's see how that handles, which is...
+How do you think, in your case, the solitary is zero?
+Thank you very much. Bye.
+Bye-bye.
+. . .
+Thank you.
+Okay.
+Thank you.
+. .
+. .
+. .
+Okay, that's right.
+I'll take your word for it, but let's try running it.
+Perfect. Yes. And what about
+I think with the fixes we did earlier, let's.
+is now with the ones we need in the number value or index number value.
+I think this one will work, but let's see...
+Oh, nasty!
+So this is the very last one, that bookmark.
+. .
+. .
+But adding zero is the same as adding nothing.
+Thank you.
+. .
+Thank you.
+. .
+Bye-bye.
+. .
+. .
+. .
+. .
+. .
+Thank you.
+Thank you.
+Yeah.
+Now everything broke.
+. .
+. .
+Thank you.
+. .
+Thank you.
+. . .
+Thank you.
+But think about it, here, you have a...
+expired word index, right? The problem is.
+not like the same but the other way around. You have expired working next month.
+you haven't iterated over all the characters of the pattern.
+you're missing iterating over the last zero and
+probably right, if we control up here, we will see what happens is that
+the word index
+and the Pfizer index.
+Thank you.
+Right, because, right, what will have happened is...
+Nothing, right? Let's just get this guy.
+sphere but the word now worth being 97
+Pattern index is 7, but it should be 8, because there's still pattern index.
+exist places to cover.
+But, all right, so you don't need to...
+check number one, you have to check more like
+Oh, is there pattern indexes?
+elements left. Yes, if they are zero...
+Cool. If they are not zero, not cool.
+. . .
+. .
+And, with that, I just want to say thank you very much for being here, and see you next time. Thank you. Ok. See you, Chuck. Light Waltz 5. Thank you. OK. Thanks, everybody. Bye. Bye. See you. OK, hopefully, thanks a lot of you. Bye. Bye. Bye. Bye. Bye. See you. Bye. media We've got a question, Paul. Yes, please.
+or you're going to do a Y-loop with just pattern with X.
+. .
+. .
+Thank you.
+. .
+. .
+Bye-bye.
+. .
+You're about to ride the same one that you have above.
+You are about to ride the same wild wolf that you have above.
+Thanks. Bye. Bye. Bye. Bye.
+Gay, but I'm saying now you will realize.
+Oh, I also need to check if it's a number or a word. Hehehehe
+And then you're like bugging the same in square one
+All right.
+cool. Most of all, this is cool. It was just a super interesting song.
+Don't worry about it. Let's finish the
+Bye!
+I'm saying is this is just a surprise. Okay. So let's finish the interview here.
+because we are about to run out of time, so let's finish.
+Up until this year it was cool. This was extra, extra, extra, mega, extra, extra...
+So don't worry about it. Don't worry like oh should I flood the interview? No
+It's fine. It's all good.
+interview is done, don't worry about the code anymore, we have 5 minutes but I
+I also realized I came a few minutes late, so I'm fine. I don't have anything else after that, so...
+You know, we spill over that looks totally fine too, but yeah
+Tell me any questions that you have.
+I don't know. I don't know what you're talking about.
+. .
+. .
+. .
+. .
+. .
+Yeah, so I think there's a few.
+elements in that sense. Why is there very specialized channels?
+For, I don't know, there's channels, right, we have?
+a good geyser around support, that already helps a lot.
+Then, especially for big projects, we have the NikkeiD channels.
+where the people working on those big projects
+projects, they are contributing, like they give regular updates, like...
+weekly or bi-weekly or something update like this is how the process is going and so on.
+And then people also ask questions about that project and so...
+One thing that is cool about Datadog, I like it, is...
+It has found a very good balance of
+Generally, don't tell, don't force, like not forcing engineers.
+to do migrations and stuff like that, right? Because sometimes when you work in a big company.
+It can so happen right at every corner. There's like, oh my god, there's this
+5,000 programs and my team needs to do a year.
+to the latest policies. The end of is very much like...
+The opposite of that is a very key critical problem.
+There's like maybe one or two programs per year where they like...
+You really need to upgrade.
+I don't know how you build images to follow this method, but also...
+Other than that, it's not very opinionated and it doesn't impose
+company-wide anything, which is
+very good for maintaining autonomy in the team right so i still feel
+like every department is like, especially in the product.
+Because I have worked with product engineers a lot in the product
+product is a startup basically. Sure you use some of the information
+and some of the goodies that the data.org platform gives you, all right, like all of
+of these platform engineers like we give you, but you are all on your own.
+startup. And it's like, oh, if this platform offering doesn't work for me, then I'll...
+So, I'm just figuring it out, right, because my goal is to like...
+made this product saying Trace is awesome and I am
+I mean, full control of traces, right? So the way it works in that sense is more.
+Way more products like Deem's own products.
+and then everything organizes around that.
+. .
+. . . .
+Well, then you have to be quite smart in that sense.
+And smart, I don't mean like by intellectual capacity, but just...
+smart on how do I get people in my platform with less minimal effort.
+for from their side. One thing that Datadog does not like, and all.
+It only does it very, very sparingly is migrations, like forcing people to do migrations or stuff.
+stuff, right? So, of course, right? Because it's also, I think...
+company. So imagine if every quarter you had to force teams.
+in do like doing four migrations like it will be insane you
+you will not be able to get anything done. So the way we do a lot of this in.
+Platform teams is like automating migrations and...
+Things like that or or write specially by abstraction in that sense. So if we put a
+a lot of it behind an interface that we control.
+then you can move, like you can keep upgrading.
+users, maintaining rights, say even a service. If you're.
+Service API is the same when you maintain that service API.
+You can do whatever you want internally, right, as long as you keep that.
+an API working like that interface, and that is a ship that I.
+I have seen happening a lot where we are much more...
+focus on like keeping a good interface
+details. And then that has given us a lot of velocity, right? Because
+We can change all of our internal shit without
+external users say and my external users I mean
+who use our products. They don't have to do painful migrations.
+. .
+. .
+Thank you.
+Yeah, then I mean I
+A lot of the communication also happens via, like, quarterly via two things.
+One is the CDO messages with the loudspeakers.
+programs and those are the only ones right now that are the ones I told you that they do
+very sparingly right but it says okay these are the large programs the large programs are like
+Generally, it's just company-wide programs that we want to do, like, oh, we're launching.
+a new data center or we need to increase compliance or.
+or whatever right like all of that stuff where there's a very
+very specific projects as to like and then team responsibilities are very clear.
+clear in the sense of 90% of the work does not need to
+be done by your team, there is a team already driving that, you only have to do the remaining 10%
+percent. Right? Like that sort of thing. And it's very implicit. And then the other way you copy.
+happens communication, I think it's happening is we are all ARs.
+like that's pretty much the only common framework we use for running at the
+OK, Art? Beyond that, teams can do whatever they like.
+on, like you can do full lajja right with sprints and so on by
+You can also do combat. You can organize however you want.
+And you have to publicly advertise your quarterly objectives.
+so that other yeah so that you can check
+Like, oh, what is this team gonna do next quarter? Oh, they are gonna work on that, on that, on that, cool.
+And a lot of, a lot happened with that, you know.
+the sense like this week I have some meetings with some people because they saw a project where
+interesting to them that we are doing and they're like oh can we
+Can we get it on early? Can we start using this project for my project that is in this order, okay?
+and so on right then like that's how uh how you build a lot more like
+communicating that warm-up, let's say.
+Thank you.
+All right.
+Awesome, so thank you very much again for the
+Thank you for taking the time to interview. This was great. What I will do now is.
+I will submit my feedback in Greenhouse and then I'm
+After that, the recruiter will get back in touch with you and, you know, make some changes.
+Thank you, Mustafa, again.
+This was very nice, and thank you for taking the time to join me on Day 1.
+Have a good day, bye.
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
 you
 you
 you
