@@ -21,22 +21,20 @@ export class QuestionManager {
    * Set up DOM event listeners
    */
   setupEventListeners() {
-    this.elements.markQuestionBtn.addEventListener("click", () =>
-      this.markQuestion()
-    );
-    this.elements.markFollowupBtn.addEventListener("click", () =>
-      this.markFollowup()
-    );
-
-    // Listen for question type changes
-    this.elements.questionTypeSelect.addEventListener("change", (event) => {
-      appState.update("question.type", event.target.value);
-    });
-
-    // Listen for question notes changes
-    this.elements.questionNotesInput.addEventListener("input", (event) => {
-      appState.update("question.notes", event.target.value);
-    });
+    // this.elements.markQuestionBtn.addEventListener("click", () =>
+    //   this.markQuestion()
+    // );
+    // this.elements.markFollowupBtn.addEventListener("click", () =>
+    //   this.markFollowup()
+    // );
+    // // Listen for question type changes
+    // this.elements.questionTypeSelect.addEventListener("change", (event) => {
+    //   appState.update("question.type", event.target.value);
+    // });
+    // // Listen for question notes changes
+    // this.elements.questionNotesInput.addEventListener("input", (event) => {
+    //   appState.update("question.notes", event.target.value);
+    // });
   }
 
   /**
