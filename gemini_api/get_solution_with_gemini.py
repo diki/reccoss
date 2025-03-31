@@ -2,6 +2,7 @@ import os
 import json
 from typing import Dict, Optional
 import google.generativeai as genai
+from .prompts import get_solution_prompt
 
 def get_solution_for_question_with_gemini(question: str) -> Optional[Dict[str, str]]:
     """
@@ -25,25 +26,8 @@ def get_solution_for_question_with_gemini(question: str) -> Optional[Dict[str, s
         # Initialize the model
         model = genai.GenerativeModel('gemini-2.0-flash')
         
-        # Construct the prompt for Gemini
-        prompt = f"""
-I need a solution to the following coding problem:
-
-{question}
-
-Please provide a comprehensive solution with the following components:
-1. Explanation of your approach step by step (technical explanation)
-2. A friendly, conversational but concise explanation as if you're in an interview explaining your approach
-3. Code implementation in TypeScript with proper type annotations
-   - IMPORTANT: Place all comments ABOVE the code lines, not on the same line as the code
-   - Example of correct comment formatting:
-     // This is a comment explaining what the next line does
-     const result = calculateSomething(input);
-   - NOT like this:
-     const result = calculateSomething(input); // This comment is on the same line as code
-4. Time and space complexity analysis
-5. Interview strategy tips for this problem
-"""
+        # Get the prompt from prompts.py
+        prompt = get_solution_prompt(question)
         
         # Define the response schema for structured output
         response_schema = {

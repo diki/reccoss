@@ -1,4 +1,5 @@
 from .common import genai, configure_gemini, json
+from .prompts import get_followup_solution_prompt
 from typing import Dict, Optional
 
 def get_followup_solution_with_gemini(current_problem: str, current_code: str, transcript: str) -> Optional[Dict[str, str]]:
@@ -20,22 +21,8 @@ def get_followup_solution_with_gemini(current_problem: str, current_code: str, t
         # Initialize the model
         model = genai.GenerativeModel('gemini-2.0-flash')
         
-        # Construct the prompt for Gemini
-        prompt = f"""
-Given the following context:
-1. Current Problem: {current_problem}
-2. Current Solution Code: {current_code}
-3. Recent Transcript: {transcript}
-
-Please:
-1. Extract the most recent follow-up question or request from the transcript
-2. Analyze how this follow-up relates to the current solution
-3. Modify the current solution code to address the follow-up
-4. Return a JSON object with:
-   - explanation: Detailed technical explanation of the changes made
-   - solution: Friendly and conversational but concise explanation as if you're in an interview explaining your approach
-   - code: The updated solution code
-"""
+        # Get the prompt from prompts.py
+        prompt = get_followup_solution_prompt(current_problem, current_code, transcript)
         
         # Define the response schema for structured output
         response_schema = {

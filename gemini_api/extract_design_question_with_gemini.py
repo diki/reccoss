@@ -1,5 +1,6 @@
 from typing import Optional
 from .common import genai, configure_gemini
+from .prompts import get_design_question_extraction_prompt
 
 def extract_design_question_with_gemini(image_path: str) -> Optional[str]:
     """
@@ -24,13 +25,7 @@ def extract_design_question_with_gemini(image_path: str) -> Optional[str]:
         
         # Create a prompt with the image
         response = model.generate_content([
-            """Extract the complete system design question from this screenshot. Make sure to include:
-1. The main question or task (e.g., "Design a system for...")
-2. All requirements and constraints
-3. All specific aspects to address (architecture, database, API, scalability, etc.)
-4. Any follow-up questions or areas of particular interest
-
-Return the complete question text exactly as presented, without any additional commentary or explanation.""",
+            get_design_question_extraction_prompt(),
             {"mime_type": "image/png", "data": image_data}
         ])
         

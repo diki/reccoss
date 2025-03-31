@@ -1,6 +1,6 @@
 from typing import Optional
 from .common import genai, configure_gemini
-from typing import Optional
+from .prompts import get_coding_question_extraction_prompt
 
 
 def extract_coding_question_with_gemini(image_path: str) -> Optional[str]:
@@ -26,7 +26,7 @@ def extract_coding_question_with_gemini(image_path: str) -> Optional[str]:
         
         # Create a prompt with the image
         response = model.generate_content([
-            "Extract the coding question from this screenshot. Return only the question text without any additional commentary or explanation.",
+            get_coding_question_extraction_prompt(),
             {"mime_type": "image/png", "data": image_data}
         ])
         
