@@ -353,8 +353,10 @@ h3 {
 
 /* Solution button */
 .solution-button {
-  background-color: #9b59b6;
+  background-color: green;
   color: white;
+  width: 100%;
+  padding: 8px;
   /* margin-top: 10px; */
 }
 

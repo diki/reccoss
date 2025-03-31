@@ -9,13 +9,22 @@ from datetime import datetime
 from web_adapter import WebTranscriber, transcriptions, transcription_lock, is_recording
 from screenshot import take_screenshot
 from claude_api import extract_coding_question, get_solution_for_question, get_followup_solution
-from gemini_api import extract_coding_question_with_gemini, get_solution_for_question_with_gemini, get_followup_solution_with_gemini, extract_design_question_with_gemini
+from gemini_api.extract_coding_question_with_gemini import extract_coding_question_with_gemini
+from gemini_api.get_design_solution_with_gemini import get_design_solution_with_gemini
+from gemini_api.get_solution_with_gemini import get_solution_for_question_with_gemini
+from gemini_api.get_followup_solution_with_gemini import get_followup_solution_with_gemini
+from gemini_api.extract_design_question_with_gemini import extract_design_question_with_gemini
 from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai
 
 # Initialize Flask app
 app = Flask(__name__, 
             static_folder='static',
             template_folder='templates')
+
+# Disable Flask request logging
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 # Global variables
 transcriber = None
@@ -589,6 +598,8 @@ def process_followup_solution_with_gemini(current_problem, current_code, transcr
         # Get follow-up solution with Gemini
         solution = get_followup_solution_with_gemini(current_problem, current_code, transcript)
         
+        print('soltion is here')
+        print(solution)
         if solution:
             print(f"Gemini follow-up solution generated successfully")
             print(f"Gemini follow-up solution explanation length: {len(solution.get('explanation', ''))}")
