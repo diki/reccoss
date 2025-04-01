@@ -8,9 +8,9 @@ body {
 }
 
 .container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: calc(100vw - 300px);
+  /* max-width: 1200px; */
+  /* margin: 0 auto; */
   padding: 20px;
   display: flex;
   gap: 20px;
@@ -29,13 +29,13 @@ body {
   position: fixed;
   z-index: 999;
   height: 100%;
-  left: 0;
+  right: 0;
   top: 0;
   width: 200px;
   height: 100vh;
   background-color: white;
   padding: 16px;
-  border-right: 1px solid black;
+  border-left: 1px solid black;
 }
 
 .left-panel.collapsed {
