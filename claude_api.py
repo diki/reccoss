@@ -4,6 +4,9 @@ import requests
 import json
 from typing import Optional, Dict
 
+# Import the specific prompt function needed for Claude React solutions
+from gemini_api.prompts import get_react_solution_prompt_for_claude
+
 def encode_image_to_base64(image_path: str) -> str:
     """
     Encode an image file to base64 string
@@ -119,6 +122,79 @@ def get_followup_solution(current_problem: str, current_code: str, transcript: s
         _create_followup_prompt
     )
 
+def get_react_solution(question: str) -> Optional[Dict[str, str]]:
+    """
+    Send a React-specific coding question to Claude Sonnet API to get a solution
+    
+    Parameters:
+    - question: The React coding question to solve
+    
+    Returns:
+    - Dictionary containing only the 'code' field populated, or None if failed
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("Error: ANTHROPIC_API_KEY environment variable not set")
+        return None
+
+    # Prepare the API request
+    headers = {
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+    }
+
+    # Construct the prompt for Claude using the specific React prompt creator
+    prompt = get_react_solution_prompt_for_claude(question)
+
+    # Construct the message
+    payload = {
+        "model": "claude-3-sonnet-20240229",
+        "max_tokens": 4000, # Keep max tokens high for potentially long code
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    }
+
+    print("Get React solution code with Claude");
+    # print(payload) # Avoid printing potentially large prompts
+
+    try:
+        # Make the API request
+        response = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers=headers,
+            json=payload
+        )
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            response_data = response.json()
+            code_text = response_data["content"][0]["text"]
+            
+            print("React code solution is ready")
+            # print(code_text) # Avoid printing potentially large code blocks
+
+            # Return the response in the expected dictionary format, only populating 'code'
+            return {
+                "explanation": "", 
+                "solution": "", # Corresponds to interview_explanation in frontend
+                "code": code_text.strip(), 
+                "complexity": "", 
+                "strategy": ""
+            }
+        else:
+            print(f"Error from Claude API: {response.status_code}")
+            print(response.text)
+            return None
+
+    except Exception as e:
+        print(f"Exception when calling Claude API for React code solution: {str(e)}")
+        return None
+
 def _create_followup_prompt(context: Dict[str, str]) -> str:
     """
     Create a prompt for follow-up solution
@@ -226,6 +302,8 @@ def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str
         ]
     }
     
+    print("Get solution with Claude");
+    print(payload)
     try:
         # Make the API request
         response = requests.post(
@@ -239,6 +317,9 @@ def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str
             response_data = response.json()
             solution_text = response_data["content"][0]["text"]
             
+            print("solution is ready")
+            print(solution_text)
+
             try:
                 # Try to parse the response as JSON
                 # Find the first { and the last } to extract the JSON object
@@ -249,20 +330,10 @@ def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str
                     json_str = solution_text[start_idx:end_idx]
                     solution_json = json.loads(json_str)
                     
-                    # For follow-up solutions, we only expect explanation and code
-                    if "explanation" in solution_json and "code" in solution_json and len(solution_json) == 2:
-                        return {
-                            "explanation": solution_json.get("explanation", ""),
-                            "code": solution_json.get("code", "")
-                        }
-                    # For regular solutions, we expect all four fields
-                    else:
-                        return {
-                            "explanation": solution_json.get("explanation", ""),
-                            "code": solution_json.get("code", ""),
-                            "complexity": solution_json.get("complexity", ""),
-                            "strategy": solution_json.get("strategy", "")
-                        }
+                    # Return all keys found in the parsed JSON object
+                    # This makes the function more flexible for different prompt structures
+                    return {k: solution_json.get(k, "") for k in solution_json}
+                    
                 else:
                     raise ValueError("JSON object not found in response")
                     
@@ -305,21 +376,22 @@ def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str
                 # If the parsing logic failed, just return the full text as explanation
                 if not explanation and not code and not complexity and not strategy:
                     explanation = solution_text
-                
-                # For follow-up solutions, we only return explanation and code
-                if isinstance(context, dict) and "transcript" in context:
-                    return {
-                        "explanation": explanation.strip(),
-                        "code": code.strip()
-                    }
-                # For regular solutions, we return all four fields
-                else:
-                    return {
-                        "explanation": explanation.strip(),
-                        "code": code.strip(),
-                        "complexity": complexity.strip(),
-                        "strategy": strategy.strip()
-                    }
+
+                # Fallback: Return the full text as explanation if parsing fails completely
+                # Determine expected keys based on the prompt creator function name if possible,
+                # otherwise return a generic structure or just the explanation.
+                # For simplicity here, we'll return a basic structure if parsing failed.
+                # A more robust implementation might try to infer keys based on context.
+                fallback_result = {"explanation": explanation.strip()}
+                if "code" in locals() and code.strip(): fallback_result["code"] = code.strip()
+                if "complexity" in locals() and complexity.strip(): fallback_result["complexity"] = complexity.strip()
+                if "strategy" in locals() and strategy.strip(): fallback_result["strategy"] = strategy.strip()
+                # Add 'solution' key if it's likely a React prompt (simple check)
+                if prompt_creator.__name__ == 'get_react_solution_prompt':
+                     fallback_result["solution"] = "" # Add placeholder if needed
+
+                return fallback_result
+
         else:
             print(f"Error from Claude API: {response.status_code}")
             print(response.text)

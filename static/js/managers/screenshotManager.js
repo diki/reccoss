@@ -256,6 +256,7 @@ export class ScreenshotManager {
           this.elements.getSolutionWithOpenaiBtn.disabled = false;
           this.elements.getSolutionWithGeminiBtn.disabled = false;
           this.elements.getReactSolutionWithGeminiBtn.disabled = false;
+          this.elements.getReactSolutionWithClaudeBtn.disabled = false; // Enable Claude button
 
           // Store the current question and screenshot path
           appState.update(
@@ -331,6 +332,7 @@ export class ScreenshotManager {
           this.elements.getSolutionWithOpenaiBtn.disabled = false;
           this.elements.getSolutionWithGeminiBtn.disabled = false;
           this.elements.getReactSolutionWithGeminiBtn.disabled = false;
+          this.elements.getReactSolutionWithClaudeBtn.disabled = false; // Enable Claude button
 
           // Store the current question and screenshot path
           appState.update(
@@ -460,6 +462,7 @@ export class ScreenshotManager {
         this.elements.getSolutionWithOpenaiBtn.disabled = false;
         this.elements.getSolutionWithGeminiBtn.disabled = false;
         this.elements.getReactSolutionWithGeminiBtn.disabled = false;
+        this.elements.getReactSolutionWithClaudeBtn.disabled = false; // Enable Claude button
 
         // Store the current question
         appState.update("question.currentExtractedQuestion", data.question);
@@ -582,6 +585,7 @@ export class ScreenshotManager {
               this.elements.getSolutionWithOpenaiBtn.disabled = false;
               this.elements.getSolutionWithGeminiBtn.disabled = false;
               this.elements.getReactSolutionWithGeminiBtn.disabled = false;
+              this.elements.getReactSolutionWithClaudeBtn.disabled = false; // Enable Claude button
 
               // Store the current question and screenshot path
               appState.update("question.currentExtractedQuestion", question);

@@ -35,6 +35,9 @@ export class SolutionManager {
     this.elements.getReactSolutionWithGeminiBtn.addEventListener("click", () =>
       this.getReactSolutionWithGemini()
     );
+    this.elements.getReactSolutionWithClaudeBtn.addEventListener("click", () =>
+      this.getReactSolutionWithClaude()
+    );
     this.elements.getSolutionFollowupBtn.addEventListener("click", () =>
       this.getFollowupSolution()
     );
@@ -52,9 +55,10 @@ export class SolutionManager {
       this.updateSolutionButtonsState(isGenerating);
     });
 
-    StateEvents.on("solution.currentSolution:changed", (solution) => {
-      if (solution) {
-        this.displaySolution(solution);
+    StateEvents.on("solution.currentSolution:changed", (data) => {
+      if (data && data.solution) {
+        // Pass both the regular solution and the raw react solution
+        this.displaySolution(data.solution, data.react_solution);
       }
     });
 
@@ -563,9 +567,13 @@ export class SolutionManager {
       try {
         const data = await apiRequest(`/api/solution/${filename}`);
 
-        if (data.solution) {
-          // We have a solution, update state
-          appState.update("solution.currentSolution", data.solution);
+        // Check if either solution or react_solution is present
+        if (data.solution || data.react_solution) {
+          // We have a solution, update state with both parts
+          appState.update("solution.currentSolution", {
+            solution: data.solution,
+            react_solution: data.react_solution,
+          });
           appState.update("solution.isGenerating", false);
 
           // Stop polling
@@ -691,6 +699,55 @@ export class SolutionManager {
   }
 
   /**
+   * Get a React solution for the current question with Claude
+   */
+  async getReactSolutionWithClaude() {
+    const currentExtractedQuestion = appState.get(
+      "question.currentExtractedQuestion"
+    );
+    const currentScreenshotPath = appState.get(
+      "screenshots.currentScreenshotPath"
+    );
+
+    if (!currentExtractedQuestion || !currentScreenshotPath) {
+      console.error("No question or screenshot path available");
+      return;
+    }
+
+    // Update state to show loading
+    appState.update("solution.isGenerating", true);
+
+    // Show loading state in UI
+    this.showLoadingState("React Claude"); // Use a distinct identifier
+
+    try {
+      const data = await apiRequest("/api/react-solution-with-claude", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: currentExtractedQuestion,
+          screenshot_path: currentScreenshotPath,
+        }),
+      });
+
+      if (data.status === "success") {
+        console.log("React Claude solution request submitted");
+
+        // Start polling for the solution
+        this.pollForSolution(currentScreenshotPath);
+      } else {
+        console.error("Error requesting React Claude solution:", data.message);
+        appState.update("solution.isGenerating", false);
+      }
+    } catch (error) {
+      console.error("Error requesting React Claude solution:", error);
+      appState.update("solution.isGenerating", false);
+    }
+  }
+
+  /**
    * Update solution buttons state based on generation status
    * @param {boolean} isGenerating - Whether a solution is being generated
    */
@@ -699,6 +756,7 @@ export class SolutionManager {
     this.elements.getSolutionWithOpenaiBtn.disabled = isGenerating;
     this.elements.getSolutionWithGeminiBtn.disabled = isGenerating;
     this.elements.getReactSolutionWithGeminiBtn.disabled = isGenerating;
+    this.elements.getReactSolutionWithClaudeBtn.disabled = isGenerating; // Add Claude button
     this.elements.getSolutionFollowupBtn.disabled = isGenerating;
     this.elements.getSolutionFollowupWithGeminiBtn.disabled = isGenerating;
 
@@ -710,6 +768,8 @@ export class SolutionManager {
         "Get Solution with Gemini";
       this.elements.getReactSolutionWithGeminiBtn.textContent =
         "Get React Solution (Gemini)";
+      this.elements.getReactSolutionWithClaudeBtn.textContent =
+        "Get React Solution (Claude)"; // Add Claude button text reset
       this.elements.getSolutionFollowupBtn.textContent = "Solve Follow-up";
       this.elements.getSolutionFollowupWithGeminiBtn.textContent =
         "Solve Follow-up with GEMini";
@@ -1067,74 +1127,117 @@ export class SolutionManager {
 
   /**
    * Display the solution
-   * @param {Object} solution - The solution object
+   * @param {Object} solution - The structured solution object
+   * @param {string} reactSolution - The raw React solution string (optional)
    */
-  displaySolution(solution) {
-    // Update the solution tabs
-    if (solution.explanation) {
-      this.elements.explanationTab.innerHTML = `<p>${solution.explanation.replace(
-        /\n/g,
-        "<br>"
-      )}</p>`;
-    } else {
-      this.elements.explanationTab.innerHTML =
-        "<p><em>No explanation available.</em></p>";
-    }
-
-    // Update the interview-style tab
-    if (solution.solution) {
-      document.getElementById("interview-style-tab").innerHTML = `
-        <p class="interview-solution">${solution.solution.replace(
+  displaySolution(solution, reactSolution) {
+    // Update the standard solution tabs if solution object exists
+    if (solution) {
+      if (solution.explanation) {
+        this.elements.explanationTab.innerHTML = `<p>${solution.explanation.replace(
           /\n/g,
           "<br>"
-        )}</p>
-      `;
+        )}</p>`;
+      } else {
+        this.elements.explanationTab.innerHTML =
+          "<p><em>No explanation available.</em></p>";
+      }
+
+      // Update the interview-style tab
+      if (solution.solution) {
+        document.getElementById("interview-style-tab").innerHTML = `
+          <p class="interview-solution">${solution.solution.replace(
+            /\n/g,
+            "<br>"
+          )}</p>
+        `;
+      } else {
+        document.getElementById("interview-style-tab").innerHTML =
+          "<p><em>No interview-style explanation available.</em></p>";
+      }
+
+      if (solution.code) {
+        // Remove code block markers and detect language
+        const cleanCode = cleanCodeMarkdown(solution.code);
+        const language = detectLanguage(cleanCode);
+
+        // Update the code tab content
+        const codeElement = document.getElementById("code-content");
+        if (codeElement) {
+          codeElement.className = `language-${language}`;
+          codeElement.innerHTML = cleanCode;
+
+          // Trigger Prism to highlight the code if available
+          if (window.Prism) {
+            window.Prism.highlightElement(codeElement);
+          }
+        }
+      } else {
+        const codeElement = document.getElementById("code-content");
+        if (codeElement) {
+          codeElement.innerHTML = "<em>No code solution available.</em>";
+        }
+      }
+
+      if (solution.complexity) {
+        this.elements.complexityTab.innerHTML = `<p>${solution.complexity.replace(
+          /\n/g,
+          "<br>"
+        )}</p>`;
+      } else {
+        this.elements.complexityTab.innerHTML =
+          "<p><em>No complexity analysis available.</em></p>";
+      }
+
+      if (solution.strategy) {
+        this.elements.strategyTab.innerHTML = `<p>${solution.strategy.replace(
+          /\n/g,
+          "<br>"
+        )}</p>`;
+      } else {
+        this.elements.strategyTab.innerHTML =
+          "<p><em>No interview strategy available.</em></p>";
+      }
     } else {
+      // If no standard solution object, clear the tabs
+      this.elements.explanationTab.innerHTML =
+        "<p><em>No solution available.</em></p>";
       document.getElementById("interview-style-tab").innerHTML =
-        "<p><em>No interview-style explanation available.</em></p>";
-    }
-
-    if (solution.code) {
-      // Remove code block markers and detect language
-      const cleanCode = cleanCodeMarkdown(solution.code);
-      const language = detectLanguage(cleanCode);
-
-      // Update the code tab content
+        "<p><em>No solution available.</em></p>";
       const codeElement = document.getElementById("code-content");
       if (codeElement) {
-        codeElement.className = `language-${language}`;
-        codeElement.innerHTML = cleanCode;
+        codeElement.innerHTML = "<em>No solution available.</em>";
+      }
+      this.elements.complexityTab.innerHTML =
+        "<p><em>No solution available.</em></p>";
+      this.elements.strategyTab.innerHTML =
+        "<p><em>No solution available.</em></p>";
+    }
 
-        // Trigger Prism to highlight the code if available
+    // Update the dedicated React Solution section if reactSolution exists
+    const reactSolutionContainer = document.getElementById(
+      "react-solution-content"
+    );
+    if (reactSolutionContainer) {
+      if (reactSolution) {
+        // Display the raw React solution code, preserving formatting
+        // Use textContent to prevent HTML injection and preserve whitespace/newlines
+        const preElement = document.createElement("pre");
+        const codeElement = document.createElement("code");
+        codeElement.className = "language-jsx"; // Assume JSX for highlighting
+        codeElement.textContent = reactSolution;
+        preElement.appendChild(codeElement);
+        reactSolutionContainer.innerHTML = ""; // Clear previous content
+        reactSolutionContainer.appendChild(preElement);
+
+        // Trigger Prism highlighting if available
         if (window.Prism) {
           window.Prism.highlightElement(codeElement);
         }
+      } else {
+        reactSolutionContainer.innerHTML =
+          "<p><em>No React solution available.</em></p>";
       }
-    } else {
-      const codeElement = document.getElementById("code-content");
-      if (codeElement) {
-        codeElement.innerHTML = "<em>No code solution available.</em>";
-      }
-    }
-
-    if (solution.complexity) {
-      this.elements.complexityTab.innerHTML = `<p>${solution.complexity.replace(
-        /\n/g,
-        "<br>"
-      )}</p>`;
-    } else {
-      this.elements.complexityTab.innerHTML =
-        "<p><em>No complexity analysis available.</em></p>";
-    }
-
-    if (solution.strategy) {
-      this.elements.strategyTab.innerHTML = `<p>${solution.strategy.replace(
-        /\n/g,
-        "<br>"
-      )}</p>`;
-    } else {
-      this.elements.strategyTab.innerHTML =
-        "<p><em>No interview strategy available.</em></p>";
     }
   }
 

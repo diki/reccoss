@@ -23,7 +23,7 @@ def get_react_solution_with_gemini(question: str) -> Optional[Dict[str, str]]:
     
     try:
         # Initialize the model
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25')
         
         # Get the prompt from prompts.py
         prompt = get_react_solution_prompt(question)

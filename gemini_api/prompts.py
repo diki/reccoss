@@ -111,6 +111,25 @@ Imagine you are in an interview. Please provide a comprehensive React solution w
 5. Interview strategy tips for this React problem
 """
 
+def get_react_solution_prompt_for_claude(question: str) -> str:
+    """Returns the prompt for getting React-specific coding solutions from Claude, requesting only code."""
+    return f"""
+I need a solution to the following React coding problem:
+
+{question}
+
+Please provide ONLY the code implementation in React (TypeScript/TSX) with proper JSX syntax. Do not include any explanation, complexity analysis, or strategy tips outside of the code comments.
+
+Code Requirements:
+   - IMPORTANT: Include detailed comments ABOVE each code section explaining WHY this code is written this way.
+   - Example of correct comment formatting:
+     // This useState hook is used to track form state because we need to maintain input values between renders
+     const [formData, setFormData] = useState({{}}); 
+   - Make sure to explain your implementation decisions in the comments.
+
+Return ONLY the raw code block, without any surrounding text or markdown formatting (like ```tsx ... ```).
+"""
+
 def get_followup_solution_prompt(current_problem: str, current_code: str, transcript: str) -> str:
     """Returns the prompt for getting follow-up solutions from Gemini"""
     return f"""

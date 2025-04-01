@@ -8,7 +8,7 @@ from datetime import datetime
 # Import our web adapter and screenshot functionality
 from web_adapter import WebTranscriber, transcriptions, transcription_lock, is_recording
 from screenshot import take_screenshot
-from claude_api import extract_coding_question, get_solution_for_question, get_followup_solution
+from claude_api import extract_coding_question, get_solution_for_question, get_followup_solution, get_react_solution
 from gemini_api.extract_coding_question_with_gemini import extract_coding_question_with_gemini
 from gemini_api.get_design_solution_with_gemini import get_design_solution_with_gemini
 from gemini_api.get_solution_with_gemini import get_solution_for_question_with_gemini
@@ -35,7 +35,8 @@ interview_data = {
     "screenshots": [],
     "current_question": None,
     "extracted_questions": {},  # Map screenshot paths to extracted questions
-    "solutions": {}  # Map screenshot paths to solutions
+    "solutions": {},  # Map screenshot paths to solutions
+    "react_solutions": {} # Map screenshot paths to raw React solutions from Claude
 }
 interview_data_lock = threading.Lock()
 
@@ -645,6 +646,32 @@ def get_react_solution_with_gemini_route():
         "message": "React Gemini solution request submitted"
     })
 
+# API endpoint to get a React solution for a coding question with Claude
+@app.route('/api/react-solution-with-claude', methods=['POST'])
+def get_react_solution_with_claude_route():
+    data = request.json or {}
+    question = data.get('question', '')
+    screenshot_path = data.get('screenshot_path', '')
+    
+    if not question:
+        return jsonify({
+            "status": "error",
+            "message": "No question provided"
+        }), 400
+    
+    # Start a thread to get the React solution with Claude
+    solution_thread = threading.Thread(
+        target=process_react_solution_with_claude,
+        args=(question, screenshot_path)
+    )
+    solution_thread.daemon = True
+    solution_thread.start()
+    
+    return jsonify({
+        "status": "success",
+        "message": "React Claude solution request submitted"
+    })
+
 # Function to process solution with OpenAI API
 def process_solution_with_openai(question, screenshot_path):
     try:
@@ -740,11 +767,40 @@ def process_react_solution_with_gemini(question, screenshot_path):
     except Exception as e:
         print(f"Error processing React solution with Gemini: {str(e)}")
 
+# Function to process React solution with Claude API
+def process_react_solution_with_claude(question, screenshot_path):
+    try:
+        # Get React solution for the question using Claude
+        solution = get_react_solution(question)
+        
+        if solution:
+            print(f"React solution generated for question with Claude")
+            print(f"React Claude solution explanation length: {len(solution.get('explanation', ''))}")
+            print(f"React Claude solution interview-style explanation length: {len(solution.get('solution', ''))}")
+            print(f"React Claude solution code length: {len(solution.get('code', ''))}")
+            
+            # Store the formatted solution in 'solutions'
+            # Store the raw code response in 'react_solutions'
+            with interview_data_lock:
+                # The get_react_solution function currently returns a dict with only 'code' populated
+                # We'll store this dict in 'solutions' for consistency with other solution types
+                interview_data["solutions"][screenshot_path] = solution 
+                # Store the raw code text directly in react_solutions
+                interview_data["react_solutions"][screenshot_path] = solution.get("code", "") 
+        else:
+            print("Failed to generate React solution for question with Claude")
+    except Exception as e:
+        print(f"Error processing React solution with Claude: {str(e)}")
+
 # API endpoint to get all solutions
 @app.route('/api/solutions', methods=['GET'])
 def get_solutions():
     with interview_data_lock:
-        return jsonify(interview_data["solutions"])
+        # Return both regular solutions and react solutions
+        return jsonify({
+            "solutions": interview_data["solutions"],
+            "react_solutions": interview_data["react_solutions"]
+        })
 
 # API endpoint to get solution for a specific screenshot
 @app.route('/api/solution/<path:screenshot_filename>', methods=['GET'])
@@ -753,10 +809,12 @@ def get_solution_for_screenshot(screenshot_filename):
     
     with interview_data_lock:
         solution = interview_data["solutions"].get(screenshot_path, None)
+        react_solution = interview_data["react_solutions"].get(screenshot_path, None)
         
         return jsonify({
             "screenshot": screenshot_path,
-            "solution": solution
+            "solution": solution,
+            "react_solution": react_solution # Include the raw react solution
         })
 
 # API endpoint to mark a new question
@@ -835,7 +893,8 @@ def reset_all_data():
             "screenshots": [],
             "current_question": None,
             "extracted_questions": {},
-            "solutions": {}
+            "solutions": {},
+            "react_solutions": {}
         }
     
     # Clear transcriptions
