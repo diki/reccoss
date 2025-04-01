@@ -91,6 +91,26 @@ def get_react_question_extraction_prompt() -> str:
 
 Return the complete question text exactly as presented, without any additional commentary or explanation."""
 
+def get_react_solution_prompt(question: str) -> str:
+    """Returns the prompt for getting React-specific coding solutions from Gemini"""
+    return f"""
+I need a solution to the following React coding problem:
+
+{question}
+
+Imagine you are in an interview. Please provide a comprehensive React solution with the following components:
+1. Explanation of your approach step by step (technical explanation)
+2. A friendly, conversational but concise explanation as if you're in an interview explaining your approach
+3. Code implementation in React with proper JSX syntax
+   - IMPORTANT: Include detailed comments ABOVE each code section explaining WHY this code is written this way
+   - Example of correct comment formatting:
+     // This useState hook is used to track form state because we need to maintain input values between renders
+     const [formData, setFormData] = useState({{}}); 
+   - Make sure to explain your implementation decisions in the comments
+4. Time and space complexity analysis, including React-specific performance considerations
+5. Interview strategy tips for this React problem
+"""
+
 def get_followup_solution_prompt(current_problem: str, current_code: str, transcript: str) -> str:
     """Returns the prompt for getting follow-up solutions from Gemini"""
     return f"""

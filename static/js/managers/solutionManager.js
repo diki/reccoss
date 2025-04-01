@@ -32,6 +32,9 @@ export class SolutionManager {
     this.elements.getSolutionWithGeminiBtn.addEventListener("click", () =>
       this.getSolutionWithGemini()
     );
+    this.elements.getReactSolutionWithGeminiBtn.addEventListener("click", () =>
+      this.getReactSolutionWithGemini()
+    );
     this.elements.getSolutionFollowupBtn.addEventListener("click", () =>
       this.getFollowupSolution()
     );
@@ -639,6 +642,55 @@ export class SolutionManager {
   }
 
   /**
+   * Get a React solution for the current question with Gemini
+   */
+  async getReactSolutionWithGemini() {
+    const currentExtractedQuestion = appState.get(
+      "question.currentExtractedQuestion"
+    );
+    const currentScreenshotPath = appState.get(
+      "screenshots.currentScreenshotPath"
+    );
+
+    if (!currentExtractedQuestion || !currentScreenshotPath) {
+      console.error("No question or screenshot path available");
+      return;
+    }
+
+    // Update state to show loading
+    appState.update("solution.isGenerating", true);
+
+    // Show loading state in UI
+    this.showLoadingState("React Gemini");
+
+    try {
+      const data = await apiRequest("/api/react-solution-with-gemini", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: currentExtractedQuestion,
+          screenshot_path: currentScreenshotPath,
+        }),
+      });
+
+      if (data.status === "success") {
+        console.log("React Gemini solution request submitted");
+
+        // Start polling for the solution
+        this.pollForSolution(currentScreenshotPath);
+      } else {
+        console.error("Error requesting React Gemini solution:", data.message);
+        appState.update("solution.isGenerating", false);
+      }
+    } catch (error) {
+      console.error("Error requesting React Gemini solution:", error);
+      appState.update("solution.isGenerating", false);
+    }
+  }
+
+  /**
    * Update solution buttons state based on generation status
    * @param {boolean} isGenerating - Whether a solution is being generated
    */
@@ -646,6 +698,7 @@ export class SolutionManager {
     this.elements.getSolutionBtn.disabled = isGenerating;
     this.elements.getSolutionWithOpenaiBtn.disabled = isGenerating;
     this.elements.getSolutionWithGeminiBtn.disabled = isGenerating;
+    this.elements.getReactSolutionWithGeminiBtn.disabled = isGenerating;
     this.elements.getSolutionFollowupBtn.disabled = isGenerating;
     this.elements.getSolutionFollowupWithGeminiBtn.disabled = isGenerating;
 
@@ -655,6 +708,8 @@ export class SolutionManager {
         "Get Solution with OpenAI";
       this.elements.getSolutionWithGeminiBtn.textContent =
         "Get Solution with Gemini";
+      this.elements.getReactSolutionWithGeminiBtn.textContent =
+        "Get React Solution (Gemini)";
       this.elements.getSolutionFollowupBtn.textContent = "Solve Follow-up";
       this.elements.getSolutionFollowupWithGeminiBtn.textContent =
         "Solve Follow-up with GEMini";

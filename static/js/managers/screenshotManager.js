@@ -255,6 +255,7 @@ export class ScreenshotManager {
           this.elements.getSolutionBtn.disabled = false;
           this.elements.getSolutionWithOpenaiBtn.disabled = false;
           this.elements.getSolutionWithGeminiBtn.disabled = false;
+          this.elements.getReactSolutionWithGeminiBtn.disabled = false;
 
           // Store the current question and screenshot path
           appState.update(
@@ -329,6 +330,7 @@ export class ScreenshotManager {
           this.elements.getSolutionBtn.disabled = false;
           this.elements.getSolutionWithOpenaiBtn.disabled = false;
           this.elements.getSolutionWithGeminiBtn.disabled = false;
+          this.elements.getReactSolutionWithGeminiBtn.disabled = false;
 
           // Store the current question and screenshot path
           appState.update(
@@ -457,6 +459,7 @@ export class ScreenshotManager {
         this.elements.getSolutionBtn.disabled = false;
         this.elements.getSolutionWithOpenaiBtn.disabled = false;
         this.elements.getSolutionWithGeminiBtn.disabled = false;
+        this.elements.getReactSolutionWithGeminiBtn.disabled = false;
 
         // Store the current question
         appState.update("question.currentExtractedQuestion", data.question);
@@ -471,6 +474,7 @@ export class ScreenshotManager {
         this.elements.getSolutionBtn.disabled = true;
         this.elements.getSolutionWithOpenaiBtn.disabled = true;
         this.elements.getSolutionWithGeminiBtn.disabled = true;
+        this.elements.getReactSolutionWithGeminiBtn.disabled = true;
 
         // Clear current question
         appState.update("question.currentExtractedQuestion", "");
@@ -577,6 +581,7 @@ export class ScreenshotManager {
               this.elements.getSolutionBtn.disabled = false;
               this.elements.getSolutionWithOpenaiBtn.disabled = false;
               this.elements.getSolutionWithGeminiBtn.disabled = false;
+              this.elements.getReactSolutionWithGeminiBtn.disabled = false;
 
               // Store the current question and screenshot path
               appState.update("question.currentExtractedQuestion", question);

@@ -44,6 +44,9 @@ export function initDomElements() {
     getSolutionWithGeminiBtn: document.getElementById(
       "get-solution-with-gemini"
     ),
+    getReactSolutionWithGeminiBtn: document.getElementById(
+      "get-react-solution-with-gemini"
+    ),
     getSolutionFollowupBtn: document.getElementById("get-solution-followup"),
     getSolutionFollowupWithGeminiBtn: document.getElementById(
       "get-solution-followup-with-gemini"
