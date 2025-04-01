@@ -1222,10 +1222,13 @@ export class SolutionManager {
       if (reactSolution) {
         // Display the raw React solution code, preserving formatting
         // Use textContent to prevent HTML injection and preserve whitespace/newlines
+        // Clean the React solution code first
+        const cleanReactCode = cleanCodeMarkdown(reactSolution);
+
         const preElement = document.createElement("pre");
         const codeElement = document.createElement("code");
         codeElement.className = "language-jsx"; // Assume JSX for highlighting
-        codeElement.textContent = reactSolution;
+        codeElement.textContent = cleanReactCode; // Use cleaned code
         preElement.appendChild(codeElement);
         reactSolutionContainer.innerHTML = ""; // Clear previous content
         reactSolutionContainer.appendChild(preElement);
