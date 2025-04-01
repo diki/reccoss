@@ -1,0 +1,685 @@
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+Thank you.
+Thank you. Bye. Bye. Bye. Bye. Bye. Bye. Bye. Bye.
+Yes, I can hear you.
+Can you hear me? Yeah. Okay, good. Nice to meet you.
+. .
+Yes, of course.
+We have about an hour for the interview of Prince.
+or engineer that I'm looking for my group.
+So, yeah, let me first introduce myself.
+And then I would be happy to hear your career journey, what you're doing.
+for what you did so far hmm okay so
+So yeah, so I'm the hiring manager, by the way, for my group.
+My name is Orly. I am managing the group.
+of workspaces, which is responsive.
+responsible for the orchestration.
+of the UI of all of the micro front-end architecture.
+with the UI modules for the various themes.
+front-end teams in LivePerson. I also have a team.
+that owns the agent workspace, which is.
+the workspace for the agents.
+that will write all the messages.
+manage their conversations. So yeah, I will get
+to that in a minute. Just a bit about LivePerson. Are you familiar with LivePerson?
+Yeah. Okay. Good.
+So it's part of being a messaging platform.
+then this is like the agent workspace where all of the agents are sending the messages.
+And I also have a mobile application.
+that is like a light version of the Asian workspace.
+It was rewritten lately with...
+the React Native, so this is like an object.
+available up on Google Play Store and Apple.
+And then play store?
+What else? Yeah, and I'm looking for...
+a principal engineer to join the group.
+um, to help me.
+uh, take this, uh, um,
+design architecture for the next level.
+um yeah i'm a bit about myself i'm
+in life person for three and a half years.
+20 years in the industry, I'm located in Israel, I
+have teams, like it is a global, we
+company so we are working with people around the world.
+For my group, we have teams in Berlin, Bulgaria.
+Syria, Israel, work from India, yeah.
+So, yes.
+Bye-bye.
+Yes, it is. Yes.
+. .
+. .
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+. .
+. .
+. .
+. .
+. .
+. .
+Bye. Bye.
+. .
+Bye-bye.
+. .
+. .
+.
+. .
+. .
+. .
+Bye-bye.
+Bye.
+.
+. .
+Bye-bye.
+.
+. .
+.
+.
+.
+Thank you.
+. .
+. .
+. .
+. .
+. .
+. .
+Yes, yes, so let's just start.
+walk through your career journey.
+Um, so today, like you are in.
+in payrails and sort of life.
+like how many engineers do you have there?
+Thank you.
+Yeah, so comparing to, I don't know,
+Trivago I assume it is like in it is smaller, right?
+Yeah. Yeah. Yeah. Yeah. Yeah.
+because like on your resume you are describing like 200
+front and develop large-scale and and I think like
+This is something that is more similar to what is happening in life.
+person from front-end perspective and large-scale
+like millions of messages a day.
+And what are you looking for?
+. .
+. .
+. .
+.
+. .
+. .
+.
+. .
+. .
+So like. So what are you looking for next, like?
+. .
+. .
+.
+. .
+.
+You got it.
+. .
+.
+. .
+Got it. By the way, the technological stuff like the
+language that we are using is Vue, Vue 3 today.
+But most teams are like we migrated from view.
+take Vue.js, Vue 2.0, like the code is...
+using JavaScript, less TypeScript.
+And you know how it is, like the code is there, we are not.
+We don't have capacity to migrate it to TypeScript, but yeah.
+Yeah, only that new code we will work.
+with TypeScript when we will prepare.
+the infrastructure for it like from store perspective and so on.
+So, yes, so let's let's talk about
+about like what you did with, with, like, I mean,
+interested to hear about the micro front and architecture and was working.
+there, if you can describe like.
+What is the product in Delivery Hero?
+And like, what was your role? Like, what?
+Your day to day, how did you got your task or?
+did you like, you know, as as principal, as staff in
+engineer, how did you create? OK.
+What am I going to work on, on the next two weeks and so on, or, or even.
+long-term.
+.
+Thank you. Bye-bye.
+.
+Bye-bye.
+. .
+. .
+.
+. .
+. .
+. .
+Thank you. Thank you.
+.
+. .
+Thank you.
+. .
+. .
+. .
+. .
+you
+Bye-bye.
+What is the product in Hero?
+What is the product?
+Just for the context.
+.
+. .
+. .
+Thank you.
+Thank you.
+. .
+. .
+. .
+Thank you.
+Thank you.
+.
+.
+. .
+.
+.
+. .
+.
+. .
+.
+Bye. Bye.
+this is like from technical perspective, like from product wise, business wise.
+what was the goal of the company.
+Okay.
+. .
+. .
+.
+.
+Thank you.
+.
+. .
+. .
+. .
+So, so you, you were on the team.
+team that was responsible for the infrastructure of
+of the product, like the shared life.
+libraries, the store management, I don't know.
+know, log in all of all of that was managed by your team.
+or by your medicine.
+. .
+. .
+Okay, got it and like I'm I am a team doing
+specific page, how do I connect to the system like that?
+how everything is orchestrated, I think.
+. .
+. .
+. .
+. .
+. .
+. .
+.
+.
+. .
+. .
+. .
+. .
+Okay.
+. .
+. .
+. .
+. .
+. .
+.
+Okay.
+Okay.
+So everything is in one monorepo. Yeah.
+and I separated by folders.
+. .
+So, if I need to navigate...
+to the next tab in your application, then.
+You have the config file that will send me the route of or the folder
+that I need to look at and then I will get I will go to this.
+logic on this folder and everything will be served there.
+there, but like from session management statement.
+management, everything is managed as one, right? Everything.
+but you inject it to the ... to the specific part.
+uh, application, I will go. So it's like
+So you don't, when application is loaded.
+yeah what is happening when it is loaded so I am now
+on the main page, everything now loads, what happens when it starts?
+. .
+Yeah, yeah
+. .
+. .
+. .
+. .
+. .
+. .
+You
+. .
+Yeah, I guess because like in...
+in the conversational cloud, the product that is.
+the micro front and main product so this is
+responsible for the frame, for the patient on the.
+for the login, for the session management, for the store.
+And if I'm a module that I have like.
+If you click on this option on the navigation.
+menu then it will have some
+config that will tell, oh, this is the project, this is the module.
+then it will go to this module and it has...
+like separated packages, um, like
+like all of the assets and the builds are per project.
+module and then it will orchestrate everything it will also not show
+you or not load packages that the agent doesn't.
+have permissions, so I will, so for, for performance.
+if we will talk about the next session, the next topic.
+uh for you is like did you encounter performance
+performance problems or how did you measure performance from low
+like forced content paint, did you have...
+have metrics for that or on what suppose or what.
+do you, if it is, um, if you're a
+Customers are suffering from latency, for example, how did you know...
+that or if you had some project to improve performance.
+Like, I don't know.
+Bye-bye.
+. .
+. .
+Thank you.
+. .
+Bye-bye.
+Thank you.
+Bye-bye.
+. .
+Thank you.
+. .
+. .
+Thank you.
+. .
+Thank you. Bye-bye.
+. .
+. .
+. .
+.
+. .
+. .
+. .
+.
+Yeah. It's positive.
+Yeah, it doesn't sound the same, like, like.
+Like each repo that you're running,
+um, is sort of independent and you should inject.
+from the upper layer all the information like I don't know if you need.
+the JWT, if you need all of that.
+then you will take it from the upper layer, but your module should be.
+behave independent and if I understand correctly, like it.
+is highly coupled in your application, right?
+Thank you.
+.
+.
+. .
+. .
+. .
+.
+. .
+Okay.
+Got it. So now looking back.
+At what you did there, do you think you would change the architecture?
+Yes, what would you do different?
+.
+. .
+. .
+Thank you.
+. .
+Bye-bye.
+. .
+Bye-bye.
+you
+.
+.
+. .
+Thank you.
+. .
+. .
+. .
+. .
+Bye-bye.
+.
+. .
+. .
+. .
+. .
+. .
+. .
+. .
+. .
+. .
+. .
+.
+. .
+Yeah. Thanks. Bye. Bye.
+. .
+. .
+Thank you.
+. .
+Got it.
+And, um, like from production perspective or deployment perspective, how.
+How did that work, like how was it done?
+on public cloud and like.
+I'm working on your monorepo. I'm from this team. I committed my.
+change, what's next, how did it reach production and...
+How did you deploy to production and later on if you got in.
+How did you debug the incident on production?
+Thank you.
+. .
+.
+. .
+Thank you.
+. .
+Thank you. Thank you.
+. .
+. .
+.
+Bye-bye.
+. .
+. .
+So when I build my changes, it builds the entire projects, all of them.
+the pool.
+My project.
+. .
+. .
+. .
+. .
+. .
+. .
+.
+. .
+. .
+You
+. .
+. .
+. .
+. .
+.
+. .
+. .
+.
+Wait, wait, before, before the incident, just to unmute.
+understand. Yeah, because we have like discussions on how.
+to deploy to production, so this is why I'm asking.
+So, I need, I did production, everything is good.
+I tested. Now I said, okay, I want to take this to production.
+So, I run build-fraud.
+Then, is it manual?
+or is it like we give up actions and we'll deploy it?
+Um, um, with Jenkins or whatever.
+it is deploying the package and uploads everything, all of the packages.
+packages are now redeployed to production, is this how it works?
+. .
+. .
+Just for one minute, OK, this one.
+One second.
+you
+you
+you
+Sorry.
+It was my kid, finished school.
+Okay, so, so I finished, uh, like
+I run the build on production, what happens then?
+. .
+.
+.
+.
+Okay.
+You
+Got it. But
+What is the landing page, like is it a different application?
+Where did you build this landing?
+. .
+. .
+. .
+you
+. .
+. .
+Okay. We are. Thank you. Bye.
+Yes, I think so. I think so. So, so like everything is on.
+side rendering and on the front end you will have all of the
+of those static files and you can select it.
+each of your modules.
+different builds and then you will create like a snapshot.
+of it, and then you will say, this is what I want on production.
+Bye.
+. .
+Oh, it's per country.
+You
+Hi, parajinguitos all. Tony Hi Father Hi Hi Hello Low Father Come on in. Niño Hello Hello Montague entirely all Son Hi Governor Hello What's your name? My name? Yes
+That was your A, B testing, like first you started small.
+. .
+. .
+. .
+Which tool were you using for Fidget Flutter?
+Bye-bye.
+Uh Once darkly
+. .
+Yeah.
+Got it. Got it. Okay. I'm just 10.
+And then last question, like how did you debug?
+Like if you found some incident, some incident was reported on production.
+How did you debug it?
+Bye.
+Bye-bye.
+Thank you.
+All right. Okay.
+. .
+Thank you.
+Bye. Bye. Bye.
+Thank you.
+. .
+So you couldn't actually.
+debug production, like if you had an issue in production.
+couldn't debug it, like to see on your browser what is happening.
+like I could see my cord, I could put breakpoint.
+on the browser and view my code, you couldn't do that.
+do that.
+Thank you.
+. .
+Can you find like?
+When you deployed the code, was it minified?
+Thank you.
+Mm-hmm.
+.
+Okay, but you were like
+debugging locally, not production.
+Thank you.
+Thank you.
+. .
+. .
+Yes.
+Yes, but there also there's an option to do that on production
+with your source code.
+Yes.
+We're doing it with Puppeteer. Injecting.
+our specific module code.
+that it would listen to your local host.
+with whatever port you are running and then for this specific
+module, it will inject your source code.
+source build and not production. So it's nice. Very helpful.
+Thank you. Bye-bye.
+with playwright you can do that also but yeah we we first use it with before we
+We had playwrights, so in-house tool that we built.
+pretty cool. You can debug production. I was thinking to load it to GitHub.
+hub to the community. So everyone can use that. It can be very
+helpful. Anyway, yeah, I sort of understand.
+and um like how you were working and and like from your
+perspective, Mustafa, like, um, like,
+How what is your day-to-day like OK, so you have the VJ.
+you have a yearly vision, OKRs and so on, but eventually.
+Like you were working with the teams right like you had a lot
+lot of teams there and micro front end or front end teams.
+front and teams and you were on the
+infrastructure, I guess, team.
+and how did you know what to do next?
+Yes.
+Thank you.
+Thank you.
+Mm-hmm.
+. .
+. .
+. .
+. .
+Thank you.
+. .
+Bye.
+. .
+. .
+we end
+Which part did you like most, the coding stuff or the...
+the planning.
+Yes, so you will always go find it.
+yourself some project code.
+. .
+Okay, um, what about
+back-end like all of that was on front-end or you also did the
+Service site
+. .
+. .
+Thank you.
+. .
+Thank you.
+. .
+Okay.
+Okay.
+Any questions?
+to me.
+. .
+. .
+Thank you. Bye bye.
+So, there's the like routine.
+day-to-day job of the of the teams we have.
+We have the objectives, we have the roadmap, we know what projects we need.
+to finish, we need, we have backbone marionette component.
+that we must rewrite.
+because of security and there are a lot of
+things that we're doing, like we're now migrating to GCP, so we have backend.
+services that we need to migrate and all of.
+the features and bugs and incidents and performance improvements.
+and so on, so we have the task for the team. But for the.
+In principle, the expectation is to look vertical.
+on the activities and to think...
+on the next level, where are we taking?
+the teams or you know if it is a specific problem.
+for for one of the teams, one of the
+of the developers, there's like brainstorming needed, design, new...
+architecture then of course principle should be there and help.
+with the design and architecture.
+So you have the ongoing stuff, but you also need to have.
+to be proactive with, okay, what we have today.
+what we need to change, how everything
+is working together and maybe we needed to fix it. Maybe it's not working right.
+Looking at performance, okay, we can do better on performance.
+if we would do XYZ. Today, we're
+working with Vuex as the store management of.
+Vue, Vuex is end of life. We need to replace that.
+uh with pina store i don't know if you are familiar with you uh
+Uhm? But OK, so how do?
+We do that by not enforcing all of our...
+15 modules to do so, like I want to do.
+to do it gradually, I wanted to co-exist Vuex and Pinnia.
+Yes, so I would want to have this project running on the principle.
+engineer and and then to embed the raw
+load for everyone else for all of the teams. So this.
+This is what I'm looking for. I'm looking for someone assertive, proactive.
+Strong coding skills.
+and having a vision of how
+things should work, how we can improve.
+This is the thing that I'm looking for.
+Yes, it is.
+So she's like strong.
+strong candidate for a very mean
+meaningful role.
+How do you see that?
+. .
+Yes.
+Bye-bye.
+Okay, no surprises, yes.
+Okay, what else?
+Thank you. Thank you.
+. .
+. .
+And of course, that.
+Thank you.
+Yes, so don't forget that we do have team leads.
+and teams are
+First of all yes on boarding of course like three months on boarding
+and understanding what is going on but next thing would be okay
+... Let's take this, this piece, okay, this product.
+this project, this topic, and let's work on that.
+Depends on our objectives for this year, depends on the vision, okay.
+we have now on our objectives to re-regulate the system.
+right or to get rid of all of the backbone marionette components.
+opponents, then I would want the involvement of principal and then you're the agent.
+will be okay, like sort of, it's not project management.
+but work with the teams, understand what is.
+the status there, what they did, if they are doing it correctly.
+review that, like, challenge them.
+and lead the technical way for the teams and.
+Since this team like the platform team
+is responsible for the entire micro front-end architecture.
+of live person, then it's not just the two teams that we have, but we
+We also responsible on how everything works together.
+Okay, so it has to be someone that...
+is always aware of what
+the guidelines we are communicating to the teams.
+to all of the UI teams.
+. .
+. .
+Yes.
+So yeah, so that's what I'm looking for.
+Uh, yeah, no, I'm okay.
+I think I'm, I'm, I'm okay. Like, so from.
+From a process perspective, I just.
+to explain how it is working on hiring process.
+then like this is like the hiring manager interview.
+you what we did now, and then if you are.
+If you pass this level, then you will be transitioned to
+full loop interviews of several interviewers.
+more technical interviews with students.
+with another principle.
+two team leads and and like so so on.
+on, something like three more interviews to have.
+So and then if everything goes okay, then you will get the contract and
+and then you can start. By the way, what is your notice period?
+Three months.
+. .
+Ah, not much.
+we don't have many, yeah, there are, yes, we don't have many.
+Very few. Okay.
+I'm sorry.
+It was very nice talking to you Mustafa, we will be in touch.
+Dutch, or me or Marvin, the HR.
+Yeah, and good luck with the process
+Thank you. You too. Bye-bye.
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+you
+You
+you
+you
+you
+you

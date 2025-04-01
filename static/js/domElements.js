@@ -19,6 +19,7 @@ export function initDomElements() {
     extractWithGeminiBtn: document.getElementById("extract-with-gemini"),
     getDesignQuestionBtn: document.getElementById("get-design-question"),
     extractWithOpenaiBtn: document.getElementById("extract-with-openai"),
+    extractReactQuestionBtn: document.getElementById("extract-react-question"),
     screenshotsContainer: document.getElementById("screenshots"),
 
     // Question controls

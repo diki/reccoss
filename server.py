@@ -14,6 +14,7 @@ from gemini_api.get_design_solution_with_gemini import get_design_solution_with_
 from gemini_api.get_solution_with_gemini import get_solution_for_question_with_gemini
 from gemini_api.get_followup_solution_with_gemini import get_followup_solution_with_gemini
 from gemini_api.extract_design_question_with_gemini import extract_design_question_with_gemini
+from gemini_api.extract_react_question_with_gemini import extract_react_question_with_gemini
 from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai
 
 # Initialize Flask app
@@ -285,6 +286,51 @@ def get_design_question():
         
         if extracted_question:
             print(f"Extracted design question: {extracted_question}")
+            
+            # Store the extracted question
+            with interview_data_lock:
+                interview_data["extracted_questions"][screenshot_path] = extracted_question
+        
+        # Return the screenshot info and extracted question
+        return jsonify({
+            "status": "success",
+            "screenshot": screenshot_info,
+            "extracted_question": extracted_question
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+# API endpoint to extract React question with Gemini
+@app.route('/api/extract-react-question', methods=['POST'])
+def extract_react_question():
+    try:
+        # Take a screenshot
+        screenshot_path = take_screenshot()
+        
+        # Get question context if available
+        data = request.json or {}
+        question_type = data.get('question_type', 'react')
+        notes = data.get('notes', '')
+        
+        # Add to interview data
+        with interview_data_lock:
+            screenshot_info = {
+                "path": screenshot_path,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "question_type": question_type,
+                "notes": notes,
+                "question_id": interview_data["current_question"] if interview_data["current_question"] else None
+            }
+            interview_data["screenshots"].append(screenshot_info)
+        
+        # Extract the React question
+        extracted_question = extract_react_question_with_gemini(screenshot_path)
+        
+        if extracted_question:
+            print(f"Extracted React question: {extracted_question}")
             
             # Store the extracted question
             with interview_data_lock:

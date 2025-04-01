@@ -81,6 +81,16 @@ Return the response as a JSON object with the following structure:
 }}
 """
 
+def get_react_question_extraction_prompt() -> str:
+    """Returns the prompt for extracting React-specific questions from screenshots"""
+    return """Extract the complete React-related coding question from this screenshot. Make sure to include:
+1. The main question or task
+2. All requirements and constraints
+3. Any specific React concepts, hooks, or patterns mentioned
+4. Any code snippets or examples provided
+
+Return the complete question text exactly as presented, without any additional commentary or explanation."""
+
 def get_followup_solution_prompt(current_problem: str, current_code: str, transcript: str) -> str:
     """Returns the prompt for getting follow-up solutions from Gemini"""
     return f"""

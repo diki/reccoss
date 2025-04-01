@@ -33,6 +33,9 @@ export class ScreenshotManager {
     this.elements.extractWithOpenaiBtn.addEventListener("click", () =>
       this.extractWithOpenai()
     );
+    this.elements.extractReactQuestionBtn.addEventListener("click", () =>
+      this.extractReactQuestion()
+    );
 
     // Add click event delegation for screenshot items
     this.elements.screenshotsContainer.addEventListener("click", (event) => {
@@ -276,6 +279,83 @@ export class ScreenshotManager {
       console.error("Error taking screenshot for design question:", error);
       this.elements.extractedQuestionContainer.innerHTML =
         "<p><em>Error extracting design question. Please try again.</em></p>";
+    }
+  }
+
+  /**
+   * Extract React question with Gemini
+   */
+  async extractReactQuestion() {
+    // Reset the manually selected screenshot flag
+    appState.update("screenshots.manuallySelectedScreenshot", false);
+
+    const questionType = "react";
+    const notes = appState.get("question.notes");
+
+    // Show loading message
+    this.elements.extractedQuestionContainer.innerHTML =
+      "<p><em>Extracting React question with Gemini...</em></p>";
+
+    try {
+      const data = await apiRequest("/api/extract-react-question", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question_type: questionType,
+          notes: notes,
+        }),
+      });
+
+      if (data.status === "success") {
+        console.log(
+          "Screenshot taken for React question extraction:",
+          data.screenshot
+        );
+
+        // Update screenshots in state
+        const screenshots = [
+          ...appState.get("screenshots.items"),
+          data.screenshot,
+        ];
+        appState.update("screenshots.items", screenshots);
+
+        if (data.extracted_question) {
+          // Display the extracted question
+          this.elements.extractedQuestionContainer.innerHTML = `<p>${data.extracted_question}</p>`;
+
+          // Enable the solution buttons
+          this.elements.getSolutionBtn.disabled = false;
+          this.elements.getSolutionWithOpenaiBtn.disabled = false;
+          this.elements.getSolutionWithGeminiBtn.disabled = false;
+
+          // Store the current question and screenshot path
+          appState.update(
+            "question.currentExtractedQuestion",
+            data.extracted_question
+          );
+          appState.update(
+            "screenshots.currentScreenshotPath",
+            data.screenshot.path
+          );
+        } else {
+          this.elements.extractedQuestionContainer.innerHTML =
+            "<p><em>Could not extract React question. Please try again.</em></p>";
+        }
+      } else {
+        console.error(
+          "Error taking screenshot for React question extraction:",
+          data.message
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Error taking screenshot for React question extraction:",
+        error
+      );
+      this.elements.extractedQuestionContainer.innerHTML =
+        "<p><em>Error extracting React question. Please try again.</em></p>";
     }
   }
 
