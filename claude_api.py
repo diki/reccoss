@@ -195,6 +195,98 @@ def get_react_solution(question: str) -> Optional[Dict[str, str]]:
         print(f"Exception when calling Claude API for React code solution: {str(e)}")
         return None
 
+def get_followup_solution_with_claude_react(transcript: str, react_question: str, current_solution: str) -> Optional[str]:
+    """
+    Send transcript, react question, and current solution to Claude to get a follow-up answer.
+    Returns the raw text response.
+
+    Parameters:
+    - transcript: Recent transcript text.
+    - react_question: The current React question being discussed.
+    - current_solution: The current solution code (React or standard).
+
+    Returns:
+    - Raw text response from Claude, or None if failed.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("Error: ANTHROPIC_API_KEY environment variable not set")
+        return None
+
+    # Prepare the API request
+    headers = {
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+    }
+
+    # Construct the specific prompt
+    prompt = f"""Here is the recent transcript of an interview discussion:
+<transcript>
+{transcript}
+</transcript>
+
+Here is the current React question being discussed:
+<react_question>
+{react_question}
+</react_question>
+
+Here is the current code solution provided so far:
+<current_solution>
+{current_solution}
+</current_solution>
+
+Based *only* on the information in the transcript, please perform the following steps:
+1. Identify and extract the single, most recent question asked by the interviewer in the transcript.
+2. Provide a suggested answer to that extracted question.
+3. If answering the question requires a change to the provided <current_solution> code, include the necessary code modifications or additions in your answer. If no code change is needed, state that explicitly.
+
+Your response MUST start with the extracted question on its own line, like this:
+Extracted Question: [The exact question you extracted from the transcript]
+
+Then, provide your suggested answer below that line. Do not include any other introductory text or commentary. Return only the extracted question line and the suggested answer.
+"""
+
+    # Construct the message payload
+    payload = {
+        "model": "claude-3-sonnet-20240229", # Or potentially Opus if needed for complexity
+        "max_tokens": 2000, # Adjust as needed
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    }
+
+    print("Sending request to Claude for React follow-up solution...")
+    # print(f"Prompt: {prompt}") # Avoid printing potentially large prompts/solutions
+
+    try:
+        # Make the API request
+        response = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers=headers,
+            json=payload
+        )
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            response_data = response.json()
+            raw_response_text = response_data["content"][0]["text"]
+            print("Claude React follow-up response received.")
+            # print(f"Raw Response: {raw_response_text}") # Avoid printing potentially large responses
+            return raw_response_text.strip() # Return the raw text
+        else:
+            print(f"Error from Claude API (React Followup): {response.status_code}")
+            print(response.text)
+            return None
+
+    except Exception as e:
+        print(f"Exception when calling Claude API for React follow-up solution: {str(e)}")
+        return None
+
+
 def _create_followup_prompt(context: Dict[str, str]) -> str:
     """
     Create a prompt for follow-up solution

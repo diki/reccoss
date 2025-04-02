@@ -87,6 +87,29 @@ export class SolutionDisplayManager {
     );
   }
 
+  /**
+   * Display the raw Claude React follow-up solution.
+   * @param {string} rawSolution - The raw response string from Claude.
+   */
+  displayClaudeReactFollowupSolution(rawSolution) {
+    console.log("Displaying Claude React follow-up solution");
+    this.elements.getFollowupSolutionClaudeReactBtn.textContent =
+      "Get Followup Solution (Claude)"; // Reset button text
+
+    if (this.elements.followupReactContent) {
+      if (rawSolution) {
+        // Display the raw text directly, preserving line breaks with <pre>
+        const preElement = document.createElement("pre");
+        preElement.textContent = rawSolution;
+        this.elements.followupReactContent.innerHTML = ""; // Clear previous
+        this.elements.followupReactContent.appendChild(preElement);
+      } else {
+        this.elements.followupReactContent.innerHTML =
+          "<p><em>No followup solution available.</em></p>";
+      }
+    }
+  }
+
   // --- Private Helper Methods ---
 
   /**

@@ -168,6 +168,65 @@ export class SolutionPollingManager {
     }, this.POLL_TIMEOUT_MS);
   }
 
+  /**
+   * Poll for the Claude React follow-up solution.
+   * @param {string} screenshotPath - The screenshot path.
+   */
+  pollForFollowupSolutionWithClaudeReact(screenshotPath) {
+    const filename = this._getFilename(screenshotPath);
+    const pollKey = `claude-react-followup-${filename}`;
+    // Define a unique key prefix for storing this specific type of solution
+    const solutionKeyPrefix = `${screenshotPath}:claude-react-followup:`;
+
+    console.log(
+      `Starting to poll for Claude React follow-up solution: ${pollKey}`
+    );
+    this._clearPolling(pollKey);
+
+    this.pollIntervals[pollKey] = setInterval(async () => {
+      try {
+        // We still poll the generic /api/solutions endpoint which returns all data
+        const data = await apiRequest("/api/solutions");
+        // Find the specific key for our Claude React followup
+        const followupKey = Object.keys(data.solutions).find(
+          // Check within 'solutions' object
+          (key) => key.startsWith(solutionKeyPrefix)
+        );
+
+        if (followupKey && data.solutions[followupKey]) {
+          console.log(`Claude React follow-up solution found: ${followupKey}`);
+          const followupSolution = data.solutions[followupKey]; // Get the raw response
+
+          // Trigger a specific event for the display manager
+          StateEvents.emit("solution:claudeReactFollowupAvailable", {
+            solution: followupSolution, // Send the raw response string
+          });
+
+          appState.update("solution.isGenerating", false);
+          this._clearPolling(pollKey);
+        }
+      } catch (error) {
+        console.error(
+          `Error polling for Claude React follow-up solution (${pollKey}):`,
+          error
+        );
+        // Use the specific error handler for this UI element
+        this.uiStateManager.showFollowupErrorWithClaudeReact(
+          "Error retrieving Claude follow-up solution. Please try again."
+        );
+        this._handlePollingError(pollKey); // Stop polling on error
+      }
+    }, this.POLL_INTERVAL_MS);
+
+    this.pollTimeouts[pollKey] = setTimeout(() => {
+      // Use the specific error handler for this UI element
+      this.uiStateManager.showFollowupErrorWithClaudeReact(
+        "Could not generate Claude follow-up solution. Please try again."
+      );
+      this._handlePollingTimeout(pollKey);
+    }, this.POLL_TIMEOUT_MS);
+  }
+
   // --- Private Helper Methods ---
 
   /**

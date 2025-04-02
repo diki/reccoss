@@ -75,3 +75,14 @@ def store_followup_solution(screenshot_path, solution, provider="claude"):
             followup_key = f"{screenshot_path}:{provider}-followup:{timestamp}"
             interview_data["solutions"][followup_key] = followup_solution
             print(f"{provider.capitalize()} follow-up solution stored with key: {followup_key}")
+
+def store_claude_react_followup_solution(screenshot_path, raw_solution_text):
+    """Stores the raw text response for a Claude React follow-up solution."""
+    if raw_solution_text:
+        with interview_data_lock:
+            # Use a specific key format for this type of raw response
+            timestamp = int(datetime.now().timestamp())
+            followup_key = f"{screenshot_path}:claude-react-followup:{timestamp}"
+            # Store the raw text directly
+            interview_data["solutions"][followup_key] = raw_solution_text
+            print(f"Claude React raw follow-up solution stored with key: {followup_key}")

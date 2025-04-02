@@ -60,6 +60,9 @@ export function initDomElements() {
     getSolutionFollowupWithGeminiBtn: document.getElementById(
       "get-solution-followup-with-gemini"
     ),
+    getFollowupSolutionClaudeReactBtn: document.getElementById(
+      "get-followup-solution-claude-react"
+    ),
 
     // Solution display
     solutionTabs: document.getElementById("solution-tabs"),
@@ -70,6 +73,12 @@ export function initDomElements() {
 
     // Code tab
     codeTab: document.getElementById("code-tab"),
+
+    // React solution display
+    reactSolutionContent: document.getElementById("react-solution-content"),
+
+    // Claude React Followup display
+    followupReactContent: document.getElementById("followup-react-content"),
 
     // UI controls
     resetAllBtn: document.getElementById("reset-all"),

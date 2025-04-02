@@ -38,6 +38,8 @@ export class SolutionUIStateManager {
       isGenerating || !questionAvailable || !solutionAvailable;
     this.elements.getSolutionFollowupWithGeminiBtn.disabled =
       isGenerating || !questionAvailable || !solutionAvailable;
+    this.elements.getFollowupSolutionClaudeReactBtn.disabled =
+      isGenerating || !questionAvailable || !solutionAvailable; // Add new button
 
     // Reset button text if not generating
     if (!isGenerating) {
@@ -55,6 +57,8 @@ export class SolutionUIStateManager {
       this.elements.getSolutionFollowupBtn.textContent = "Solve Follow-up";
       this.elements.getSolutionFollowupWithGeminiBtn.textContent =
         "Solve Follow-up with GEMini";
+      this.elements.getFollowupSolutionClaudeReactBtn.textContent =
+        "Get Followup Solution (Claude)"; // Add new button text reset
     }
   }
 
@@ -73,7 +77,14 @@ export class SolutionUIStateManager {
       this.elements.getReactSolutionWithClaudeBtn.disabled = !questionAvailable;
       this.elements.getReactSolution2WithGeminiBtn.disabled =
         !questionAvailable;
-      // Follow-up buttons depend on both question and existing solution, handled by updateSolutionButtonsState
+      // Follow-up buttons depend on both question and existing solution
+      const solutionAvailable = !!appState.get("solution.currentSolution");
+      this.elements.getSolutionFollowupBtn.disabled =
+        !questionAvailable || !solutionAvailable;
+      this.elements.getSolutionFollowupWithGeminiBtn.disabled =
+        !questionAvailable || !solutionAvailable;
+      this.elements.getFollowupSolutionClaudeReactBtn.disabled =
+        !questionAvailable || !solutionAvailable; // Add new button availability
     }
   }
 
@@ -139,6 +150,19 @@ export class SolutionUIStateManager {
   }
 
   /**
+   * Show loading state for the Claude React follow-up solution
+   */
+  showFollowupLoadingStateWithClaudeReact() {
+    this.elements.getFollowupSolutionClaudeReactBtn.textContent =
+      "Processing Claude Followup...";
+    // Update the specific raw display area
+    if (this.elements.followupReactContent) {
+      this.elements.followupReactContent.innerHTML =
+        "<p><em>Generating Claude followup solution, please wait...</em></p>";
+    }
+  }
+
+  /**
    * Show loading state for the Gemini follow-up solution
    */
   showFollowupLoadingStateWithGemini() {
@@ -152,6 +176,19 @@ export class SolutionUIStateManager {
       "Generating Gemini follow-up solution, please wait...",
       "gemini-followup" // Additional class for styling
     );
+  }
+
+  /**
+   * Show error message for the Claude React follow-up solution
+   * @param {string} message - The error message
+   */
+  showFollowupErrorWithClaudeReact(message) {
+    this.elements.getFollowupSolutionClaudeReactBtn.textContent =
+      "Get Followup Solution (Claude)"; // Reset button text
+    // Update the specific raw display area
+    if (this.elements.followupReactContent) {
+      this.elements.followupReactContent.innerHTML = `<p><em>${message}</em></p>`;
+    }
   }
 
   /**

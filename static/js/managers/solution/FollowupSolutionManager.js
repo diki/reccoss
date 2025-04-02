@@ -45,6 +45,25 @@ export class FollowupSolutionManager {
     );
   }
 
+  /**
+   * Get a follow-up solution using Claude (for React context).
+   */
+  async getFollowupSolutionWithClaudeReact() {
+    await this._fetchFollowupSolution(
+      "/api/solution/followup-with-claude-react", // New endpoint
+      "Claude React",
+      this.uiStateManager.showFollowupLoadingStateWithClaudeReact.bind(
+        this.uiStateManager
+      ),
+      this.uiStateManager.showFollowupErrorWithClaudeReact.bind(
+        this.uiStateManager
+      ),
+      this.pollingManager.pollForFollowupSolutionWithClaudeReact.bind(
+        this.pollingManager
+      )
+    );
+  }
+
   // --- Private Helper Method ---
 
   /**
@@ -63,26 +82,33 @@ export class FollowupSolutionManager {
     showErrorFn,
     startPollingFn
   ) {
+    // Get the current extracted question (could be coding or React)
     const currentExtractedQuestion = appState.get(
       "question.currentExtractedQuestion"
     );
     const currentScreenshotPath = appState.get(
       "screenshots.currentScreenshotPath"
     );
-    // Follow-up needs the *current* solution's code, which might be in the combined object
+    // Follow-up needs the *current* solution's code.
+    // Check both standard solution and React solution from the combined object.
     const currentSolutionData = appState.get("solution.currentSolution");
-    const currentSolutionCode = currentSolutionData?.solution?.code; // Access nested code
+    const currentStandardSolutionCode = currentSolutionData?.solution?.code;
+    const currentReactSolutionCode = currentSolutionData?.react_solution; // Raw React code
+
+    // Prioritize React solution code if available, otherwise use standard code
+    const currentSolutionCode =
+      currentReactSolutionCode || currentStandardSolutionCode;
 
     if (
       !currentExtractedQuestion ||
       !currentScreenshotPath ||
-      !currentSolutionCode // Check for code specifically
+      !currentSolutionCode
     ) {
       console.error(
-        `Cannot fetch ${providerName} follow-up: Missing question, screenshot, or current solution code.`
+        `Cannot fetch ${providerName} follow-up: Missing question, screenshot, or current solution code (checked both standard and React).`
       );
       showErrorFn(
-        "Missing required information (question, screenshot, or previous code) for follow-up."
+        "Missing required information (question, screenshot, or previous solution code) for follow-up."
       );
       return;
     }
@@ -119,10 +145,11 @@ export class FollowupSolutionManager {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          problem: currentExtractedQuestion,
-          code: currentSolutionCode, // Use the extracted code
+          // Send both the extracted question and the current solution code
+          react_question: currentExtractedQuestion, // Rename for clarity on backend? Or keep generic? Let's keep generic for now.
+          current_solution: currentSolutionCode,
           transcript: transcriptText,
-          screenshot_path: currentScreenshotPath,
+          screenshot_path: currentScreenshotPath, // Still useful for context/logging
         }),
       });
 

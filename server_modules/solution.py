@@ -4,10 +4,10 @@ from flask import Blueprint, jsonify, request
 from datetime import datetime
 
 # Import shared app and data/locks/helpers
-from .config import app, interview_data, interview_data_lock, store_solution, store_react_solution, store_followup_solution
+from .config import app, interview_data, interview_data_lock, store_solution, store_react_solution, store_followup_solution, store_claude_react_followup_solution
 
 # Import solution generation functions
-from claude_api import get_solution_for_question, get_followup_solution, get_react_solution
+from claude_api import get_solution_for_question, get_followup_solution, get_react_solution, get_followup_solution_with_claude_react
 from gemini_api.get_solution_with_gemini import get_solution_for_question_with_gemini
 from gemini_api.get_followup_solution_with_gemini import get_followup_solution_with_gemini
 from gemini_api.get_react_solution_with_gemini import get_react_solution_with_gemini, get_react_solution2_with_gemini
@@ -107,6 +107,19 @@ def process_followup_solution_with_gemini(current_problem, current_code, transcr
             print("Failed to generate Gemini follow-up solution")
     except Exception as e:
         print(f"Error processing Gemini follow-up solution: {str(e)}")
+
+def process_followup_solution_with_claude_react(transcript, react_question, current_solution, screenshot_path):
+    """Background task to get and store raw Claude React follow-up."""
+    try:
+        print(f"Processing Claude React follow-up request...")
+        raw_solution = get_followup_solution_with_claude_react(transcript, react_question, current_solution)
+        if raw_solution:
+            print(f"Claude React follow-up solution generated successfully (raw)")
+            store_claude_react_followup_solution(screenshot_path, raw_solution) # Use the specific raw storage function
+        else:
+            print("Failed to generate Claude React follow-up solution (raw)")
+    except Exception as e:
+        print(f"Error processing follow-up solution (Claude React raw): {str(e)}")
 
 
 # --- Solution Request Routes (Start Background Threads) ---
@@ -218,6 +231,22 @@ def get_followup_solution_gemini():
     thread.daemon = True
     thread.start()
     return jsonify({"status": "success", "message": "Gemini follow-up solution request submitted"})
+
+@solution_bp.route('/solution/followup-with-claude-react', methods=['POST']) # Claude React Follow-up (Raw)
+def get_followup_solution_claude_react_route():
+    data = request.json or {}
+    # Match the keys sent from the frontend
+    react_question = data.get('react_question', '')
+    current_solution = data.get('current_solution', '')
+    transcript = data.get('transcript', '')
+    screenshot_path = data.get('screenshot_path', '')
+    if not react_question or not current_solution or not transcript or not screenshot_path:
+        return jsonify({"status": "error", "message": "Missing required parameters for Claude React follow-up"}), 400
+
+    thread = threading.Thread(target=process_followup_solution_with_claude_react, args=(transcript, react_question, current_solution, screenshot_path))
+    thread.daemon = True
+    thread.start()
+    return jsonify({"status": "success", "message": "Claude React follow-up solution request submitted"})
 
 
 # --- Solution Retrieval Routes ---
