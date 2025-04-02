@@ -8,7 +8,7 @@ import { RecordingManager } from "./managers/recordingManager.js";
 import { TranscriptionManager } from "./managers/transcriptionManager.js";
 import { ScreenshotManager } from "./managers/screenshotManager.js";
 import { QuestionManager } from "./managers/questionManager.js";
-import { SolutionManager } from "./managers/solutionManager.js";
+import { SolutionManager } from "./managers/solution/SolutionManager.js";
 import { UiManager } from "./managers/uiManager.js";
 
 // Polling interval for updates (in ms)
