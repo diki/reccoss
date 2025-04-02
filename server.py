@@ -15,7 +15,7 @@ from gemini_api.get_solution_with_gemini import get_solution_for_question_with_g
 from gemini_api.get_followup_solution_with_gemini import get_followup_solution_with_gemini
 from gemini_api.extract_design_question_with_gemini import extract_design_question_with_gemini
 from gemini_api.extract_react_question_with_gemini import extract_react_question_with_gemini
-from gemini_api.get_react_solution_with_gemini import get_react_solution_with_gemini
+from gemini_api.get_react_solution_with_gemini import get_react_solution_with_gemini, get_react_solution2_with_gemini
 from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai
 
 # Initialize Flask app
@@ -672,6 +672,32 @@ def get_react_solution_with_claude_route():
         "message": "React Claude solution request submitted"
     })
 
+# API endpoint to get a React solution2 for a coding question with Gemini (using Claude's prompt)
+@app.route('/api/react-solution2-with-gemini', methods=['POST'])
+def get_react_solution2_with_gemini_route():
+    data = request.json or {}
+    question = data.get('question', '')
+    screenshot_path = data.get('screenshot_path', '')
+    
+    if not question:
+        return jsonify({
+            "status": "error",
+            "message": "No question provided"
+        }), 400
+    
+    # Start a thread to get the React solution
+    solution_thread = threading.Thread(
+        target=process_react_solution2_with_gemini,
+        args=(question, screenshot_path)
+    )
+    solution_thread.daemon = True
+    solution_thread.start()
+    
+    return jsonify({
+        "status": "success",
+        "message": "React Gemini solution2 request submitted"
+    })
+
 # Function to process solution with OpenAI API
 def process_solution_with_openai(question, screenshot_path):
     try:
@@ -791,6 +817,25 @@ def process_react_solution_with_claude(question, screenshot_path):
             print("Failed to generate React solution for question with Claude")
     except Exception as e:
         print(f"Error processing React solution with Claude: {str(e)}")
+
+# Function to process React solution2 with Gemini API (using Claude's prompt)
+def process_react_solution2_with_gemini(question, screenshot_path):
+    try:
+        # Get React solution for the question using Gemini with Claude's prompt
+        solution = get_react_solution2_with_gemini(question)
+        
+        if solution:
+            print(f"React solution2 generated for question with Gemini")
+            print(f"React solution2 code length: {len(solution.get('code', ''))}")
+            
+            # Store the solution in both places like Claude's implementation
+            with interview_data_lock:
+                interview_data["solutions"][screenshot_path] = solution
+                interview_data["react_solutions"][screenshot_path] = solution.get("code", "")
+        else:
+            print("Failed to generate React solution2 for question with Gemini")
+    except Exception as e:
+        print(f"Error processing React solution2 with Gemini: {str(e)}")
 
 # API endpoint to get all solutions
 @app.route('/api/solutions', methods=['GET'])

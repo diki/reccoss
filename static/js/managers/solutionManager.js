@@ -38,6 +38,9 @@ export class SolutionManager {
     this.elements.getReactSolutionWithClaudeBtn.addEventListener("click", () =>
       this.getReactSolutionWithClaude()
     );
+    this.elements.getReactSolution2WithGeminiBtn.addEventListener("click", () =>
+      this.getReactSolution2WithGemini()
+    );
     this.elements.getSolutionFollowupBtn.addEventListener("click", () =>
       this.getFollowupSolution()
     );
@@ -66,6 +69,29 @@ export class SolutionManager {
     StateEvents.on("solution:available", (solution) => {
       appState.update("solution.currentSolution", solution);
     });
+
+    // Listen for changes in the extracted question to enable/disable buttons
+    StateEvents.on("question.currentExtractedQuestion:changed", (question) => {
+      this.updateSolutionButtonsAvailability(!!question);
+    });
+  }
+
+  /**
+   * Enable or disable solution buttons based on question availability
+   * @param {boolean} questionAvailable - Whether an extracted question is available
+   */
+  updateSolutionButtonsAvailability(questionAvailable) {
+    // Only change state if not currently generating a solution
+    if (!appState.get("solution.isGenerating")) {
+      this.elements.getSolutionBtn.disabled = !questionAvailable;
+      this.elements.getSolutionWithOpenaiBtn.disabled = !questionAvailable;
+      this.elements.getSolutionWithGeminiBtn.disabled = !questionAvailable;
+      this.elements.getReactSolutionWithGeminiBtn.disabled = !questionAvailable;
+      this.elements.getReactSolutionWithClaudeBtn.disabled = !questionAvailable;
+      this.elements.getReactSolution2WithGeminiBtn.disabled =
+        !questionAvailable;
+      // Follow-up buttons depend on both question and existing solution, handled elsewhere
+    }
   }
 
   /**
@@ -756,9 +782,28 @@ export class SolutionManager {
     this.elements.getSolutionWithOpenaiBtn.disabled = isGenerating;
     this.elements.getSolutionWithGeminiBtn.disabled = isGenerating;
     this.elements.getReactSolutionWithGeminiBtn.disabled = isGenerating;
-    this.elements.getReactSolutionWithClaudeBtn.disabled = isGenerating; // Add Claude button
-    this.elements.getSolutionFollowupBtn.disabled = isGenerating;
-    this.elements.getSolutionFollowupWithGeminiBtn.disabled = isGenerating;
+    this.elements.getReactSolutionWithClaudeBtn.disabled = isGenerating;
+    const questionAvailable = !!appState.get(
+      "question.currentExtractedQuestion"
+    );
+    this.elements.getSolutionBtn.disabled = isGenerating || !questionAvailable;
+    this.elements.getSolutionWithOpenaiBtn.disabled =
+      isGenerating || !questionAvailable;
+    this.elements.getSolutionWithGeminiBtn.disabled =
+      isGenerating || !questionAvailable;
+    this.elements.getReactSolutionWithGeminiBtn.disabled =
+      isGenerating || !questionAvailable;
+    this.elements.getReactSolutionWithClaudeBtn.disabled =
+      isGenerating || !questionAvailable;
+    this.elements.getReactSolution2WithGeminiBtn.disabled =
+      isGenerating || !questionAvailable; // Add Gemini2 button
+
+    // Follow-up buttons also depend on having a current solution
+    const solutionAvailable = !!appState.get("solution.currentSolution");
+    this.elements.getSolutionFollowupBtn.disabled =
+      isGenerating || !questionAvailable || !solutionAvailable;
+    this.elements.getSolutionFollowupWithGeminiBtn.disabled =
+      isGenerating || !questionAvailable || !solutionAvailable;
 
     if (!isGenerating) {
       this.elements.getSolutionBtn.textContent = "Get Solution";
@@ -769,7 +814,9 @@ export class SolutionManager {
       this.elements.getReactSolutionWithGeminiBtn.textContent =
         "Get React Solution (Gemini)";
       this.elements.getReactSolutionWithClaudeBtn.textContent =
-        "Get React Solution (Claude)"; // Add Claude button text reset
+        "Get React Solution (Claude)";
+      this.elements.getReactSolution2WithGeminiBtn.textContent =
+        "Get React Solution2 (Gemini)"; // Add Gemini2 button text reset
       this.elements.getSolutionFollowupBtn.textContent = "Solve Follow-up";
       this.elements.getSolutionFollowupWithGeminiBtn.textContent =
         "Solve Follow-up with GEMini";
@@ -1249,5 +1296,54 @@ export class SolutionManager {
    */
   poll() {
     // No polling needed here as we use specific polling for solutions
+  }
+
+  /**
+   * Get a React solution2 for the current question with Gemini (using Claude's prompt)
+   */
+  async getReactSolution2WithGemini() {
+    const currentExtractedQuestion = appState.get(
+      "question.currentExtractedQuestion"
+    );
+    const currentScreenshotPath = appState.get(
+      "screenshots.currentScreenshotPath"
+    );
+
+    if (!currentExtractedQuestion || !currentScreenshotPath) {
+      console.error("No question or screenshot path available");
+      return;
+    }
+
+    // Update state to show loading
+    appState.update("solution.isGenerating", true);
+
+    // Show loading state in UI
+    this.showLoadingState("React Gemini2"); // Use a distinct identifier
+
+    try {
+      const data = await apiRequest("/api/react-solution2-with-gemini", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: currentExtractedQuestion,
+          screenshot_path: currentScreenshotPath,
+        }),
+      });
+
+      if (data.status === "success") {
+        console.log("React Gemini solution2 request submitted");
+
+        // Start polling for the solution (uses the same polling mechanism)
+        this.pollForSolution(currentScreenshotPath);
+      } else {
+        console.error("Error requesting React Gemini solution2:", data.message);
+        appState.update("solution.isGenerating", false);
+      }
+    } catch (error) {
+      console.error("Error requesting React Gemini solution2:", error);
+      appState.update("solution.isGenerating", false);
+    }
   }
 }

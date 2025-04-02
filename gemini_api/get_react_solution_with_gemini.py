@@ -115,3 +115,54 @@ def get_react_solution_with_gemini(question: str) -> Optional[Dict[str, str]]:
     except Exception as e:
         print(f"Exception when calling Gemini API for React solution: {str(e)}")
         return None
+
+def get_react_solution2_with_gemini(question: str) -> Optional[Dict[str, str]]:
+    """
+    Send a React-specific coding question to Google Gemini API using Claude's prompt format
+    
+    Parameters:
+    - question: The React coding question to solve
+    
+    Returns:
+    - Dictionary containing only the 'code' field populated, or None if failed
+    """
+    if not configure_gemini():
+        return None
+    
+    print("Get React solution2 with Gemini (using Claude's prompt)")
+    
+    try:
+        # Initialize the model
+        # Using a potentially newer or experimental model if available, adjust as needed
+        model = genai.GenerativeModel('gemini-1.5-pro-latest') 
+        
+        # Get the Claude prompt from prompts.py
+        # Make sure get_react_solution_prompt_for_claude is imported or defined
+        from .prompts import get_react_solution_prompt_for_claude 
+        prompt = get_react_solution_prompt_for_claude(question)
+        
+        # Generate the solution - Note: Gemini might not strictly adhere to "only code"
+        # We might need to adjust the prompt or post-process the response if Gemini adds extra text
+        response = model.generate_content(prompt)
+        
+        if response and response.text:
+            code_text = response.text
+            
+            print("React code solution2 is ready")
+            
+            # Return the response in the expected dictionary format, only populating 'code'
+            # We assume the response is mostly code, but might need cleaning
+            return {
+                "explanation": "", 
+                "solution": "", # Corresponds to interview_explanation in frontend
+                "code": code_text.strip(), # Basic stripping, might need more robust cleaning
+                "complexity": "", 
+                "strategy": ""
+            }
+        else:
+            print("Empty response from Gemini API for solution2")
+            return None
+    
+    except Exception as e:
+        print(f"Exception when calling Gemini API for React solution2: {str(e)}")
+        return None

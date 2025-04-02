@@ -50,6 +50,9 @@ export function initDomElements() {
     getReactSolutionWithClaudeBtn: document.getElementById(
       "get-react-solution-with-claude"
     ),
+    getReactSolution2WithGeminiBtn: document.getElementById(
+      "get-react-solution2-with-gemini"
+    ),
     getSolutionFollowupBtn: document.getElementById("get-solution-followup"),
     getSolutionFollowupWithGeminiBtn: document.getElementById(
       "get-solution-followup-with-gemini"
