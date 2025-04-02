@@ -16,7 +16,7 @@ from gemini_api.get_followup_solution_with_gemini import get_followup_solution_w
 from gemini_api.extract_design_question_with_gemini import extract_design_question_with_gemini
 from gemini_api.extract_react_question_with_gemini import extract_react_question_with_gemini
 from gemini_api.get_react_solution_with_gemini import get_react_solution_with_gemini, get_react_solution2_with_gemini
-from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai
+from openai_api import extract_coding_question_with_openai, get_solution_for_question_with_openai, extract_react_question_with_openai
 
 # Initialize Flask app
 app = Flask(__name__, 
@@ -413,6 +413,51 @@ def process_screenshot_with_openai(screenshot_path):
             print("Failed to extract question from screenshot with OpenAI")
     except Exception as e:
         print(f"Error processing screenshot with OpenAI: {str(e)}")
+
+# API endpoint to extract React question with OpenAI
+@app.route('/api/extract-react-question-openai', methods=['POST'])
+def extract_react_question_openai():
+    try:
+        # Take a screenshot
+        screenshot_path = take_screenshot()
+
+        # Get question context if available
+        data = request.json or {}
+        question_type = data.get('question_type', 'react') # Should be 'react' from frontend
+        notes = data.get('notes', '')
+
+        # Add to interview data
+        with interview_data_lock:
+            screenshot_info = {
+                "path": screenshot_path,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "question_type": question_type,
+                "notes": notes,
+                "question_id": interview_data["current_question"] if interview_data["current_question"] else None
+            }
+            interview_data["screenshots"].append(screenshot_info)
+
+        # Extract the React question using OpenAI
+        extracted_question = extract_react_question_with_openai(screenshot_path)
+
+        if extracted_question:
+            print(f"Extracted React question with OpenAI: {extracted_question}")
+
+            # Store the extracted question
+            with interview_data_lock:
+                interview_data["extracted_questions"][screenshot_path] = extracted_question
+
+        # Return the screenshot info and extracted question
+        return jsonify({
+            "status": "success",
+            "screenshot": screenshot_info,
+            "extracted_question": extracted_question
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 # API endpoint to get extracted questions
 @app.route('/api/extracted_questions', methods=['GET'])

@@ -36,6 +36,10 @@ export class ScreenshotManager {
     this.elements.extractReactQuestionBtn.addEventListener("click", () =>
       this.extractReactQuestion()
     );
+    // Add listener for the new OpenAI React button
+    this.elements.extractReactQuestionOpenaiBtn.addEventListener("click", () =>
+      this.extractReactQuestionOpenai()
+    );
 
     // Add click event delegation for screenshot items
     this.elements.screenshotsContainer.addEventListener("click", (event) => {
@@ -360,6 +364,90 @@ export class ScreenshotManager {
       );
       this.elements.extractedQuestionContainer.innerHTML =
         "<p><em>Error extracting React question. Please try again.</em></p>";
+    }
+  }
+
+  /**
+   * Extract React question with OpenAI
+   */
+  async extractReactQuestionOpenai() {
+    // Reset the manually selected screenshot flag
+    appState.update("screenshots.manuallySelectedScreenshot", false);
+
+    const questionType = "react"; // Hardcoded for this button
+    const notes = appState.get("question.notes");
+
+    // Show loading message
+    this.elements.extractedQuestionContainer.innerHTML =
+      "<p><em>Extracting React question with OpenAI...</em></p>"; // Updated message
+
+    try {
+      // Make API request to the new backend endpoint
+      const data = await apiRequest("/api/extract-react-question-openai", {
+        // Updated endpoint
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question_type: questionType,
+          notes: notes,
+        }),
+      });
+
+      if (data.status === "success") {
+        console.log(
+          "Screenshot taken for OpenAI React question extraction:", // Updated log
+          data.screenshot
+        );
+
+        // Update screenshots in state
+        const screenshots = [
+          ...appState.get("screenshots.items"),
+          data.screenshot,
+        ];
+        appState.update("screenshots.items", screenshots);
+
+        if (data.extracted_question) {
+          // Display the extracted question
+          this.elements.extractedQuestionContainer.innerHTML = `<p>${data.extracted_question}</p>`;
+
+          // Enable the solution buttons (same as Gemini version)
+          this.elements.getSolutionBtn.disabled = false;
+          this.elements.getSolutionWithOpenaiBtn.disabled = false;
+          this.elements.getSolutionWithGeminiBtn.disabled = false;
+          this.elements.getReactSolutionWithGeminiBtn.disabled = false;
+          this.elements.getReactSolutionWithClaudeBtn.disabled = false;
+
+          // Store the current question and screenshot path
+          appState.update(
+            "question.currentExtractedQuestion",
+            data.extracted_question
+          );
+          appState.update(
+            "screenshots.currentScreenshotPath",
+            data.screenshot.path
+          );
+        } else {
+          // Show error if question couldn't be extracted
+          this.elements.extractedQuestionContainer.innerHTML =
+            "<p><em>Could not extract React question with OpenAI. Please try again.</em></p>"; // Updated message
+        }
+      } else {
+        // Handle API error
+        console.error(
+          "Error taking screenshot for OpenAI React question extraction:", // Updated log
+          data.message
+        );
+      }
+    } catch (error) {
+      // Handle network/fetch error
+      console.error(
+        "Error taking screenshot for OpenAI React question extraction:", // Updated log
+        error
+      );
+      this.elements.extractedQuestionContainer.innerHTML =
+        "<p><em>Error extracting React question with OpenAI. Please try again.</em></p>"; // Updated message
     }
   }
 

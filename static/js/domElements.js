@@ -20,6 +20,9 @@ export function initDomElements() {
     getDesignQuestionBtn: document.getElementById("get-design-question"),
     extractWithOpenaiBtn: document.getElementById("extract-with-openai"),
     extractReactQuestionBtn: document.getElementById("extract-react-question"),
+    extractReactQuestionOpenaiBtn: document.getElementById(
+      "extract-react-question-openai"
+    ), // Added this line
     screenshotsContainer: document.getElementById("screenshots"),
 
     // Question controls

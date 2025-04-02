@@ -176,3 +176,63 @@ Format your response with clear section headers for each component.
     except Exception as e:
         print(f"Exception when calling OpenAI API for solution: {str(e)}")
         return None
+
+def extract_react_question_with_openai(image_path: str) -> Optional[str]:
+    """
+    Send an image to OpenAI API to extract a React-specific question
+
+    Parameters:
+    - image_path: Path to the screenshot image
+
+    Returns:
+    - Extracted React question as a string, or None if extraction failed
+    """
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        print("Error: OPENAI_API_KEY environment variable not set")
+        return None
+
+    # Initialize the OpenAI client
+    client = OpenAI(api_key=api_key)
+
+    # Simplified prompt for OpenAI React question extraction
+    prompt_text = """Extract the React coding question shown in this image. Return only the question text."""
+
+    try:
+        # Encode the image
+        base64_image = encode_image_to_base64(image_path)
+
+        # Create a prompt with the image
+        response = client.chat.completions.create(
+            model="gpt-4o-mini", # Using gpt-4o-mini as in other functions
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt_text
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{base64_image}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=1000 # Allow sufficient tokens for potentially long questions
+        )
+
+        # Extract the question from OpenAI's response
+        if response and response.choices and len(response.choices) > 0:
+            extracted_question = response.choices[0].message.content
+            return extracted_question.strip()
+        else:
+            print("Empty response from OpenAI API for React question extraction")
+            return None
+
+    except Exception as e:
+        print(f"Exception when calling OpenAI API for React question extraction: {str(e)}")
+        return None
