@@ -18,8 +18,9 @@ interview_data = {
     "screenshots": [],
     "current_question": None,
     "extracted_questions": {},  # Map screenshot paths to extracted questions
-    "solutions": {},  # Map screenshot paths to solutions
-    "react_solutions": {} # Map screenshot paths to raw React solutions
+    "solutions": {},  # Map screenshot paths to structured solutions (coding, standard followup)
+    "react_solutions": {}, # Map screenshot paths to raw React initial solutions
+    "followup_solutions": {} # Map screenshot paths to LISTS of raw followup solutions (React Claude/Gemini)
 }
 interview_data_lock = threading.Lock()
 
@@ -76,13 +77,21 @@ def store_followup_solution(screenshot_path, solution, provider="claude"):
             interview_data["solutions"][followup_key] = followup_solution
             print(f"{provider.capitalize()} follow-up solution stored with key: {followup_key}")
 
-def store_claude_react_followup_solution(screenshot_path, raw_solution_text):
-    """Stores the raw text response for a Claude React follow-up solution."""
+def store_claude_react_followup_solution(followup_id, raw_solution_text): # Use followup_id as key
+    """Stores the raw text response for a Claude React follow-up solution using its unique ID."""
+    if raw_solution_text and followup_id:
+        with interview_data_lock:
+            # Store the raw text directly, keyed by the unique followup_id
+            interview_data["followup_solutions"][followup_id] = raw_solution_text
+            print(f"Stored Claude React raw follow-up solution for ID: {followup_id}")
+
+def store_gemini_react_followup_solution(screenshot_path, raw_solution_text):
+    """Stores the raw text response for a Gemini React follow-up solution."""
     if raw_solution_text:
         with interview_data_lock:
             # Use a specific key format for this type of raw response
             timestamp = int(datetime.now().timestamp())
-            followup_key = f"{screenshot_path}:claude-react-followup:{timestamp}"
+            followup_key = f"{screenshot_path}:gemini-react-followup:{timestamp}"
             # Store the raw text directly
             interview_data["solutions"][followup_key] = raw_solution_text
-            print(f"Claude React raw follow-up solution stored with key: {followup_key}")
+            print(f"Gemini React raw follow-up solution stored with key: {followup_key}")

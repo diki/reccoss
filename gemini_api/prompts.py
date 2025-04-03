@@ -147,3 +147,26 @@ Please:
    - solution: Friendly and conversational but concise explanation as if you're in an interview explaining your approach
    - code: The updated solution code
 """
+
+def get_react_followup_solution_prompt_for_gemini(transcript: str, react_question: str, current_solution: str) -> str:
+    """Returns the prompt for getting raw React follow-up solutions from Gemini."""
+    return f"""
+Given the following context:
+1. Original React Question: {react_question}
+2. Current React Solution Code:
+```tsx
+{current_solution}
+```
+3. Recent Transcript:
+```
+{transcript}
+```
+
+Please perform the following steps:
+1. Identify the most recent follow-up question or modification request related to the React code from the transcript.
+2. Modify the "Current React Solution Code" provided above to address ONLY that follow-up question/request.
+3. Ensure the updated code is complete and functional React code (TypeScript/TSX).
+4. Include detailed comments ABOVE each changed or added code section explaining WHY the changes were made to address the follow-up.
+
+IMPORTANT: Return ONLY the raw, updated React code block. Do not include any surrounding text, explanations, or markdown formatting (like ```tsx ... ```). Just the code itself.
+"""

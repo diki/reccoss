@@ -49,6 +49,16 @@ export class FollowupSolutionManager {
    * Get a follow-up solution using Claude (for React context).
    */
   async getFollowupSolutionWithClaudeReact() {
+    // --- Generate Unique ID ---
+    const followupId = `followup-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 7)}`;
+    console.log(`Generated followupId: ${followupId}`);
+    // --- End Generate Unique ID ---
+
+    // Get screenshot path needed for polling function call
+    const screenshotPath = appState.get("screenshots.currentScreenshotPath");
+
     await this._fetchFollowupSolution(
       "/api/solution/followup-with-claude-react", // New endpoint
       "Claude React",
@@ -58,7 +68,30 @@ export class FollowupSolutionManager {
       this.uiStateManager.showFollowupErrorWithClaudeReact.bind(
         this.uiStateManager
       ),
-      this.pollingManager.pollForFollowupSolutionWithClaudeReact.bind(
+      () =>
+        this.pollingManager.pollForFollowupSolutionWithClaudeReact(followupId), // Pass followupId
+      followupId // Pass followupId to _fetchFollowupSolution to include in request body
+    );
+  }
+
+  /**
+   * Get a React follow-up solution using Gemini.
+   */
+  async getReactFollowupSolutionWithGemini() {
+    // Reuse Claude React UI functions for now, as they target the same display area
+    await this._fetchFollowupSolution(
+      "/api/solution/react-followup-with-gemini", // New endpoint
+      "Gemini React",
+      this.uiStateManager.showFollowupLoadingStateWithClaudeReact.bind(
+        // Reuse UI loading
+        this.uiStateManager
+      ),
+      this.uiStateManager.showFollowupErrorWithClaudeReact.bind(
+        // Reuse UI error
+        this.uiStateManager
+      ),
+      this.pollingManager.pollForReactFollowupSolutionWithGemini.bind(
+        // New polling function
         this.pollingManager
       )
     );
@@ -72,7 +105,8 @@ export class FollowupSolutionManager {
    * @param {string} providerName - Name for logging ("standard" or "Gemini").
    * @param {Function} showLoadingFn - Function from UIStateManager to show loading state.
    * @param {Function} showErrorFn - Function from UIStateManager to show error state.
-   * @param {Function} startPollingFn - Function from PollingManager to start polling.
+   * @param {Function} startPollingFn - Function from PollingManager to start polling (will accept followupId).
+   * @param {string|null} [followupId=null] - Unique ID for this specific followup request.
    * @private
    */
   async _fetchFollowupSolution(
@@ -80,7 +114,8 @@ export class FollowupSolutionManager {
     providerName,
     showLoadingFn,
     showErrorFn,
-    startPollingFn
+    startPollingFn,
+    followupId = null // Add followupId parameter
   ) {
     // Get the current extracted question (could be coding or React)
     const currentExtractedQuestion = appState.get(
@@ -146,10 +181,11 @@ export class FollowupSolutionManager {
         },
         body: JSON.stringify({
           // Send both the extracted question and the current solution code
-          react_question: currentExtractedQuestion, // Rename for clarity on backend? Or keep generic? Let's keep generic for now.
+          react_question: currentExtractedQuestion,
           current_solution: currentSolutionCode,
           transcript: transcriptText,
           screenshot_path: currentScreenshotPath, // Still useful for context/logging
+          followup_id: followupId, // Include the unique ID
         }),
       });
 
@@ -157,8 +193,9 @@ export class FollowupSolutionManager {
         console.log(
           `${providerName} follow-up solution request submitted successfully.`
         );
-        // Start polling for this specific follow-up type
-        startPollingFn(currentScreenshotPath);
+        // Start polling. The specific polling function (bound or lambda)
+        // now includes the followupId.
+        startPollingFn();
       } else {
         console.error(
           `Error requesting ${providerName} follow-up solution:`,

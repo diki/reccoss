@@ -1,6 +1,6 @@
 from .common import genai, configure_gemini, json
-from .prompts import get_followup_solution_prompt
-from typing import Dict, Optional
+from .prompts import get_followup_solution_prompt, get_react_followup_solution_prompt_for_gemini # Added new prompt import
+from typing import Dict, Optional, Union
 
 def get_followup_solution_with_gemini(current_problem: str, current_code: str, transcript: str) -> Optional[Dict[str, str]]:
     """
@@ -94,4 +94,49 @@ def get_followup_solution_with_gemini(current_problem: str, current_code: str, t
     
     except Exception as e:
         print(f"Exception when calling Gemini API for follow-up solution: {str(e)}")
+        return None
+
+
+def get_react_followup_solution_with_gemini(transcript: str, react_question: str, current_solution: str) -> Optional[str]:
+    """
+    Send a React follow-up request to Google Gemini API to get raw updated code.
+
+    Parameters:
+    - transcript: Recent transcript text containing the follow-up question.
+    - react_question: The original React coding question.
+    - current_solution: The current React solution code.
+
+    Returns:
+    - Raw updated code string, or None if failed.
+    """
+    if not configure_gemini():
+        print("Gemini API key not configured.")
+        return None
+
+    try:
+        # Use a model suitable for code generation/modification, e.g., gemini-1.5-flash or gemini-pro
+        # Note: The original code used 'gemini-2.0-flash' which might be incorrect. Using 'gemini-1.5-flash'.
+        model = genai.GenerativeModel('gemini-1.5-flash')
+
+        # Get the specific prompt for raw React follow-up
+        prompt = get_react_followup_solution_prompt_for_gemini(transcript, react_question, current_solution)
+
+        # Generate the content (expecting raw text based on the prompt)
+        response = model.generate_content(prompt)
+
+        if response and response.text:
+            # Return the raw text directly as requested by the prompt
+            print("Successfully received raw React follow-up from Gemini.")
+            return response.text
+        else:
+            print("Empty response from Gemini API for React follow-up.")
+            # Check for safety ratings or other reasons for empty response
+            if response and response.prompt_feedback:
+                 print(f"Prompt Feedback: {response.prompt_feedback}")
+            if response and response.candidates and response.candidates[0].finish_reason:
+                 print(f"Finish Reason: {response.candidates[0].finish_reason}")
+            return None
+
+    except Exception as e:
+        print(f"Exception when calling Gemini API for React follow-up solution: {str(e)}")
         return None

@@ -215,61 +215,56 @@ export class SolutionPollingManager {
   }
 
   /**
-   * Poll for the Claude React follow-up solution.
-   * @param {string} screenshotPath - The screenshot path.
+   * Poll for the Claude React follow-up solution using its unique ID.
+   * @param {string} followupId - The unique ID for the specific followup request.
    */
-  pollForFollowupSolutionWithClaudeReact(screenshotPath) {
-    const filename = this._getFilename(screenshotPath);
-    const pollKey = `claude-react-followup-${filename}`;
-    // Define a unique key prefix for storing this specific type of solution
-    const solutionKeyPrefix = `${screenshotPath}:claude-react-followup:`;
+  pollForFollowupSolutionWithClaudeReact(followupId) {
+    // Use the followupId itself as the pollKey for uniqueness
+    const pollKey = followupId;
 
     console.log(
-      `Starting to poll for Claude React follow-up solution: ${pollKey}`
+      `Starting to poll for Claude React follow-up solution with ID: ${pollKey}`
     );
     this._clearPolling(pollKey);
 
     this.pollIntervals[pollKey] = setInterval(async () => {
       try {
-        // We still poll the generic /api/solutions endpoint which returns all data
+        // Poll the generic /api/solutions endpoint which returns all data
         const data = await apiRequest("/api/solutions");
 
-        // Find the LATEST Claude React follow-up key based on timestamp
-        const allKeys = Object.keys(data.solutions || {}); // Check within 'solutions' object safely
-        const matchingKeys = allKeys.filter((key) =>
-          key.startsWith(solutionKeyPrefix)
+        // --- DEBUG LOGGING START ---
+        console.log(
+          `[Polling ${pollKey}] Received data:`,
+          JSON.stringify(data, null, 2)
         );
-        let latestKey = null;
-        let latestTimestamp = 0;
+        // --- DEBUG LOGGING END ---
 
-        if (matchingKeys.length > 0) {
-          matchingKeys.forEach((key) => {
-            const parts = key.split(":");
-            const timestamp = parseInt(parts[parts.length - 1], 10);
-            if (!isNaN(timestamp) && timestamp >= latestTimestamp) {
-              // Use >= to handle potential simultaneous requests
-              latestTimestamp = timestamp;
-              latestKey = key;
-            }
-          });
-        }
+        // Check if the solution exists for the specific followupId
+        const specificFollowupSolution =
+          data.followup_solutions && data.followup_solutions[followupId];
 
-        // Check if the latest key was found and exists in the data.solutions
-        const followupSolution = latestKey ? data.solutions[latestKey] : null;
+        // --- DEBUG LOGGING START ---
+        console.log(
+          `[Polling ${pollKey}] Checking for solution with ID ${followupId}:`,
+          specificFollowupSolution
+        );
+        // --- DEBUG LOGGING END ---
 
-        if (latestKey && followupSolution) {
+        // Check if the solution for this ID is present
+        if (specificFollowupSolution) {
           console.log(
-            `Latest Claude React follow-up solution found: ${latestKey}`
+            `Claude React follow-up solution found for ID: ${followupId}`
           );
 
           // Trigger a specific event for the display manager
           StateEvents.emit("solution:claudeReactFollowupAvailable", {
-            solution: followupSolution, // Send the raw response string
+            solution: specificFollowupSolution, // Send the specific raw response string
           });
 
           appState.update("solution.isGenerating", false);
-          this._clearPolling(pollKey);
+          this._clearPolling(pollKey); // Stop polling once found
         }
+        // else: Continue polling if the specific ID is not found yet
       } catch (error) {
         console.error(
           `Error polling for Claude React follow-up solution (${pollKey}):`,
@@ -287,6 +282,81 @@ export class SolutionPollingManager {
       // Use the specific error handler for this UI element
       this.uiStateManager.showFollowupErrorWithClaudeReact(
         "Could not generate Claude follow-up solution. Please try again."
+      );
+      this._handlePollingTimeout(pollKey);
+    }, this.POLL_TIMEOUT_MS);
+  }
+
+  /**
+   * Poll for the Gemini React follow-up solution status.
+   * @param {string} screenshotPath - The screenshot path.
+   */
+  pollForReactFollowupSolutionWithGemini(screenshotPath) {
+    const filename = this._getFilename(screenshotPath);
+    const pollKey = `gemini-react-followup-${filename}`;
+    // Define a unique key prefix for storing this specific type of solution
+    const solutionKeyPrefix = `${screenshotPath}:gemini-react-followup:`;
+
+    console.log(
+      `Starting to poll for Gemini React follow-up solution: ${pollKey}`
+    );
+    this._clearPolling(pollKey);
+
+    this.pollIntervals[pollKey] = setInterval(async () => {
+      try {
+        const data = await apiRequest("/api/solutions");
+
+        // Find the LATEST Gemini React follow-up key based on timestamp
+        const allKeys = Object.keys(data.solutions || {});
+        const matchingKeys = allKeys.filter((key) =>
+          key.startsWith(solutionKeyPrefix)
+        );
+        let latestKey = null;
+        let latestTimestamp = 0;
+
+        if (matchingKeys.length > 0) {
+          matchingKeys.forEach((key) => {
+            const parts = key.split(":");
+            const timestamp = parseInt(parts[parts.length - 1], 10);
+            if (!isNaN(timestamp) && timestamp >= latestTimestamp) {
+              latestTimestamp = timestamp;
+              latestKey = key;
+            }
+          });
+        }
+
+        const followupSolution = latestKey ? data.solutions[latestKey] : null;
+
+        if (latestKey && followupSolution) {
+          console.log(
+            `Latest Gemini React follow-up solution found: ${latestKey}`
+          );
+
+          // Trigger a specific event for the display manager
+          StateEvents.emit("solution:geminiReactFollowupAvailable", {
+            solution: followupSolution, // Send the raw response string
+          });
+
+          appState.update("solution.isGenerating", false);
+          this._clearPolling(pollKey);
+        }
+      } catch (error) {
+        console.error(
+          `Error polling for Gemini React follow-up solution (${pollKey}):`,
+          error
+        );
+        // Reuse the Claude React error UI for now as it targets the same display area
+        this.uiStateManager.showFollowupErrorWithClaudeReact(
+          "Error retrieving Gemini follow-up solution. Please try again."
+        );
+        this._handlePollingError(pollKey); // Stop polling on error
+      }
+    }, this.POLL_INTERVAL_MS);
+
+    this.pollTimeouts[pollKey] = setTimeout(() => {
+      // Reuse the Claude React error UI for now
+      this.uiStateManager.showFollowupErrorWithClaudeReact(
+        "Could not generate Gemini follow-up solution. Please try again."
       );
       this._handlePollingTimeout(pollKey);
     }, this.POLL_TIMEOUT_MS);
@@ -310,13 +380,22 @@ export class SolutionPollingManager {
    * @private
    */
   _clearPolling(pollKey) {
+    // --- DEBUG LOGGING START ---
+    console.log(`Attempting to clear polling for key: ${pollKey}`);
+    // --- DEBUG LOGGING END ---
     if (this.pollIntervals[pollKey]) {
       clearInterval(this.pollIntervals[pollKey]);
       delete this.pollIntervals[pollKey];
+      // --- DEBUG LOGGING START ---
+      console.log(`Cleared polling interval for: ${pollKey}`);
+      // --- DEBUG LOGGING END ---
     }
     if (this.pollTimeouts[pollKey]) {
       clearTimeout(this.pollTimeouts[pollKey]);
       delete this.pollTimeouts[pollKey];
+      // --- DEBUG LOGGING START ---
+      console.log(`Cleared polling timeout for: ${pollKey}`);
+      // --- DEBUG LOGGING END ---
     }
   }
 

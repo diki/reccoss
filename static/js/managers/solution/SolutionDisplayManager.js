@@ -277,4 +277,23 @@ export class SolutionDisplayManager {
       }
     }
   }
+
+  /**
+   * Display the raw Gemini React follow-up solution.
+   * @param {string} solution - The raw solution text from Gemini.
+   */
+  displayGeminiReactFollowupSolution(solution) {
+    if (this.elements.followupReactContent) {
+      // Display the raw text directly using textContent within a <pre> tag
+      const preElement = document.createElement("pre");
+      preElement.textContent = solution || ""; // Set text content directly
+      this.elements.followupReactContent.innerHTML = ""; // Clear previous content
+      this.elements.followupReactContent.appendChild(preElement);
+      // Optional highlighting can be added here if needed later
+    } else {
+      console.error("Followup React content element not found.");
+    }
+  }
+
+  // --- Private Helper Methods --- (Keep existing helpers below)
 }

@@ -72,6 +72,18 @@ document.addEventListener("DOMContentLoaded", function () {
     solutionDisplayManager.displayClaudeReactFollowupSolution(data.solution);
   });
 
+  // Add listener for the new Gemini React Followup button
+  if (elements.getReactFollowupGeminiBtn) {
+    elements.getReactFollowupGeminiBtn.addEventListener("click", () => {
+      followupSolutionManager.getReactFollowupSolutionWithGemini();
+    });
+  }
+
+  // Add listener for the event when Gemini React Followup solution is ready
+  StateEvents.on("solution:geminiReactFollowupAvailable", (data) => {
+    solutionDisplayManager.displayGeminiReactFollowupSolution(data.solution);
+  });
+
   // Store managers for potential future access
   const managers = {
     recordingManager,

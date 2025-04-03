@@ -63,6 +63,10 @@ export function initDomElements() {
     getFollowupSolutionClaudeReactBtn: document.getElementById(
       "get-followup-solution-claude-react"
     ),
+    getReactFollowupGeminiBtn: document.getElementById(
+      // Added this line
+      "get-react-followup-gemini"
+    ),
 
     // Solution display
     solutionTabs: document.getElementById("solution-tabs"),

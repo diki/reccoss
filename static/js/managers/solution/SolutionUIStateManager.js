@@ -39,7 +39,9 @@ export class SolutionUIStateManager {
     this.elements.getSolutionFollowupWithGeminiBtn.disabled =
       isGenerating || !questionAvailable || !solutionAvailable;
     this.elements.getFollowupSolutionClaudeReactBtn.disabled =
-      isGenerating || !questionAvailable || !solutionAvailable; // Add new button
+      isGenerating || !questionAvailable || !solutionAvailable;
+    this.elements.getReactFollowupGeminiBtn.disabled = // Added this line
+      isGenerating || !questionAvailable || !solutionAvailable;
 
     // Reset button text if not generating
     if (!isGenerating) {
@@ -58,7 +60,9 @@ export class SolutionUIStateManager {
       this.elements.getSolutionFollowupWithGeminiBtn.textContent =
         "Solve Follow-up with GEMini";
       this.elements.getFollowupSolutionClaudeReactBtn.textContent =
-        "Get Followup Solution (Claude)"; // Add new button text reset
+        "Get Followup Solution (Claude)";
+      this.elements.getReactFollowupGeminiBtn.textContent = // Added this line
+        "Get React Follow-up (Gemini)";
     }
   }
 
@@ -84,7 +88,9 @@ export class SolutionUIStateManager {
       this.elements.getSolutionFollowupWithGeminiBtn.disabled =
         !questionAvailable || !solutionAvailable;
       this.elements.getFollowupSolutionClaudeReactBtn.disabled =
-        !questionAvailable || !solutionAvailable; // Add new button availability
+        !questionAvailable || !solutionAvailable;
+      this.elements.getReactFollowupGeminiBtn.disabled = // Added this line
+        !questionAvailable || !solutionAvailable;
     }
   }
 
