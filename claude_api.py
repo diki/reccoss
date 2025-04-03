@@ -149,7 +149,7 @@ def get_react_solution(question: str) -> Optional[Dict[str, str]]:
 
     # Construct the message
     payload = {
-        "model": "claude-3-sonnet-20240229",
+        "model": "claude-3-7-sonnet-20250219",
         "max_tokens": 4000, # Keep max tokens high for potentially long code
         "messages": [
             {
@@ -249,7 +249,7 @@ Then, provide your suggested response below that line. Do not include any other 
 
     # Construct the message payload
     payload = {
-        "model": "claude-3-sonnet-20240229", # Or potentially Opus if needed for complexity
+        "model": "claude-3-7-sonnet-20250219", # Or potentially Opus if needed for complexity
         "max_tokens": 2000, # Adjust as needed
         "messages": [
             {
