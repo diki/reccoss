@@ -13,6 +13,8 @@ export class QuestionManager {
    */
   constructor(elements) {
     this.elements = elements;
+    // Ensure the new button element is available
+    this.extractQuestionTranscriptBtn = elements.extractQuestionTranscriptBtn;
     this.setupEventListeners();
     this.setupStateSubscriptions();
   }
@@ -35,6 +37,17 @@ export class QuestionManager {
     // this.elements.questionNotesInput.addEventListener("input", (event) => {
     //   appState.update("question.notes", event.target.value);
     // });
+
+    // Add listener for the new transcript extraction button
+    if (this.extractQuestionTranscriptBtn) {
+      this.extractQuestionTranscriptBtn.addEventListener("click", () =>
+        this.extractQuestionFromTranscript()
+      );
+    } else {
+      console.error(
+        "Extract Question (Transcript) button not found in DOM elements."
+      );
+    }
   }
 
   /**
@@ -161,5 +174,95 @@ export class QuestionManager {
    */
   poll() {
     // No polling needed for questions
+  }
+
+  /**
+   * Extract question from transcript using Gemini
+   */
+  async extractQuestionFromTranscript() {
+    console.log("Attempting to extract question from transcript...");
+
+    // Reset screenshot selection state
+    appState.update("screenshots.manuallySelectedScreenshot", false);
+    appState.update("screenshots.currentScreenshotPath", null);
+
+    // Show loading message
+    this.elements.extractedQuestionContainer.innerHTML =
+      "<p><em>Extracting question from transcript... (using Gemini)</em></p>";
+
+    // Disable solution buttons initially
+    this.disableSolutionButtons();
+
+    try {
+      const data = await apiRequest("/api/extract-question-from-transcript", {
+        method: "POST",
+        // No body needed as the backend retrieves the transcript
+      });
+
+      if (data.status === "success" && data.extracted_question) {
+        console.log(
+          "Successfully extracted question from transcript:",
+          data.extracted_question
+        );
+        // Display the extracted question
+        this.elements.extractedQuestionContainer.innerHTML = `<p>${data.extracted_question}</p>`;
+
+        // Enable the solution buttons
+        this.enableSolutionButtons();
+
+        // Store the current question (using the transcript key)
+        appState.update(
+          "question.currentExtractedQuestion",
+          data.extracted_question
+        );
+        // We don't have a specific screenshot path here, maybe store the key?
+        // appState.update("question.currentStorageKey", data.storage_key); // Optional: store the key if needed later
+      } else {
+        console.error(
+          "Error extracting question from transcript:",
+          data.message
+        );
+        this.elements.extractedQuestionContainer.innerHTML = `<p><em>Could not extract question from transcript: ${
+          data.message || "Unknown error"
+        }</em></p>`;
+      }
+    } catch (error) {
+      console.error(
+        "Error calling API to extract question from transcript:",
+        error
+      );
+      this.elements.extractedQuestionContainer.innerHTML =
+        "<p><em>Error extracting question from transcript. Please check logs.</em></p>";
+    }
+  }
+
+  /** Helper function to disable solution buttons */
+  disableSolutionButtons() {
+    this.elements.getSolutionBtn.disabled = true;
+    this.elements.getSolutionWithOpenaiBtn.disabled = true;
+    this.elements.getSolutionWithGeminiBtn.disabled = true;
+    this.elements.getReactSolutionWithGeminiBtn.disabled = true;
+    this.elements.getReactSolutionWithClaudeBtn.disabled = true;
+    this.elements.getReactSolution2WithGeminiBtn.disabled = true;
+    this.elements.getSolutionFollowupBtn.disabled = true;
+    this.elements.getSolutionFollowupWithGeminiBtn.disabled = true;
+    this.elements.getFollowupSolutionClaudeReactBtn.disabled = true;
+    this.elements.getReactFollowupGeminiBtn.disabled = true;
+  }
+
+  /** Helper function to enable relevant solution buttons */
+  enableSolutionButtons() {
+    // Enable standard solution buttons after extracting any question
+    this.elements.getSolutionBtn.disabled = false;
+    this.elements.getSolutionWithOpenaiBtn.disabled = false;
+    this.elements.getSolutionWithGeminiBtn.disabled = false;
+    // Enable React buttons too, as the question might be React-related
+    this.elements.getReactSolutionWithGeminiBtn.disabled = false;
+    this.elements.getReactSolutionWithClaudeBtn.disabled = false;
+    // Keep follow-up buttons disabled until an initial solution is generated
+    this.elements.getSolutionFollowupBtn.disabled = true;
+    this.elements.getSolutionFollowupWithGeminiBtn.disabled = true;
+    this.elements.getFollowupSolutionClaudeReactBtn.disabled = true;
+    this.elements.getReactFollowupGeminiBtn.disabled = true;
   }
 }

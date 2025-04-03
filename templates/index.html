@@ -25,21 +25,28 @@
           </button>
           <button
             id="get-design-question"
-            class="button secondary hidden"
+            class="button secondary"
             style="background-color: black"
           >
             Get Design Question (screenshot)
           </button>
           <button
-            id="extract-react-question"
+            id="extract-question-transcript"
             class="button secondary"
+            style="background-color: #ff9800"
+          >
+            Extract Question (Transcript)
+          </button>
+          <button
+            id="extract-react-question"
+            class="button secondary hidden"
             style="background-color: rgb(231, 45, 107)"
           >
             Extract React Question (Gemini)
           </button>
           <button
             id="extract-react-question-openai"
-            class="button secondary"
+            class="button secondary hidden"
             style="background-color: rgb(10, 132, 255)"
           >
             Extract React Question (OpenAI)
@@ -83,7 +90,7 @@
           </button>
           <button
             id="get-react-solution2-with-gemini"
-            class="button solution-button"
+            class="button solution-button hidden"
             style="background-color: rgb(232, 94, 8)"
             disabled
           >
@@ -113,16 +120,16 @@
           </button>
           <button
             id="get-react-followup-gemini"
-            class="button solution-button"
+            class="button solution-button hidden"
             style="background-color: #4285f4"
             disabled
           >
             Get React Follow-up (Gemini)
           </button>
-          <button id="start-recording" class="button primary">
+          <button id="start-recording" class="button primary hidden">
             Start Recording
           </button>
-          <button id="stop-recording" class="button danger">
+          <button id="stop-recording" class="button danger hidden">
             Stop Recording
           </button>
           <button id="reset-all" class="button danger">Reset All</button>
@@ -216,7 +223,7 @@
             <select id="question-type">
               <option value="coding">Coding Question</option>
               <option value="behavioral">Behavioral Question</option>
-              <option value="system-design">System Design</option>
+              <option value="11em-design">System Design</option>
               <option value="other">Other</option>
             </select>
             <button id="mark-question" class="button info">

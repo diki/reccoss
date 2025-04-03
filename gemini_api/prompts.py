@@ -175,3 +175,18 @@ Please perform the following steps:
 
 IMPORTANT: Return ONLY the raw, updated React code block. Do not include any surrounding text, explanations, or markdown formatting (like ```tsx ... ```). Just the code itself.
 """
+
+def get_transcript_question_extraction_prompt() -> str:
+    """Returns the prompt for extracting the latest question from a transcript"""
+    return """Analyze the following interview transcript and extract the most recent, complete question or task description given by the interviewer.
+
+Instructions:
+1. Analyze the entire transcript provided below.
+2. Identify ONLY the **latest** (most recent) question or task description given by the interviewer. Pay attention to conversational cues that indicate a new question is being asked.
+3. Once the latest question/task is identified, extract its core request (e.g., "solve this coding problem", "design this system", "explain this concept").
+4. Extract ALL associated requirements, constraints, context, and specific details mentioned immediately before, during, or after that *specific* latest question/task that are necessary to understand its full scope.
+5. Combine the core request and all its associated details into a single, coherent block of text representing the complete latest question/task.
+6. Ignore conversational filler, greetings, earlier questions, and unrelated side comments.
+7. Focus on technical questions, coding problems, system design tasks, or behavioral questions that require a structured answer.
+
+Return only the complete, extracted text for the **latest** question/task description, without any introductory phrases like "The question is:", commentary, or explanation."""

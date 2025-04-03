@@ -18,6 +18,9 @@ export function initDomElements() {
     takeScreenshotBtn: document.getElementById("take-screenshot"),
     extractWithGeminiBtn: document.getElementById("extract-with-gemini"),
     getDesignQuestionBtn: document.getElementById("get-design-question"),
+    extractQuestionTranscriptBtn: document.getElementById(
+      "extract-question-transcript"
+    ), // Added for transcript extraction
     extractWithOpenaiBtn: document.getElementById("extract-with-openai"),
     extractReactQuestionBtn: document.getElementById("extract-react-question"),
     extractReactQuestionOpenaiBtn: document.getElementById(
