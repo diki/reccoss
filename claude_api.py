@@ -237,14 +237,14 @@ Here is the current code solution provided so far:
 </current_solution>
 
 Based *only* on the information in the transcript, please perform the following steps:
-1. Identify and extract the single, most recent question asked by the interviewer in the transcript.
-2. Provide a suggested answer to that extracted question.
-3. If answering the question requires a change to the provided <current_solution> code, include the necessary code modifications or additions in your answer. If no code change is needed, state that explicitly.
+1. Identify and extract the most recent meaningful statement or question from the interviewer in the transcript. This could be a question, instruction, feedback, or any other important input.
+2. Provide a suggested response to that extracted input.
+3. If responding requires a change to the provided <current_solution> code, include the necessary code modifications or additions in your answer. If no code change is needed, state that explicitly.
 
-Your response MUST start with the extracted question on its own line, like this:
-Extracted Question: [The exact question you extracted from the transcript]
+Your response MUST start with the extracted input on its own line, like this:
+Extracted Input: [The exact statement or question you extracted from the transcript]
 
-Then, provide your suggested answer below that line. Do not include any other introductory text or commentary. Return only the extracted question line and the suggested answer.
+Then, provide your suggested response below that line. Do not include any other introductory text or commentary. Return only the extracted input line and the suggested response.
 """
 
     # Construct the message payload

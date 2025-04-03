@@ -79,13 +79,36 @@ export class SolutionPollingManager {
     this.pollIntervals[pollKey] = setInterval(async () => {
       try {
         const data = await apiRequest("/api/solutions"); // Get all solutions
-        const followupKey = Object.keys(data).find((key) =>
+
+        // Find the LATEST follow-up key based on timestamp
+        const allKeys = Object.keys(data.solutions || data); // Check both root and solutions object
+        const matchingKeys = allKeys.filter((key) =>
           key.startsWith(solutionKeyPrefix)
         );
+        let latestKey = null;
+        let latestTimestamp = 0;
 
-        if (followupKey && data[followupKey]) {
-          console.log(`Follow-up solution found: ${followupKey}`);
-          const followupSolution = data[followupKey];
+        if (matchingKeys.length > 0) {
+          matchingKeys.forEach((key) => {
+            const parts = key.split(":");
+            const timestamp = parseInt(parts[parts.length - 1], 10);
+            if (!isNaN(timestamp) && timestamp >= latestTimestamp) {
+              // Use >= to handle potential simultaneous requests
+              latestTimestamp = timestamp;
+              latestKey = key;
+            }
+          });
+        }
+
+        // Check if the latest key was found and exists in the data
+        const followupSolution = latestKey
+          ? data.solutions
+            ? data.solutions[latestKey]
+            : data[latestKey]
+          : null;
+
+        if (latestKey && followupSolution) {
+          console.log(`Latest follow-up solution found: ${latestKey}`);
 
           // Trigger event for display manager to handle
           StateEvents.emit("solution:followupAvailable", {
@@ -131,13 +154,36 @@ export class SolutionPollingManager {
     this.pollIntervals[pollKey] = setInterval(async () => {
       try {
         const data = await apiRequest("/api/solutions"); // Get all solutions
-        const followupKey = Object.keys(data).find((key) =>
+
+        // Find the LATEST follow-up key based on timestamp
+        const allKeys = Object.keys(data.solutions || data); // Check both root and solutions object
+        const matchingKeys = allKeys.filter((key) =>
           key.startsWith(solutionKeyPrefix)
         );
+        let latestKey = null;
+        let latestTimestamp = 0;
 
-        if (followupKey && data[followupKey]) {
-          console.log(`Gemini follow-up solution found: ${followupKey}`);
-          const followupSolution = data[followupKey];
+        if (matchingKeys.length > 0) {
+          matchingKeys.forEach((key) => {
+            const parts = key.split(":");
+            const timestamp = parseInt(parts[parts.length - 1], 10);
+            if (!isNaN(timestamp) && timestamp >= latestTimestamp) {
+              // Use >= to handle potential simultaneous requests
+              latestTimestamp = timestamp;
+              latestKey = key;
+            }
+          });
+        }
+
+        // Check if the latest key was found and exists in the data
+        const followupSolution = latestKey
+          ? data.solutions
+            ? data.solutions[latestKey]
+            : data[latestKey]
+          : null;
+
+        if (latestKey && followupSolution) {
+          console.log(`Latest Gemini follow-up solution found: ${latestKey}`);
 
           // Trigger event for display manager to handle
           StateEvents.emit("solution:followupAvailable", {
@@ -187,15 +233,34 @@ export class SolutionPollingManager {
       try {
         // We still poll the generic /api/solutions endpoint which returns all data
         const data = await apiRequest("/api/solutions");
-        // Find the specific key for our Claude React followup
-        const followupKey = Object.keys(data.solutions).find(
-          // Check within 'solutions' object
-          (key) => key.startsWith(solutionKeyPrefix)
-        );
 
-        if (followupKey && data.solutions[followupKey]) {
-          console.log(`Claude React follow-up solution found: ${followupKey}`);
-          const followupSolution = data.solutions[followupKey]; // Get the raw response
+        // Find the LATEST Claude React follow-up key based on timestamp
+        const allKeys = Object.keys(data.solutions || {}); // Check within 'solutions' object safely
+        const matchingKeys = allKeys.filter((key) =>
+          key.startsWith(solutionKeyPrefix)
+        );
+        let latestKey = null;
+        let latestTimestamp = 0;
+
+        if (matchingKeys.length > 0) {
+          matchingKeys.forEach((key) => {
+            const parts = key.split(":");
+            const timestamp = parseInt(parts[parts.length - 1], 10);
+            if (!isNaN(timestamp) && timestamp >= latestTimestamp) {
+              // Use >= to handle potential simultaneous requests
+              latestTimestamp = timestamp;
+              latestKey = key;
+            }
+          });
+        }
+
+        // Check if the latest key was found and exists in the data.solutions
+        const followupSolution = latestKey ? data.solutions[latestKey] : null;
+
+        if (latestKey && followupSolution) {
+          console.log(
+            `Latest Claude React follow-up solution found: ${latestKey}`
+          );
 
           // Trigger a specific event for the display manager
           StateEvents.emit("solution:claudeReactFollowupAvailable", {

@@ -32,6 +32,9 @@ def process_solution_with_claude(question, screenshot_path):
 def process_followup_solution_with_claude(current_problem, current_code, transcript, screenshot_path):
     try:
         print(f"Processing Claude follow-up request...")
+        print(f"--- Problem sent to Claude (Standard Follow-up) ---")
+        print(current_problem)
+        print(f"--- End Problem ---")
         solution = get_followup_solution(current_problem, current_code, transcript)
         if solution:
             print(f"Claude follow-up solution generated successfully")
@@ -112,6 +115,9 @@ def process_followup_solution_with_claude_react(transcript, react_question, curr
     """Background task to get and store raw Claude React follow-up."""
     try:
         print(f"Processing Claude React follow-up request...")
+        print(f"--- React Question sent to Claude (React Follow-up) ---")
+        print(react_question)
+        print(f"--- End React Question ---")
         raw_solution = get_followup_solution_with_claude_react(transcript, react_question, current_solution)
         if raw_solution:
             print(f"Claude React follow-up solution generated successfully (raw)")
