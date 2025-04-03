@@ -149,7 +149,8 @@ def get_react_solution(question: str) -> Optional[Dict[str, str]]:
 
     # Construct the message
     payload = {
-        "model": "claude-3-7-sonnet-20250219",
+        # "model": "claude-3-7-sonnet-20250219",
+        "model": "claude-3-5-sonnet-20241022",
         "max_tokens": 4000, # Keep max tokens high for potentially long code
         "messages": [
             {
@@ -238,7 +239,7 @@ Here is the current code solution provided so far:
 
 Based *only* on the information in the transcript, please perform the following steps:
 1. Identify and extract the most recent meaningful statement or question from the interviewer in the transcript. This could be a question, instruction, feedback, or any other important input.
-2. Provide a suggested response to that extracted input.
+2. Provide a suggested response to that extracted input, write down suggested response step by step
 3. If responding requires a change to the provided <current_solution> code, include the necessary code modifications or additions in your answer. If no code change is needed, state that explicitly.
 
 Your response MUST start with the extracted input on its own line, like this:
@@ -249,7 +250,8 @@ Then, provide your suggested response below that line. Do not include any other 
 
     # Construct the message payload
     payload = {
-        "model": "claude-3-7-sonnet-20250219", # Or potentially Opus if needed for complexity
+        # "model": "claude-3-7-sonnet-20250219",
+        "model": "claude-3-5-sonnet-20241022",
         "max_tokens": 2000, # Adjust as needed
         "messages": [
             {

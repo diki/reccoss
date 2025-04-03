@@ -88,8 +88,10 @@ def get_react_question_extraction_prompt() -> str:
 2. All requirements and constraints
 3. Any specific React concepts, hooks, or patterns mentioned
 4. Any code snippets or examples provided
+5. File and folder hierarchy if exists
 
-Return the complete question text exactly as presented, without any additional commentary or explanation."""
+
+Return the complete question text exactly as presented, without any additional commentary or explanation and file folder structure with same hierarchy"""
 
 def get_react_solution_prompt(question: str) -> str:
     """Returns the prompt for getting React-specific coding solutions from Gemini"""
@@ -101,7 +103,7 @@ I need a solution to the following React coding problem:
 Imagine you are in an interview. Please provide a comprehensive React solution with the following components:
 1. Explanation of your approach step by step (technical explanation)
 2. A friendly, conversational but concise explanation as if you're in an interview explaining your approach
-3. Code implementation in React with proper JSX syntax
+3. Code implementation in React with proper JSX syntax, if you see a file hierarchy in the question add file name as commnet and show the code for file below the comment
    - IMPORTANT: Include detailed comments ABOVE each code section explaining WHY this code is written this way
    - Example of correct comment formatting:
      // This useState hook is used to track form state because we need to maintain input values between renders
@@ -118,10 +120,13 @@ I need a solution to the following React coding problem:
 
 {question}
 
-Please provide ONLY the code implementation in React (TypeScript/TSX) with proper JSX syntax. Do not include any explanation, complexity analysis, or strategy tips outside of the code comments.
+Please provide ONLY the code implementation in React (TypeScript/TSX) with proper JSX syntax and typescript types. Do not include any explanation, complexity analysis, or strategy tips outside of the code comments.
+If you see a file hiearchy in the question explain how you would structure the code shortly in a comment
 
 Code Requirements:
    - IMPORTANT: Include detailed comments ABOVE each code section explaining WHY this code is written this way.
+   - IMPORTANT: Do not typescript generic types
+   - IMPORTANT: if you see a file hierarchy in the question add file name as commnet and show the code for file below the comment
    - Example of correct comment formatting:
      // This useState hook is used to track form state because we need to maintain input values between renders
      const [formData, setFormData] = useState({{}}); 
