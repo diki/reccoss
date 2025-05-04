@@ -18,7 +18,7 @@ def extract_question_from_transcript_with_gemini(transcript_text: str) -> Option
 
     try:
         # 2. Initialize the model (using the same model as design question for now)
-        model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25') # Use the correct model name
+        model = genai.GenerativeModel('gemini-2.0-flash') # Use the correct model name
 
         print("💬💬💬💬💬💬💬💬💬💬💬")
         print(transcript_text)

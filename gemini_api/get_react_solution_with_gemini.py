@@ -23,37 +23,23 @@ def get_react_solution_with_gemini(question: str) -> Optional[Dict[str, str]]:
     
     try:
         # Initialize the model
-        model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25')
+        # model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25')
+        model = genai.GenerativeModel('gemini-2.0-flash')
         
         # Get the prompt from prompts.py
         prompt = get_react_solution_prompt(question)
         
+        print(prompt)
         # Define the response schema for structured output
         response_schema = {
             "type": "object",
             "properties": {
-                "explanation": {
-                    "type": "string",
-                    "description": "Step-by-step technical explanation of the React solution approach"
-                },
-                "solution": {
-                    "type": "string",
-                    "description": "Friendly and conversational but concise explanation as if in an interview setting"
-                },
                 "code": {
                     "type": "string",
                     "description": "React implementation of the solution with proper JSX and comments explaining the code"
                 },
-                "complexity": {
-                    "type": "string",
-                    "description": "Analysis of time and space complexity, including React-specific performance considerations"
-                },
-                "strategy": {
-                    "type": "string",
-                    "description": "Interview strategy tips for this React problem"
-                }
             },
-            "required": ["explanation", "solution", "code", "complexity", "strategy"]
+            "required": ["code"]
         }
         
         # Generate the solution with structured JSON output

@@ -96,21 +96,35 @@ Return the complete question text exactly as presented, without any additional c
 def get_react_solution_prompt(question: str) -> str:
     """Returns the prompt for getting React-specific coding solutions from Gemini"""
     return f"""
-I need a solution to the following React coding problem:
+Act as an expert React developer specializing in modern TypeScript practices.
+Your task is to provide *only* the code solution for the following React problem:
 
 {question}
 
-Imagine you are in an interview. Please provide a comprehensive React solution with the following components:
-1. Explanation of your approach step by step (technical explanation)
-2. A friendly, conversational but concise explanation as if you're in an interview explaining your approach
-3. Code implementation in React with proper JSX syntax, if you see a file hierarchy in the question add file name as commnet and show the code for file below the comment
-   - IMPORTANT: Include detailed comments ABOVE each code section explaining WHY this code is written this way
-   - Example of correct comment formatting:
-     // This useState hook is used to track form state because we need to maintain input values between renders
-     const [formData, setFormData] = useState({{}}); 
-   - Make sure to explain your implementation decisions in the comments
-4. Time and space complexity analysis, including React-specific performance considerations
-5. Interview strategy tips for this React problem
+Follow these instructions rigorously:
+
+1.  **Code Only:** Your entire response must consist *only* of the code implementation. Do **NOT** include any introductory sentences, explanations outside of code comments, closing remarks, or any other text. Start directly with the first line of code.
+2.  **TypeScript & State-of-the-Art React:**
+    *   Use TypeScript (`.tsx` syntax). Ensure strong typing for props, state, event handlers, and function return types. Use interfaces or types where appropriate.
+    *   Employ modern React practices: Functional components, Hooks (useState, useEffect, useCallback, useMemo, useContext, useRef as needed), and potentially custom hooks for reusable logic. Avoid class components.
+    *   Focus on clarity, maintainability, and common React patterns.
+3.  **Explanatory Comments:** Include concise comments *directly within* the code (typically immediately above the relevant line or block) explaining the *'why'* behind significant implementation choices.
+    *   **Purpose:** Explain the reason for using a specific hook, the logic within a function, the structure of state, or the role of a component/prop.
+    *   **Focus:** Clarity on design decisions, not just restating what the code does.
+    *   **Example:**
+        ```typescript
+        // Using useCallback to memoize the fetch function, preventing unnecessary re-creation
+        // on each render, which optimizes child components that might receive it as a prop.
+        const fetchData = useCallback(async () => {{
+          // ... fetch logic
+        }}, [dependency]);
+
+        // useState to manage the loading state during asynchronous operations.
+        const [isLoading, setIsLoading] = useState<boolean>(false);
+        ```
+4.  **Completeness:** Provide all necessary code snippets (components, types/interfaces, helper functions) required for a functional solution based *only* on the input question. Assume a standard React + TypeScript project setup. Do not add imports for libraries not implicitly needed by the solution (like `React`, `useState` are fine, but don't add `lodash` unless the problem requires it).
+
+Your output should be ready to be copied and pasted directly into `.tsx` files.    
 """
 
 def get_react_solution_prompt_for_claude(question: str) -> str:

@@ -32,7 +32,7 @@
           </button>
           <button
             id="extract-question-transcript"
-            class="button secondary hidden"
+            class="button secondary"
             style="background-color: #ff9800"
           >
             Extract Question (Transcript)
@@ -53,17 +53,21 @@
           </button>
           <button
             id="get-solution-with-gemini"
-            class="button solution-button"
+            class="button solution-button hidden"
             disabled
           >
             Get Solution with Gemini
           </button>
-          <button id="get-solution" class="button solution-button" disabled>
+          <button
+            id="get-solution"
+            class="button solution-button hidden"
+            disabled
+          >
             Get Solution
           </button>
           <button
             id="get-solution-with-openai"
-            class="button solution-button"
+            class="button solution-button hidden"
             disabled
           >
             Get Solution with OpenAI
@@ -71,7 +75,7 @@
 
           <button
             id="get-react-solution-with-gemini"
-            class="button solution-button hidden"
+            class="button solution-button"
             style="background-color: rgb(232, 94, 8)"
             disabled
           >
@@ -87,7 +91,7 @@
           </button>
           <button
             id="get-react-solution2-with-gemini"
-            class="button solution-button hidden"
+            class="button solution-button"
             style="background-color: rgb(232, 94, 8)"
             disabled
           >
@@ -125,7 +129,7 @@
           </button>
           <button
             id="get-react-followup-gemini"
-            class="button solution-button hidden"
+            class="button solution-button"
             style="background-color: #4285f4"
             disabled
           >
@@ -155,7 +159,7 @@
           </div>
         </div>
 
-        <div class="solution-code-container">
+        <div class="solution-code-container hidden">
           <div class="solution-container">
             <h3>Solution</h3>
             <div id="solution-tabs" class="tabs">
@@ -199,7 +203,7 @@
         <div
           id="react-solution-container"
           class="solution-container"
-          style="font-size: 15px"
+          style="font-size: 13px"
         >
           <h3>React Solution (Raw Claude Response)</h3>
           <div id="react-solution-content" class="solution-box">

@@ -21,22 +21,27 @@ export class SolutionPollingManager {
 
   /**
    * Poll for the main solution (standard or React).
-   * @param {string} screenshotPath - The screenshot path associated with the solution request.
+   * @param {string} key - The key identifying the solution (screenshot path or storage key like 'transcript_latest').
    */
-  pollForSolution(screenshotPath) {
-    const filename = this._getFilename(screenshotPath);
-    const pollKey = `solution-${filename}`;
+  pollForSolution(key) {
+    // Use the key directly for polling identification
+    const pollKey = `solution-${key}`; // Use the full key
 
-    console.log(`Starting to poll for solution: ${pollKey}`);
+    console.log(`Starting to poll for solution with key: ${key}`);
     this._clearPolling(pollKey); // Clear any previous polling for this key
 
     this.pollIntervals[pollKey] = setInterval(async () => {
       try {
-        const data = await apiRequest(`/api/solution/${filename}`);
+        // Construct the URL with the key as a query parameter
+        const encodedKey = encodeURIComponent(key);
+        const pollUrl = `/api/solution/status?key=${encodedKey}`;
+        console.log(`Polling URL: ${pollUrl}`); // Log the polling URL
+
+        const data = await apiRequest(pollUrl); // Use the new URL
 
         // Check if either standard solution or react_solution is present
         if (data.solution || data.react_solution) {
-          console.log(`Solution found for ${pollKey}`);
+          console.log(`Solution found for key: ${key}`);
           // Update state with both parts (one might be null)
           appState.update("solution.currentSolution", {
             solution: data.solution,
@@ -47,7 +52,7 @@ export class SolutionPollingManager {
         }
         // else: Continue polling
       } catch (error) {
-        console.error(`Error polling for solution (${pollKey}):`, error);
+        console.error(`Error polling for solution (key: ${key}):`, error);
         this._handlePollingError(
           pollKey,
           "Error retrieving solution. Please try again."

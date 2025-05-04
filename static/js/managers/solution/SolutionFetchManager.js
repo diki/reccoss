@@ -40,6 +40,7 @@ export class SolutionFetchManager {
    * Get a React solution using Gemini.
    */
   async getReactSolutionWithGemini() {
+    console.log("are yu here");
     await this._fetchSolution(
       "/api/react-solution-with-gemini",
       "React Gemini"
@@ -78,13 +79,19 @@ export class SolutionFetchManager {
     const currentExtractedQuestion = appState.get(
       "question.currentExtractedQuestion"
     );
+    // Get both potential keys
     const currentScreenshotPath = appState.get(
       "screenshots.currentScreenshotPath"
     );
+    const currentStorageKey = appState.get("question.currentStorageKey"); // Get the storage key
 
-    if (!currentExtractedQuestion || !currentScreenshotPath) {
+    // Determine the key to use: prefer screenshot path, fallback to storage key
+    const keyToSend = currentScreenshotPath || currentStorageKey;
+
+    // Check if we have a question AND a key to identify it
+    if (!currentExtractedQuestion || !keyToSend) {
       console.error(
-        `Cannot fetch ${providerName} solution: No question or screenshot path available.`
+        `Cannot fetch ${providerName} solution: No question or identifying key (screenshot/storage) available.`
       );
       // Optionally, show an error message to the user via UIStateManager if needed
       return;
@@ -102,14 +109,14 @@ export class SolutionFetchManager {
         },
         body: JSON.stringify({
           question: currentExtractedQuestion,
-          screenshot_path: currentScreenshotPath,
+          storage_key: keyToSend, // Send the key (could be path or 'transcript_latest')
         }),
       });
 
       if (data.status === "success") {
         console.log(`${providerName} solution request submitted successfully.`);
-        // Start polling for the solution using the shared polling mechanism
-        this.pollingManager.pollForSolution(currentScreenshotPath);
+        // Start polling for the solution using the same key we sent
+        this.pollingManager.pollForSolution(keyToSend);
       } else {
         console.error(
           `Error requesting ${providerName} solution:`,

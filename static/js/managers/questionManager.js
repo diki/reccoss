@@ -215,8 +215,10 @@ export class QuestionManager {
           "question.currentExtractedQuestion",
           data.extracted_question
         );
-        // We don't have a specific screenshot path here, maybe store the key?
-        // appState.update("question.currentStorageKey", data.storage_key); // Optional: store the key if needed later
+        // Store the storage key associated with this transcript question
+        appState.update("question.currentStorageKey", data.storage_key);
+        // Ensure screenshot path is null for transcript questions
+        appState.update("screenshots.currentScreenshotPath", null);
       } else {
         console.error(
           "Error extracting question from transcript:",

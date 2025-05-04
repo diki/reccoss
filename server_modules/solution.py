@@ -72,16 +72,17 @@ def process_solution_with_gemini(question, screenshot_path):
     except Exception as e:
         print(f"Error processing solution with Gemini: {str(e)}")
 
-def process_react_solution_with_gemini(question, screenshot_path):
+# Update function signature and usage to use storage_key
+def process_react_solution_with_gemini(question, storage_key):
     try:
         solution = get_react_solution_with_gemini(question)
         if solution:
-            print(f"React solution generated for question (Gemini)")
-            store_react_solution(screenshot_path, solution) # Use specific react storage
+            print(f"React solution generated for question (Gemini) with key: {storage_key}")
+            store_react_solution(storage_key, solution) # Use storage_key
         else:
-            print("Failed to generate React solution for question (Gemini)")
+            print(f"Failed to generate React solution for question (Gemini) with key: {storage_key}")
     except Exception as e:
-        print(f"Error processing React solution with Gemini: {str(e)}")
+        print(f"Error processing React solution with Gemini (key: {storage_key}): {str(e)}")
 
 def process_react_solution_with_claude(question, screenshot_path):
     try:
@@ -209,13 +210,21 @@ def get_solution_gemini():
 
 @solution_bp.route('/react-solution-with-gemini', methods=['POST']) # Gemini React Solution
 def get_react_solution_gemini():
+    print('---------------------------------')
+    print("calling get_react_solution_gemini")
+    print('---------------------------------')
     data = request.json or {}
     question = data.get('question', '')
-    screenshot_path = data.get('screenshot_path', '')
-    if not question or not screenshot_path:
-        return jsonify({"status": "error", "message": "Missing question or screenshot_path"}), 400
+    storage_key = data.get('storage_key', '') # Get storage_key instead
+    print('---------------------------------')
+    print(f"Question received: {question[:100]}...") # Log truncated question
+    print(f"Storage key received: {storage_key}")
+    print('---------------------------------')
+    if not question or not storage_key: # Check for storage_key
+        return jsonify({"status": "error", "message": "Missing question or storage_key"}), 400
 
-    thread = threading.Thread(target=process_react_solution_with_gemini, args=(question, screenshot_path))
+    # Pass storage_key to the background process
+    thread = threading.Thread(target=process_react_solution_with_gemini, args=(question, storage_key))
     thread.daemon = True
     thread.start()
     return jsonify({"status": "success", "message": "React Gemini solution request submitted"})
@@ -338,6 +347,46 @@ def get_solution_for_screenshot_route(screenshot_filename):
             "react_solution": react_solution, # Raw react code if applicable
             "followup_solutions": followup_solutions # Any follow-ups associated
         })
+
+# --- New Generic Solution Status Route (for Polling) ---
+
+@solution_bp.route('/solution/status', methods=['GET'])
+def get_solution_status_route():
+    """
+    Checks for the existence of a solution based on a generic key (screenshot path or storage key).
+    Used by the frontend polling mechanism.
+    """
+    solution_key = request.args.get('key', None)
+    if not solution_key:
+        return jsonify({"status": "error", "message": "Missing 'key' query parameter"}), 400
+
+    print(f"Polling request received for key: {solution_key}")
+
+    with interview_data_lock:
+        # Check both standard and react solution dictionaries
+        solution = interview_data["solutions"].get(solution_key, None)
+        react_solution = interview_data["react_solutions"].get(solution_key, None)
+
+        # Also check for follow-up solutions related to this key (if needed, though polling logic might handle this separately)
+        # followup_solutions = {} # Example if needed
+
+    print(f"Polling result for key {solution_key}: solution found = {bool(solution)}, react_solution found = {bool(react_solution)}")
+
+    # Return the found solutions (either or both could be present)
+    response_data = {
+        "key": solution_key,
+        "solution": solution,
+        "react_solution": react_solution,
+        # "followup_solutions": followup_solutions # Example if needed
+    }
+
+    # Add cache-control headers to prevent browser caching of polling responses
+    response = make_response(jsonify(response_data))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
+
 
 # --- New Route for Claude Design Solution (Direct Response) ---
 
