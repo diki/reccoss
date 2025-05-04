@@ -49,7 +49,9 @@ def capture_screenshot_claude():
 @screenshot_bp.route('/api/extract-with-gemini', methods=['POST']) # Gemini Coding Question
 def extract_with_gemini():
     try:
+        print("call it")
         screenshot_path = take_screenshot()
+        print(screenshot_path)
         data = request.json or {}
         question_type = data.get('question_type', 'coding') # Default to coding
         notes = data.get('notes', '')

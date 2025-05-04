@@ -59,6 +59,9 @@ export function initDomElements() {
     getReactSolution2WithGeminiBtn: document.getElementById(
       "get-react-solution2-with-gemini"
     ),
+    getDesignSolutionClaudeBtn: document.getElementById(
+      "get-design-solution-claude"
+    ), // Added
     getSolutionFollowupBtn: document.getElementById("get-solution-followup"),
     getSolutionFollowupWithGeminiBtn: document.getElementById(
       "get-solution-followup-with-gemini"
@@ -86,6 +89,12 @@ export function initDomElements() {
 
     // Claude React Followup display
     followupReactContent: document.getElementById("followup-react-content"),
+
+    // Claude Design Solution display
+    designSolutionContainer: document.getElementById(
+      "design-solution-container"
+    ), // Added
+    designSolutionContent: document.getElementById("design-solution-content"), // Added
 
     // UI controls
     resetAllBtn: document.getElementById("reset-all"),

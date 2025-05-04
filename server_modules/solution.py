@@ -7,7 +7,13 @@ from datetime import datetime
 from .config import app, interview_data, interview_data_lock, store_solution, store_react_solution, store_followup_solution, store_claude_react_followup_solution, store_gemini_react_followup_solution # Added store_gemini_react_followup_solution
 
 # Import solution generation functions
-from claude_api import get_solution_for_question, get_followup_solution, get_react_solution, get_followup_solution_with_claude_react
+import traceback # Import traceback for detailed error logging
+
+# Import shared app and data/locks/helpers
+from .config import app, interview_data, interview_data_lock, store_solution, store_react_solution, store_followup_solution, store_claude_react_followup_solution, store_gemini_react_followup_solution # Added store_gemini_react_followup_solution
+
+# Import solution generation functions
+from claude_api import get_solution_for_question, get_followup_solution, get_react_solution, get_followup_solution_with_claude_react, get_design_solution_with_claude # Import the new design function
 from gemini_api.get_solution_with_gemini import get_solution_for_question_with_gemini
 from gemini_api.get_followup_solution_with_gemini import get_followup_solution_with_gemini, get_react_followup_solution_with_gemini # Added get_react_followup_solution_with_gemini
 from gemini_api.get_react_solution_with_gemini import get_react_solution_with_gemini, get_react_solution2_with_gemini
@@ -332,3 +338,38 @@ def get_solution_for_screenshot_route(screenshot_filename):
             "react_solution": react_solution, # Raw react code if applicable
             "followup_solutions": followup_solutions # Any follow-ups associated
         })
+
+# --- New Route for Claude Design Solution (Direct Response) ---
+
+@solution_bp.route('/solution/design/claude', methods=['POST'])
+def get_design_solution_claude_direct():
+    """
+    Gets a system design solution from Claude using the RADIO prompt
+    and returns it directly in the response.
+    """
+    data = request.json or {}
+    question = data.get('question', '')
+    if not question:
+        return jsonify({"status": "error", "message": "Missing question text"}), 400
+
+    print(f"Received request for Claude design solution: {question[:100]}...")
+
+    try:
+        # Call the Claude API function directly
+        solution_markdown = get_design_solution_with_claude(question)
+
+        if solution_markdown:
+            print("Successfully generated design solution with Claude.")
+            # Return the raw markdown directly
+            return jsonify({
+                "status": "success",
+                "solution_markdown": solution_markdown
+            })
+        else:
+            print("Failed to generate design solution with Claude.")
+            return jsonify({"status": "error", "message": "Failed to generate design solution from Claude."}), 500
+
+    except Exception as e:
+        print(f"Error in /api/solution/design/claude: {str(e)}")
+        print(traceback.format_exc()) # Print full traceback
+        return jsonify({"status": "error", "message": str(e)}), 500

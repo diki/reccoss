@@ -17,7 +17,7 @@
           <button id="take-screenshot" class="button secondary hidden">
             Extract with Claude (screenshot)
           </button>
-          <button id="extract-with-gemini" class="button secondary hidden">
+          <button id="extract-with-gemini" class="button secondary">
             Extract with Gemini (screenshot)
           </button>
           <button id="extract-with-openai" class="button secondary hidden">
@@ -32,7 +32,7 @@
           </button>
           <button
             id="extract-question-transcript"
-            class="button secondary"
+            class="button secondary hidden"
             style="background-color: #ff9800"
           >
             Extract Question (Transcript)
@@ -52,26 +52,23 @@
             Extract React Question (OpenAI)
           </button>
           <button
-            id="get-solution"
-            class="button solution-button hidden"
-            disabled
-          >
-            Get Solution
-          </button>
-          <button
-            id="get-solution-with-openai"
-            class="button solution-button hidden"
-            disabled
-          >
-            Get Solution with OpenAI
-          </button>
-          <button
             id="get-solution-with-gemini"
-            class="button solution-button hidden"
+            class="button solution-button"
             disabled
           >
             Get Solution with Gemini
           </button>
+          <button id="get-solution" class="button solution-button" disabled>
+            Get Solution
+          </button>
+          <button
+            id="get-solution-with-openai"
+            class="button solution-button"
+            disabled
+          >
+            Get Solution with OpenAI
+          </button>
+
           <button
             id="get-react-solution-with-gemini"
             class="button solution-button hidden"
@@ -82,7 +79,7 @@
           </button>
           <button
             id="get-react-solution-with-claude"
-            class="button solution-button"
+            class="button solution-button hidden"
             style="background-color: rgb(232, 94, 8)"
             disabled
           >
@@ -95,6 +92,14 @@
             disabled
           >
             Get React Solution2 (Gemini)
+          </button>
+          <button
+            id="get-design-solution-claude"
+            class="button solution-button hidden"
+            style="background-color: #795548"
+            disabled
+          >
+            Get Design Solution (Claude)
           </button>
           <button
             id="get-solution-followup"
@@ -112,7 +117,7 @@
           </button>
           <button
             id="get-followup-solution-claude-react"
-            class="button solution-button"
+            class="button solution-button hidden"
             style="background-color: #d09a74"
             disabled
           >
@@ -150,7 +155,7 @@
           </div>
         </div>
 
-        <div class="solution-code-container hidden">
+        <div class="solution-code-container">
           <div class="solution-container">
             <h3>Solution</h3>
             <div id="solution-tabs" class="tabs">
@@ -211,6 +216,22 @@
           <h3>Followup Solution (Raw Claude Response)</h3>
           <div id="followup-react-content" class="solution-box">
             <p><em>No followup solution available yet.</em></p>
+          </div>
+        </div>
+
+        <!-- New Section for Claude Design Solution -->
+        <div
+          id="design-solution-container"
+          class="solution-container hidden"
+          style="font-size: 15px"
+        >
+          <h3>Design Solution (Claude RADIO)</h3>
+          <div
+            id="design-solution-content"
+            class="solution-box"
+            style="font-size: 12px"
+          >
+            <p><em>No design solution generated yet.</em></p>
           </div>
         </div>
 

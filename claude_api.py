@@ -5,7 +5,67 @@ import json
 from typing import Optional, Dict
 
 # Import the specific prompt function needed for Claude React solutions
+# (We might add a dedicated prompt file for Claude later if needed)
 from gemini_api.prompts import get_react_solution_prompt_for_claude
+
+# --- Constants ---
+CLAUDE_API_URL = "https://api.anthropic.com/v1/messages"
+# Using 3.5 Sonnet as it's generally strong and fast
+# CLAUDE_DEFAULT_MODEL = "claude-3-5-sonnet-20240620"
+CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-20250219"
+# Fallback model if needed
+# CLAUDE_DEFAULT_MODEL = "claude-3-sonnet-20240229"
+ANTHROPIC_VERSION = "2023-06-01"
+
+# --- RADIO Prompt Template for System Design ---
+RADIO_DESIGN_PROMPT_TEMPLATE = """You are acting as a senior frontend engineer designing a solution.
+
+Task: {question_text}
+
+**TL;DR Summary:** Before diving into the detailed RADIO breakdown, provide a (4-6 sentence for each) summary covering:
+*   The core frontend architecture chosen (e.g., SPA with component-based structure, Micro-frontend).
+*   The primary data flow pattern (e.g., Uni-directional from API -> Store -> Components, direct fetch in components).
+*   The main state management approach (e.g., Global store using Redux, Context API, local component state).
+Instructions:
+
+Framework: Structure your entire response using the RADIO framework:
+
+Requirements: 
+Detail both Functional (what it does) and Non-Functional (performance, accessibility, scalability, etc.) requirements. Include high-level UI layout ideas here if helpful.
+Prefer using react-query for server state management, react context api and redux in case you see a need.
+
+Architecture: 
+Describe the high-level frontend architecture. Break down the UI into key components and illustrate their relationships and hierarchy. Detail the data flow between components and services/APIs. 
+Discuss potential technology choices (frameworks, libraries) and justify them.
+Explain to Junior Dev & Discuss Trade-offs: Why this high-level architecture? What alternatives exist (e.g., if SPA, why not MPA?), and what are the trade-offs?
+
+Data Model: 
+Define the structure of the primary frontend state. How will data from APIs be stored and managed? Detail key data shapes and state management strategy (e.g., global store, local state, context API). 
+Add explanation how data flow will work.
+
+Interface Definitions: 
+Specify the contracts for key components (props) and how the frontend interacts with backend APIs (expected request/response shapes, error handling).
+Explain interface definitions like you explain it to a Juniro Dev
+
+Operational Considerations: Discuss performance optimization strategies (loading, rendering, interaction), accessibility concerns, testing approaches, potential scalability issues, and handling real-time updates (if applicable).
+
+Formatting: Use Markdown extensively for clarity (headings, subheadings, lists, code blocks for snippets).
+
+Visualizations: Include **ASCII diagrams or text-based visualizations** within each relevant section of the RADIO framework to visually represent concepts. Do NOT use Mermaid syntax. Examples of what to visualize:
+*   Component hierarchy and relationships (Architecture)
+*   Data flow (Architecture)
+*   State structure (Data Model)
+*   Key UI layouts (Requirements or Architecture)
+*   API interaction sequence (Interface Definitions or Architecture)
+
+Justification: Clearly explain the reasoning behind your design decisions and discuss potential trade-offs for key choices (e.g., state management library, data fetching strategy, rendering optimization).
+
+Completeness: Aim for a comprehensive design covering the core aspects of implementing this feature on the frontend, assuming backend APIs are available but specifying how the frontend uses them.
+
+Please provide the complete solution following these instructions. Ensure the output is well-formatted Markdown.
+"""
+
+# --- Helper Functions ---
 
 def encode_image_to_base64(image_path: str) -> str:
     """
@@ -41,13 +101,13 @@ def extract_coding_question(image_path: str) -> Optional[str]:
     # Prepare the API request
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": ANTHROPIC_VERSION,
         "content-type": "application/json"
     }
     
     # Construct the message with the image
     payload = {
-        "model": "claude-3-sonnet-20240229",
+        "model": CLAUDE_DEFAULT_MODEL, # Use constant
         "max_tokens": 1000,
         "messages": [
             {
@@ -73,7 +133,7 @@ def extract_coding_question(image_path: str) -> Optional[str]:
     try:
         # Make the API request
         response = requests.post(
-            "https://api.anthropic.com/v1/messages",
+            CLAUDE_API_URL, # Use constant
             headers=headers,
             json=payload
         )
@@ -140,7 +200,7 @@ def get_react_solution(question: str) -> Optional[Dict[str, str]]:
     # Prepare the API request
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": ANTHROPIC_VERSION, # Use constant
         "content-type": "application/json"
     }
 
@@ -149,8 +209,7 @@ def get_react_solution(question: str) -> Optional[Dict[str, str]]:
 
     # Construct the message
     payload = {
-        # "model": "claude-3-7-sonnet-20250219",
-        "model": "claude-3-5-sonnet-20241022",
+        "model": CLAUDE_DEFAULT_MODEL, # Use constant
         "max_tokens": 4000, # Keep max tokens high for potentially long code
         "messages": [
             {
@@ -166,7 +225,7 @@ def get_react_solution(question: str) -> Optional[Dict[str, str]]:
     try:
         # Make the API request
         response = requests.post(
-            "https://api.anthropic.com/v1/messages",
+            CLAUDE_API_URL, # Use constant
             headers=headers,
             json=payload
         )
@@ -217,7 +276,7 @@ def get_followup_solution_with_claude_react(transcript: str, react_question: str
     # Prepare the API request
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": ANTHROPIC_VERSION, # Use constant
         "content-type": "application/json"
     }
 
@@ -250,9 +309,8 @@ Then, provide your suggested response below that line. Do not include any other 
 
     # Construct the message payload
     payload = {
-        # "model": "claude-3-7-sonnet-20250219",
-        "model": "claude-3-5-sonnet-20241022",
-        "max_tokens": 2000, # Adjust as needed
+        "model": CLAUDE_DEFAULT_MODEL, # Use constant
+        "max_tokens": 4000, # Increased max tokens for potentially detailed design answers
         "messages": [
             {
                 "role": "user",
@@ -267,7 +325,7 @@ Then, provide your suggested response below that line. Do not include any other 
     try:
         # Make the API request
         response = requests.post(
-            "https://api.anthropic.com/v1/messages",
+            CLAUDE_API_URL, # Use constant
             headers=headers,
             json=payload
         )
@@ -288,6 +346,73 @@ Then, provide your suggested response below that line. Do not include any other 
         print(f"Exception when calling Claude API for React follow-up solution: {str(e)}")
         return None
 
+# --- New Function for Design Solutions ---
+
+def get_design_solution_with_claude(question_text: str) -> Optional[str]:
+    """
+    Send a system design question to Claude API using the RADIO prompt.
+
+    Parameters:
+    - question_text: The system design question text.
+
+    Returns:
+    - Raw Markdown response from Claude, or None if failed.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("Error: ANTHROPIC_API_KEY environment variable not set")
+        return None
+
+    # Prepare the API request headers
+    headers = {
+        "x-api-key": api_key,
+        "anthropic-version": ANTHROPIC_VERSION,
+        "content-type": "application/json"
+    }
+
+    # Format the RADIO prompt with the specific question
+    prompt = RADIO_DESIGN_PROMPT_TEMPLATE.format(question_text=question_text)
+
+    # Construct the message payload
+    payload = {
+        "model": CLAUDE_DEFAULT_MODEL,
+        "max_tokens": 4000,  # Allow ample space for detailed design docs
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    }
+
+    print(f"🚀 Sending request to Claude for design solution (Question: {question_text[:100]}...)")
+    # print(f"Full Prompt: {prompt}") # Avoid printing potentially very large prompts
+
+    try:
+        # Make the API request
+        response = requests.post(
+            CLAUDE_API_URL,
+            headers=headers,
+            json=payload
+        )
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            response_data = response.json()
+            solution_markdown = response_data["content"][0]["text"]
+            print("✅ Claude design solution response received successfully.")
+            # print(f"Raw Response: {solution_markdown[:500]}...") # Avoid printing large responses
+            return solution_markdown.strip() # Return the raw Markdown
+        else:
+            print(f"Error from Claude API (Design Solution): {response.status_code}")
+            print(response.text)
+            return None
+
+    except Exception as e:
+        print(f"Exception when calling Claude API for design solution: {str(e)}")
+        return None
+
+# --- Internal Helper Functions ---
 
 def _create_followup_prompt(context: Dict[str, str]) -> str:
     """
@@ -377,7 +502,7 @@ def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str
     # Prepare the API request
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": ANTHROPIC_VERSION, # Use constant
         "content-type": "application/json"
     }
     
@@ -386,7 +511,7 @@ def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str
     
     # Construct the message
     payload = {
-        "model": "claude-3-sonnet-20240229",
+        "model": CLAUDE_DEFAULT_MODEL, # Use constant
         "max_tokens": 4000,
         "messages": [
             {
@@ -401,7 +526,7 @@ def _get_solution_with_prompt(context, prompt_creator) -> Optional[Dict[str, str
     try:
         # Make the API request
         response = requests.post(
-            "https://api.anthropic.com/v1/messages",
+            CLAUDE_API_URL, # Use constant
             headers=headers,
             json=payload
         )

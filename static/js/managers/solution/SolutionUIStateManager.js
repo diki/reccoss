@@ -34,13 +34,15 @@ export class SolutionUIStateManager {
       isGenerating || !questionAvailable;
     this.elements.getReactSolution2WithGeminiBtn.disabled =
       isGenerating || !questionAvailable;
+    this.elements.getDesignSolutionClaudeBtn.disabled = // Added
+      isGenerating || !questionAvailable;
     this.elements.getSolutionFollowupBtn.disabled =
       isGenerating || !questionAvailable || !solutionAvailable;
     this.elements.getSolutionFollowupWithGeminiBtn.disabled =
       isGenerating || !questionAvailable || !solutionAvailable;
     this.elements.getFollowupSolutionClaudeReactBtn.disabled =
       isGenerating || !questionAvailable || !solutionAvailable;
-    this.elements.getReactFollowupGeminiBtn.disabled = // Added this line
+    this.elements.getReactFollowupGeminiBtn.disabled =
       isGenerating || !questionAvailable || !solutionAvailable;
 
     // Reset button text if not generating
@@ -56,12 +58,14 @@ export class SolutionUIStateManager {
         "Get React Solution (Claude)";
       this.elements.getReactSolution2WithGeminiBtn.textContent =
         "Get React Solution2 (Gemini)";
+      this.elements.getDesignSolutionClaudeBtn.textContent = // Added
+        "Get Design Solution (Claude)";
       this.elements.getSolutionFollowupBtn.textContent = "Solve Follow-up";
       this.elements.getSolutionFollowupWithGeminiBtn.textContent =
         "Solve Follow-up with GEMini";
       this.elements.getFollowupSolutionClaudeReactBtn.textContent =
         "Get Followup Solution (Claude)";
-      this.elements.getReactFollowupGeminiBtn.textContent = // Added this line
+      this.elements.getReactFollowupGeminiBtn.textContent =
         "Get React Follow-up (Gemini)";
     }
   }
@@ -81,6 +85,7 @@ export class SolutionUIStateManager {
       this.elements.getReactSolutionWithClaudeBtn.disabled = !questionAvailable;
       this.elements.getReactSolution2WithGeminiBtn.disabled =
         !questionAvailable;
+      this.elements.getDesignSolutionClaudeBtn.disabled = !questionAvailable; // Added
       // Follow-up buttons depend on both question and existing solution
       const solutionAvailable = !!appState.get("solution.currentSolution");
       this.elements.getSolutionFollowupBtn.disabled =
@@ -89,7 +94,7 @@ export class SolutionUIStateManager {
         !questionAvailable || !solutionAvailable;
       this.elements.getFollowupSolutionClaudeReactBtn.disabled =
         !questionAvailable || !solutionAvailable;
-      this.elements.getReactFollowupGeminiBtn.disabled = // Added this line
+      this.elements.getReactFollowupGeminiBtn.disabled =
         !questionAvailable || !solutionAvailable;
     }
   }
