@@ -294,16 +294,16 @@ export class SolutionPollingManager {
 
   /**
    * Poll for the Gemini React follow-up solution status.
-   * @param {string} screenshotPath - The screenshot path.
+   * @param {string} key - The key identifying the context (screenshot path or storage key).
    */
-  pollForReactFollowupSolutionWithGemini(screenshotPath) {
-    const filename = this._getFilename(screenshotPath);
-    const pollKey = `gemini-react-followup-${filename}`;
+  pollForReactFollowupSolutionWithGemini(key) {
+    // Use the generic key for polling identification and prefix construction
+    const pollKey = `gemini-react-followup-${key}`;
     // Define a unique key prefix for storing this specific type of solution
-    const solutionKeyPrefix = `${screenshotPath}:gemini-react-followup:`;
+    const solutionKeyPrefix = `${key}:gemini-react-followup:`; // Use the generic key
 
     console.log(
-      `Starting to poll for Gemini React follow-up solution: ${pollKey}`
+      `Starting to poll for Gemini React follow-up solution with key: ${key}`
     );
     this._clearPolling(pollKey);
 

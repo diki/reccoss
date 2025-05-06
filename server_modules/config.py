@@ -85,13 +85,15 @@ def store_claude_react_followup_solution(followup_id, raw_solution_text): # Use 
             interview_data["followup_solutions"][followup_id] = raw_solution_text
             print(f"Stored Claude React raw follow-up solution for ID: {followup_id}")
 
-def store_gemini_react_followup_solution(screenshot_path, raw_solution_text):
+# Update function signature and usage to use storage_key
+def store_gemini_react_followup_solution(storage_key, raw_solution_text):
     """Stores the raw text response for a Gemini React follow-up solution."""
     if raw_solution_text:
         with interview_data_lock:
             # Use a specific key format for this type of raw response
             timestamp = int(datetime.now().timestamp())
-            followup_key = f"{screenshot_path}:gemini-react-followup:{timestamp}"
+            # Construct the key using the generic storage_key
+            followup_key = f"{storage_key}:gemini-react-followup:{timestamp}"
             # Store the raw text directly
             interview_data["solutions"][followup_key] = raw_solution_text
             print(f"Gemini React raw follow-up solution stored with key: {followup_key}")

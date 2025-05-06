@@ -182,12 +182,14 @@ Given the following context:
 ```
 
 Please perform the following steps:
-1. Identify the most recent follow-up question or modification request related to the React code from the transcript.
-2. Modify the "Current React Solution Code" provided above to address ONLY that follow-up question/request.
-3. Ensure the updated code is complete and functional React code (TypeScript/TSX).
-4. Include detailed comments ABOVE each changed or added code section explaining WHY the changes were made to address the follow-up.
-
-IMPORTANT: Return ONLY the raw, updated React code block. Do not include any surrounding text, explanations, or markdown formatting (like ```tsx ... ```). Just the code itself.
+IF the follow-up requires CODE CHANGES:
+- Modify the "Current Code" to address ONLY the follow-up.
+- Add comments ONLY for the changes explaining the 'why'.
+- Output ONLY the raw, complete, updated TSX code. No other text.
+ELSE IF the follow-up is a QUESTION (not requiring code changes):
+- State the identified question.
+- Provide a concise answer.
+- Append the original, unmodified "Current Code" block below the answer.
 """
 
 def get_transcript_question_extraction_prompt() -> str:
@@ -204,3 +206,40 @@ Instructions:
 7. Focus on technical questions, coding problems, system design tasks, or behavioral questions that require a structured answer.
 
 Return only the complete, extracted text for the **latest** question/task description, without any introductory phrases like "The question is:", commentary, or explanation."""
+
+def get_transcript_system_design_question_extraction_prompt() -> str:
+    """Returns the prompt for extracting the system design question from a transcript"""
+    return """Analyze the interview transcript and extract the complete system design question.
+Instructions:
+1. Identify the system design question in the transcript.
+2. Extract the core design task along with ALL requirements, constraints, and specific details mentioned that are necessary to understand the full scope.
+3. Include any scale requirements, performance expectations, or technical constraints.
+4. Combine all related information into a single, coherent block of text.
+5. Ignore conversational filler, greetings, and unrelated comments.
+Return only the extracted system design question with its complete details, without any introductory phrases or commentary."""
+
+def get_frontend_system_design_extraction_prompt_with_details() -> str:
+    """
+    Returns the prompt for extracting a frontend system design question from a transcript,
+    along with TypeScript entities and API endpoint definitions.
+    The response should be structured according to the provided schema.
+    """
+    return """Analyze the interview transcript and extract the most recent complete frontend system design question.
+
+Instructions:
+1. Identify the core frontend system design question or task in the transcript.
+2. Extract ALL associated requirements, constraints, and specific details mentioned that are necessary to understand its full scope.
+3. Based on the extracted question, define relevant data entities using TypeScript interfaces or types.
+4. Define key REST API endpoints that the frontend system might interact with. For each endpoint, specify:
+    - HTTP method (e.g., GET, POST, PUT, DELETE)
+    - Path (e.g., /users, /items/{id})
+    - A brief description of its purpose
+    - Example request payload (if applicable, in JSON format)
+    - Example response payload (in JSON format)
+5. Ignore conversational filler, greetings, earlier questions, and unrelated side comments.
+
+Provide the information structured as follows:
+- "question": The complete extracted frontend system design question, including all requirements and details.
+- "entities": A string containing TypeScript interface/type definitions for relevant data entities. Each definition should be on a new line. Example:\\ninterface User {\\n  id: string;\\n  name: string;\\n}\\ninterface Product {\\n  productId: string;\\n  productName: string;\\n}
+- "api": A string describing the REST API endpoints. Each endpoint definition should be clearly delineated. Example:\\nGET /api/users/{userId}\\nPurpose: Retrieve user.\\nResponse: { 'id': '123', 'name': 'John' }\\nPOST /api/orders\\nPurpose: Create order.\\nRequest: { 'userId': '123', 'items': [] }\\nResponse: { 'orderId': 'abc' }
+"""

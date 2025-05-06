@@ -90,10 +90,9 @@ export class FollowupSolutionManager {
         // Reuse UI error
         this.uiStateManager
       ),
-      this.pollingManager.pollForReactFollowupSolutionWithGemini.bind(
-        // New polling function
-        this.pollingManager
-      )
+      // Pass the key determination logic to the polling function starter
+      (keyToUse) =>
+        this.pollingManager.pollForReactFollowupSolutionWithGemini(keyToUse)
     );
   }
 
@@ -118,12 +117,19 @@ export class FollowupSolutionManager {
     followupId = null // Add followupId parameter
   ) {
     // Get the current extracted question (could be coding or React)
+    // Get the current extracted question (could be coding or React)
     const currentExtractedQuestion = appState.get(
       "question.currentExtractedQuestion"
     );
+    // Get both potential keys
     const currentScreenshotPath = appState.get(
       "screenshots.currentScreenshotPath"
     );
+    const currentStorageKey = appState.get("question.currentStorageKey");
+
+    // Determine the key to use for this follow-up context
+    const keyToUse = currentScreenshotPath || currentStorageKey;
+
     // Follow-up needs the *current* solution's code.
     // Check both standard solution and React solution from the combined object.
     const currentSolutionData = appState.get("solution.currentSolution");
@@ -134,16 +140,17 @@ export class FollowupSolutionManager {
     const currentSolutionCode =
       currentReactSolutionCode || currentStandardSolutionCode;
 
+    // Use keyToUse in the validation check
     if (
       !currentExtractedQuestion ||
-      !currentScreenshotPath ||
+      !keyToUse || // Check the determined key
       !currentSolutionCode
     ) {
       console.error(
-        `Cannot fetch ${providerName} follow-up: Missing question, screenshot, or current solution code (checked both standard and React).`
+        `Cannot fetch ${providerName} follow-up: Missing question, identifying key (${keyToUse}), or current solution code.`
       );
       showErrorFn(
-        "Missing required information (question, screenshot, or previous solution code) for follow-up."
+        "Missing required information (question, context key, or previous solution code) for follow-up."
       );
       return;
     }
@@ -184,8 +191,8 @@ export class FollowupSolutionManager {
           react_question: currentExtractedQuestion,
           current_solution: currentSolutionCode,
           transcript: transcriptText,
-          screenshot_path: currentScreenshotPath, // Still useful for context/logging
-          followup_id: followupId, // Include the unique ID
+          storage_key: keyToUse, // Send the determined key
+          followup_id: followupId, // Include the unique ID (if applicable)
         }),
       });
 
@@ -193,9 +200,9 @@ export class FollowupSolutionManager {
         console.log(
           `${providerName} follow-up solution request submitted successfully.`
         );
-        // Start polling. The specific polling function (bound or lambda)
-        // now includes the followupId.
-        startPollingFn();
+        // Start polling, passing the keyToUse if the polling function needs it
+        // (The binding in getReactFollowupSolutionWithGemini handles passing the key)
+        startPollingFn(keyToUse); // Pass keyToUse to the bound polling function starter
       } else {
         console.error(
           `Error requesting ${providerName} follow-up solution:`,

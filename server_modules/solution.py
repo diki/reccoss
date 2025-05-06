@@ -136,20 +136,24 @@ def process_followup_solution_with_claude_react(transcript, react_question, curr
         print(f"Error processing follow-up solution (Claude React raw): {str(e)}")
 
 
-def process_react_followup_solution_with_gemini(transcript, react_question, current_solution, screenshot_path):
+# Update function signature and usage to use storage_key
+def process_react_followup_solution_with_gemini(transcript, react_question, current_solution, storage_key):
     """Background task to get and store raw Gemini React follow-up."""
     try:
-        print(f"Processing Gemini React follow-up request...")
+        print(f"Processing Gemini React follow-up request for key: {storage_key}...")
+        print(react_question)
+        print('--------------------')
+        print(current_solution)
         # Assuming the Gemini function takes similar arguments
         raw_solution = get_react_followup_solution_with_gemini(transcript, react_question, current_solution)
         if raw_solution:
-            print(f"Gemini React follow-up solution generated successfully (raw)")
-            # Use the new specific storage function
-            store_gemini_react_followup_solution(screenshot_path, raw_solution)
+            print(f"Gemini React follow-up solution generated successfully for key: {storage_key} (raw)")
+            # Use the new specific storage function with storage_key
+            store_gemini_react_followup_solution(storage_key, raw_solution)
         else:
-            print("Failed to generate Gemini React follow-up solution (raw)")
+            print(f"Failed to generate Gemini React follow-up solution for key: {storage_key} (raw)")
     except Exception as e:
-        print(f"Error processing follow-up solution (Gemini React raw): {str(e)}")
+        print(f"Error processing follow-up solution (Gemini React raw) for key {storage_key}: {str(e)}")
 
 
 # --- Solution Request Routes (Start Background Threads) ---
@@ -296,12 +300,15 @@ def get_react_followup_solution_gemini_route():
     react_question = data.get('react_question', '')
     current_solution = data.get('current_solution', '')
     transcript = data.get('transcript', '')
-    screenshot_path = data.get('screenshot_path', '')
-    if not react_question or not current_solution or not transcript or not screenshot_path:
-        return jsonify({"status": "error", "message": "Missing required parameters for Gemini React follow-up"}), 400
+    storage_key = data.get('storage_key', '') # Expect storage_key
+    print('---------------------')
+    print('get folloow')
+    print('---------------------')
+    if not react_question or not current_solution or not transcript or not storage_key: # Check for storage_key
+        return jsonify({"status": "error", "message": "Missing required parameters (incl. storage_key) for Gemini React follow-up"}), 400
 
-    # Start background thread using a new processing function
-    thread = threading.Thread(target=process_react_followup_solution_with_gemini, args=(transcript, react_question, current_solution, screenshot_path))
+    # Start background thread using a new processing function, passing storage_key
+    thread = threading.Thread(target=process_react_followup_solution_with_gemini, args=(transcript, react_question, current_solution, storage_key))
     thread.daemon = True
     thread.start()
     return jsonify({"status": "success", "message": "Gemini React follow-up solution request submitted"})

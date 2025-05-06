@@ -1,14 +1,17 @@
 you
 you
 you
-a search input component. A common requirement is to avoid triggering a search.
-an API call on every single keystroke because that can be inefficient and costly.
-Instead, we only want to trigger the search after the user has stopped typing for a second.
-certain period, e.g., 500 ms. This is called debouncing.
 you
 you
 you
 you
+Let's design the front end for a simplified version of Instagram. We'll focus only on the front end.
+Displaying a scrollable list of posts from users the current day.
+current user follows. Posts. Each post will show an image. The username of the post will
+a caption, the like count, and a preview of a few comments, liking.
+Users should be able to like and unlike a post. The like count should update. Comments
+Users should be able to see a list of comments for a post, perhaps by clicking view all
+comments or similar, users should be able to add a new comment to a post.
 you
 you
 you
@@ -60,6 +63,7 @@ you
 you
 you
 you
+You
 you
 you
 you
@@ -78,5 +82,174 @@ you
 you
 you
 you
-you
-you
+You
+the
+. .
+Aaron, how are you?
+All good. In office? No.
+Okay. No worries. Thank you. Bye bye. Bye bye.
+No, I mean, today I'm not in office, so yes, no, I'm not in office.
+has changed today. So we in the morning, let's stay home.
+me I was a bit, I don't know, I was not planning to work in the morning, but then a bug came and I ended up working.
+working on the matrix.
+Precis. Nej får vi blir.
+again, right? Do you have any topics? Let me share my screen. Yeah, let's start with the one on one, right?
+topics.
+Bye-bye.
+Bye-bye.
+.
+. .
+I mean from the, yeah, so from the challenging part is the language or the
+product.
+.
+.
+. .
+. .
+Thank you for watching!
+. .
+Thank you.
+You know, I understand that, right? See, for the web part, right, we will anyways come
+But if you want, we can do one thing after we do the iOS, right?
+We take a break, we go back to web, we can pick a few things on web and then come back to the ILS part.
+Once we have someone else join us, I think the idea would be the same, right?
+that we work across the tech stack, basically.
+iOS, React Native, Android, and
+web and web right basic which is JavaScript or TypeScript.
+. .
+. .
+And what are the things that we can.
+can do what you're saying.
+Thank you.
+Bye-bye.
+. .
+. .
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+. .
+I agree.
+No, I agree, I agree, Mustafa, I don't agree.
+also help us right a smaller team it will also help us tomorrow to reduce to work on more features
+the same time, right? My question is, would you want to pick this up as a side project in the sense that.
+Maybe invest some time, one month.
+. .
+So what do you want to pick this up?
+Exactly right. I mean what we can do is in a one on one.
+we can go back and we don't make any commitments right now. The reason I don't want to make any commitments is because...
+people really excited and then they think about, oh, tomorrow it will be delivered. I don't want to do that. Right.
+more of a commitment between you and me but then
+would have control to ask you what is the progress that you've made and then we actually spend time.
+on this, what are the blockers and so on, so it becomes like a project between us.
+We can also create.
+No, I mean, I was thinking let's make some.
+Uh, what I was thinking, OK. OK.
+Let's look, yeah, I agree, I agree.
+I mean, let's make a proof of concept.
+Thank you.
+I mean, I have read about this. It's one of the things that I would also love to solve.
+My understanding is that it's not that easy. It looks easy, but it's not that easy.
+I'll tell you where we are using it right now. Okay, we do have a cross platform.
+from this thing, which is in the error codes, exactly.
+It's the simplest part right because.
+Exactly.
+. .
+You'll have to create coordinates.
+mods across right or not even codemods right maybe even creating the mcp server.
+vote should be fine. Maybe. I'm thinking maybe we can actually, maybe we can.
+we can actually leverage AI into this rather than do it ourselves.
+I mean.
+. .
+. .
+Yeah, I think it's worth to try, right? And once we have a case for this, we will see you in the next one.
+bring this week, not me, but once we work on this together, right? So you do the whole work.
+Maybe I can help you create the project plan here, right, of how to, and even the presentation part, right?
+help you with those little things and then maybe you present it to William or Petter as well and then you.
+show that guys this is what would help us and I'm once we get to a point where it is that.
+Then maybe it's the time to actually start. Do.
+doing things around that part, because I also agree with you, right, but also another thing I would say.
+right is you also need to be understand what all can be done.
+Right, so for example, do we also plan to do it for security, I mean.
+UI elements or some basic parts of code, for example, payment executor or is
+There are more.
+We can start with Payment Executor for now.
+then we work our way, right? Let's take team into executor for this, right?
+Thank you.
+You
+Bye.
+Thank you.
+Thank you very much.
+.
+Okay, I'll assign this one to you. Now from our
+side, we'll use our one-on-ones to track the progress.
+All right, and I would say keep some time during the weeks right when maybe
+like say two hours you can always keep saying okay I want to work on this one okay.
+your calendar already, in fact.
+Bye-bye.
+So spend some time on this one and then it will help us as well right in future.
+after you do this. So I would also say block yourself like one hour every week or two hours to go.
+Just to be sure, because I don't think we can put a lot of time into it.
+of time as well into this considering where we are right how we are working.
+So I would say just be very careful about that, but let's make sure that for those one hour or two hours.
+are working on it. Let's say two hours every week, right? I think it's four hours. Two hours every week should be enough.
+So once you have that information, but just block your time in your calendar as well.
+saying this is what I'm working on and then track the progress accordingly for yourself.
+Alright. Amazing. Anything else on your list as well?
+Okay, I have one.
+I want to discuss is and it's more about the quality part right so I want to work on how.
+I see you can do things really well in the sense you can.
+You can take any complex topic. I don't have any problems that can take any complex topic you can.
+Deliver it right? You've been working on this together. I really want to work on us together.
+the weather is on the hour part, right? So the hygiene part of it basically.
+What I mean here is one of the feedback that I want to give you is right now, for example, the payment button.
+We talked about this, I've been raising this for past right and payment.
+button be from the button separate, right? We've always said yes, yes, yes.
+right. But we never really sat down and said, can you show
+me how it is actually being done. Can you explain to me what exactly this is?
+go to WebSDK and see what the actual implementation is, right? So these are the.
+small small things right which then end up being in the end right so for example for payment button
+I would, my way I would do it is, uh, if it's being asked too much times.
+I would just create a separate ticket just to track that. Just to be safe.
+Right, so I really want us to work towards a place where.
+The things are more refined on how you're working. Right now, that's my understanding.
+right. There are a lot of things and with you.
+which is a good thing because you deliver a lot of things.
+right? There's also a lot of trust here. What we really need to improve is, and that means...
+to come from you is how you manage those things really well.
+The way to do that is actually define it really well, right guys, this is what I'm supposed to do here.
+exactly what will happen. In this case, the expectations are not.
+Different. Right, even in and you really need to protect yourself in this case.
+It just also helps you protect yourself saying, OK, I will deliver this. This is exactly things that.
+I would deliver, which for me, I see this missing right now.
+I see sometimes like tickets being created, which is.
+a big ticket has small, small parts, then something gets lost.
+somewhere and then it becomes a bit difficult or
+I would say it becomes a bit...
+But in the end, it becomes frustrating for you because you then have to go back and
+So there's a lot of back and forth that can happen in the end just before we make the final thing.
+So, that's one of the things I want to work with you.
+polish it more, right? How do we make your work more polished in the sense?
+it's there's less of things that are unfinished or there.
+less things which are unrefined while they're happening. It's very raw, to be honest, when I look at it.
+Bye-bye. Bye-bye.
+Bye-bye.
+Thank you.
+Yeah, I mean
+Yeah, exactly. Right. I mean, I don't think you don't do it. I just think that, um, it
+to be really clear to others as well, right? I mean.
+And I really want to, because see Mustafa, again, like I said, I want you to grow more.
+more right in this company or outside i don't i mean there's no matter right but
+you to grow more, I really want in a way where you can take a project, break
+it down into smaller parts in such a way that it's clearly everything is clearly there.
+and anyone can come and pick this up.
+And it's a way of working that we need to improve, right? And that's what I want to work with you because I was thinking about.
+this right so what what I can put for you as a growth plan or together right that we need to work
+Technically, you're doing everything, you're doing more, Mustafa, in fact, but this is one of the...
+the places where you can improve actually.
+I would predict this
+I mean, I'm not putting anything here, but improve ways of working, right?
+No, I will not even put weights on working.
+I mean, let me just put dumb things in and then I'll explain what.
+we can do here. Improve ways of working and let me just run and then because this.
+comes out wrong. I mean your ways of working need to be improved.
+It's not that right, but I want to I want to work with you in such a way that you.
